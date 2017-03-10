@@ -1,0 +1,15 @@
+{
+  "cancel": "Cancel",
+  "connect": "Connect",
+  "file": "file",
+  "folder": "folder",
+  "kind": "Kind",
+  "lastModifiedOn": "Last Modified On",
+  "name": "Name",
+  "queryErrorMessage": "No files or folders matching the searched name were found",
+  "search": "Search",
+  "searchResultsMessage": "Search Results",
+  "signedInAs": "signed in as {user} ",
+  "signOut": "sign out",
+  "urlErrorMessage": "The URL you entered is invalid or points to a file you don't have permission to view"
+}

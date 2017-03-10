@@ -1,0 +1,15 @@
+{
+  "cancel": "Annuler",
+  "connect": "Connexion",
+  "file": "fichier",
+  "folder": "dossier",
+  "kind": "Type",
+  "lastModifiedOn": "Dernière modification le",
+  "name": "Nom",
+  "queryErrorMessage": "Aucun fichier ou dossier correspondant au nom recherché n'a été trouvé",
+  "search": "Rechercher",
+  "searchResultsMessage": "Résultats de la recherche",
+  "signedInAs": "connecté en tant que {user} ",
+  "signOut": "déconnexion",
+  "urlErrorMessage": "L'URL saisie n'est pas valide ou pointe vers un fichier que vous n'êtes pas autorisé à visualiser"
+}

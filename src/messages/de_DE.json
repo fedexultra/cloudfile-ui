@@ -1,0 +1,15 @@
+{
+  "cancel": "Abbrechen",
+  "connect": "Verbinden",
+  "file": "Datei",
+  "folder": "Ordner",
+  "kind": "Art",
+  "lastModifiedOn": "Letzte Änderung am",
+  "name": "Name",
+  "queryErrorMessage": "Es wurden keine mit dem Suchnamen übereinstimmenden Dateien oder Ordner gefunden.",
+  "search": "Suche",
+  "searchResultsMessage": "Suchergebnisse",
+  "signedInAs": "Angemeldet als {user} ",
+  "signOut": "Abmelden",
+  "urlErrorMessage": "Die von Ihnen eingegebene URL ist ungültig oder verweist auf eine Datei, zu deren Anzeige Sie nicht berechtigt sind."
+}

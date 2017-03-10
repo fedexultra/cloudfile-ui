@@ -1,0 +1,73 @@
+/**
+ * typescript compiler options for the 'src' directory
+ */
+
+{
+    "compilerOptions": {
+
+        // Compile down to es5, which is fully supported by all browsers we support (as of September 2016)
+        "target": "es5",
+
+        // Be very explicit about which library dependencies you want to pull in. For example, if using
+        // an es6 promise polyfill, you can add "es2015.promise". See https://goo.gl/emeSpT
+        "lib": ["dom", "es5", "es2015.promise"],
+
+        // Our current version of webpack supports commonjs best. Use it.
+        "module": "commonjs",
+
+        // Remove this line if you're against tsx
+        "jsx": "react",
+
+        // `any` should be explicitly called out where it is used at all
+        "noImplicitAny": true,
+
+        // Prevents `this` bugs
+        "noImplicitThis": true,
+
+        // Ensures declared variables are used. This might be better as a tslint rule so it does not break compile.
+        "noUnusedLocals": true,
+
+        // Prevents fall through bugs in switch statements. This might be better as a tslint rule so it does not break compile.
+        "noFallthroughCasesInSwitch": true,
+
+        // If any codepath in a function returns a value, ensure that all codepaths return a value so there is
+        // implicit "undefined" type returned. This might be better as a tslint rule so it does not break compile.
+        "noImplicitReturns": true,
+
+        // Helps prevent linux file casing issues.
+        "forceConsistentCasingInFileNames": true,
+
+        // Make the compiler output more human readable
+        "pretty": true,
+
+        // skipLibCheck will not typecheck .d.ts files. For example, we consume shared widgets type definitions, and shared widgets
+        // consumes react type definitions. skipLibCheck will not check that shared widget's type definitions are valid against react's.
+        // If you're hand-editing .d.ts files, this can be dangerous, but it does speed up the compiler significantly.
+        "skipLibCheck": true,
+
+        // Should point to <workspace-root>/modules/web so the compiler will consider those as modules to look for types in
+        "baseUrl": "../..",
+
+        "newLine": "LF",
+
+        // Output sourcemaps. This slows down the compiler, but it is very useful for debugging minified code
+        // We may only want this for production builds and not development builds
+        "sourceMap": true,
+
+        // No implicit null or undefined types. NPE be gone.
+        "strictNullChecks": true,
+
+        // Where to put individual compiled files and their type definitions
+        "outDir": "../lib",
+
+        "paths": {
+            // TODO: you can remove this once we update to typescript 2.0.5. See https://github.com/Microsoft/TypeScript/issues/10968
+            "react": ["cloud-file-connector/node_modules/@types/react/index"]
+        }
+    },
+    "include": [
+        // This should include each of the entry points that you want compiled. The
+        // compiler will recursively walk the imports and compile those as well
+        "./CloudFileConnector.tsx"
+    ]
+}

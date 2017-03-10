@@ -1,0 +1,15 @@
+{
+  "cancel": "Cancelar",
+  "connect": "Conectar",
+  "file": "archivo",
+  "folder": "carpeta",
+  "kind": "Clase",
+  "lastModifiedOn": "Modificado por última vez el",
+  "name": "Nombre",
+  "queryErrorMessage": "No se ha encontrado ningún archivo o carpeta que coincida con el nombre de la búsqueda",
+  "search": "Buscar",
+  "searchResultsMessage": "Resultados de la búsqueda",
+  "signedInAs": "sesión iniciada como {user}",
+  "signOut": "cerrar sesión",
+  "urlErrorMessage": "La URL indicada no es válida o tiene como destino un archivo del que no tiene permiso de visualización"
+}
