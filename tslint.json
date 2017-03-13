@@ -1,5 +1,5 @@
 {
-  "extends": ["webclients_tslint.json"],
+  "extends": ["./webclients_tslint.json"],
   "rules": {
     "no-unused-variable": [
       true,
