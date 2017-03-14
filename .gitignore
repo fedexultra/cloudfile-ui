@@ -1,7 +1,19 @@
+# Codegen bits
 node_modules
+lib
+src/codegen
+dist
 build
+
+# Logs
 npm-debug.log
+
+# Filesystem
 .env
 .DS_Store
-dist
+
+# Python compiled files
+*.pyc
+
+# CI files
 gitlab-ci
