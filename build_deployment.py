@@ -53,7 +53,7 @@ def build():
     """
     Build the UI
     """
-    if subprocess.check_call('npm install', shell=True) == 0 and subprocess.check_call('npm run all', shell=True):
+    if subprocess.check_call('npm install', shell=True) == 0 and subprocess.check_call('npm run all', shell=True) == 0:
         print("Building has completed successfully")
     else:
         print("Errors detected during building")
@@ -108,7 +108,7 @@ def validate_files():
     """
     list_of_file_paths = ["index.html", "src/img", "dist/compiled-locales", "dist/cloud-file-connector.min.js"]
     for paths in list_of_file_paths:
-        if os.path.exists(paths) is False:
+        if not os.path.exists(paths):
             return False
     return True
 
