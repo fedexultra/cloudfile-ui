@@ -8,8 +8,10 @@ build
 # Logs
 npm-debug.log
 
-# Filesystem
+# Environments
 .env
+
+# Filesystem
 .DS_Store
 
 # Python compiled files
