@@ -4,6 +4,7 @@ lib
 src/codegen
 dist
 build
+deployment_files
 
 # Logs
 npm-debug.log
