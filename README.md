@@ -9,16 +9,17 @@ python build_deployment.py --clean --build --package
 ## Deploy
 1. From this repo's root, clone the gitlab-ci project:
 ```
-git clone https://gitlab.tableausoftware.com/cloud-connect/gitlab-ci; cd gitlab-ci
+git clone git@gitlab.tableausoftware.com:cloud-connect/gitlab-ci.git; cd gitlab-ci
 ```
-2. Install python3, make a virtual environment, and install modules if necessary. If virtualenv gives you trouble, you can install pip3 modules system-wide (but at your own risk):
+2. Install python3, pip3, and virtualenv if you don't already have these tools. Make a virtual environment, and install modules if necessary. If virtualenv gives you trouble, you can install pip3 modules system-wide (but at your own risk):
 ```
 virtualenv -p python3 gitlab-ci-venv; source gitlab-ci-venv/bin/activate; pip3 install -r requirements.txt
 ```
-3. Using the appropriate arguments, run the deploy script:
+3. Using the appropriate arguments, run the deploy script. Sane defaults are provided and use `--help` if needed to determine args:
 ```
-./deploy_scripts/deploy_to_s3.py
+./deploy_scripts/deploy_to_s3.py --dry_run
 ```
+4. Deactivate your virtualenv with `deactivate`
 
 ## Contributing guidelines
 A [document on sharepoint](https://tableau.sharepoint.com/sites/Development/Online/_layouts/15/WopiFrame.aspx?sourcedoc=%7BB564AB5B-32B0-4F4D-9774-6387EAE24E1B%7D&file=Cloud-Connect%20git%20CI-CD%20workflows.docx&action=default) outlines the details of how we plan to work together and the workflows used in this framework. For the simplest case of adding a feature:
