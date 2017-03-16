@@ -120,10 +120,21 @@ class OneDriveRequestor extends Requestor {
     // GET https://graph.microsoft.com/v1.0/me/drive/root:/{item-path}:/content
     return this.baseUrl + fileID + ':/content';
   }
+  public buildRequest(query: string): string {
+    // This tries to determine if the query entered is a file url for OneDrive
 
+    const urlPattern = RegExp('^https*');
+    if (urlPattern.test(query)) {
+      const queryBits = query.split('&');
+      const fileId = queryBits[2].split('=')[1];
+      return this.baseUrl + '/drive/items/' + fileId;
+    }
+    return this.baseUrl + '/drive/root/search(q=\'{' + query + '}\')';
+
+  }
   public search(query: string): Promise<CloudItem[]> {
     // GET https://graph.microsoft.com/v1.0/me/drive/root/search(q='{search-text}')
-    const urlRequest = this.baseUrl + '/drive/root/search(q=\'{' + query + '}\')';
+    const urlRequest = this.buildRequest(query);
     return this.getOneDriveItems(urlRequest).then((response) => {
       const items: CloudItem[] = response.value.map((entry: OneDriveItem) => {
         const type = this.determineCloudItemType(entry);
