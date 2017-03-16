@@ -29,7 +29,12 @@ interface OneDriveItem {
   parentReference: OneDrivePath; // Path of cloud item. Used for cloud item id and breadcrumb
 }
 
-interface OneDriveFolder {
+interface OneDriveResponse {
+  name: string;
+  file: Object; // Only defined if item is a file
+  folder: Object; // Only defined if item is a folder
+  lastModifiedDateTime: string;
+  parentReference: OneDrivePath; // Path of cloud item. Used for cloud item id and breadcrumb
   value: OneDriveItem[];
 };
 
@@ -51,8 +56,8 @@ class OneDriveRequestor extends Requestor {
     });
   }
 
-  private getOneDriveItems(url: string): Promise<OneDriveFolder> {
-    return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveFolder>> response.json());
+  private getOneDriveItems(url: string): Promise<OneDriveResponse> {
+    return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveResponse>> response.json());
   }
 
   private determineCloudItemType(item: OneDriveItem): CloudItemType {
@@ -130,26 +135,38 @@ class OneDriveRequestor extends Requestor {
       return this.baseUrl + '/drive/items/' + fileId;
     }
     return this.baseUrl + '/drive/root/search(q=\'{' + query + '}\')';
-
+  }
+  private constructCloudItem(oneDriveItem: OneDriveItem){
+    // This is a helper method for getting the correct data bits to create a cloud item.
+    const type = this.determineCloudItemType(oneDriveItem);
+    return createCloudItem(
+      oneDriveItem.parentReference.path + '/' + oneDriveItem.name, // id is its path
+      type,
+      oneDriveItem.name,
+      determineExtension(type, oneDriveItem.name),
+      new Date(oneDriveItem.lastModifiedDateTime),
+      this.getPath(oneDriveItem.parentReference)
+    );
   }
   public search(query: string): Promise<CloudItem[]> {
-    // GET https://graph.microsoft.com/v1.0/me/drive/root/search(q='{search-text}')
-    const urlRequest = this.buildRequest(query);
-    return this.getOneDriveItems(urlRequest).then((response) => {
-      const items: CloudItem[] = response.value.map((entry: OneDriveItem) => {
-        const type = this.determineCloudItemType(entry);
-        return createCloudItem(
-          entry.parentReference.path + '/' + entry.name, // id is its path
-          type,
-          entry.name,
-          determineExtension(type, entry.name),
-          new Date(entry.lastModifiedDateTime),
-          this.getPath(entry.parentReference)
-        );
+      // GET https://graph.microsoft.com/v1.0/me/drive/root/search(q='{<SEARCH_TEXT>}')
+      // GET https://graph.microsoft.com/v1.0/me/drive/items/<FILE_ID>
+      const urlRequest = this.buildRequest(query);
+      return this.getOneDriveItems(urlRequest).then((response) => {
+        if(response.value === undefined){
+          const dummyArray: OneDriveResponse[] = [response];
+          const items: CloudItem[] = dummyArray.map((oneDriveItem: OneDriveItem) => {
+            return this.constructCloudItem(oneDriveItem);
+          });
+          return items;
+        } else {
+          const items: CloudItem[] = response.value.map((oneDriveItem: OneDriveItem) => {
+            return this.constructCloudItem(oneDriveItem);
+          });
+          return items;
+        }
       });
-      return items;
-    });
-  }
+    }
 }
 
 export { OneDriveRequestor };
