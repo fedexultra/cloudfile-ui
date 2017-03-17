@@ -128,15 +128,14 @@ class OneDriveRequestor extends Requestor {
   public buildRequest(searchText: string): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
 
-    const urlPattern = RegExp('^https*');
-    if (urlPattern.test(searchText)) {
+    if (Requestor.searchUrlRegex.test(searchText)) {
       const searchTextBits = searchText.split('&');
       const fileId = searchTextBits[2].split('=')[1];
       return this.baseUrl + '/drive/items/' + fileId;
     }
     return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
   }
-  private constructCloudItem(oneDriveItem: OneDriveItem){
+  private constructCloudItem(oneDriveItem: OneDriveItem): CloudItem {
     // This is a helper method for getting the correct data bits to create a cloud item.
     const type = this.determineCloudItemType(oneDriveItem);
     return createCloudItem(
@@ -156,7 +155,7 @@ class OneDriveRequestor extends Requestor {
         /* The response for a search returns an array only when the search text is a query and not a file id.
          * response.value is undefined if the request is a file id search.
          */
-        if(response.value === undefined){
+        if (response.value === undefined) {
           const dummyArray: OneDriveResponse[] = [response];
           const items: CloudItem[] = dummyArray.map((oneDriveItem: OneDriveItem) => {
             return this.constructCloudItem(oneDriveItem);
