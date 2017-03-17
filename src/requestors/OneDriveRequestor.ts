@@ -107,15 +107,7 @@ class OneDriveRequestor extends Requestor {
     }
     return this.getOneDriveItems(urlRequest).then(response => {
       const items: CloudItem[] = response.value.map((entry: OneDriveItem) => {
-        const type = this.determineCloudItemType(entry);
-        return createCloudItem(
-          entry.parentReference.path + '/' + entry.name, // id is its path
-          type,
-          entry.name,
-          determineExtension(type, entry.name),
-          new Date(entry.lastModifiedDateTime),
-          this.getPath(entry.parentReference)
-        );
+        return this.constructCloudItem(entry);
       });
       return items;
     });
