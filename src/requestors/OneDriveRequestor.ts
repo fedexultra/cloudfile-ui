@@ -153,6 +153,9 @@ class OneDriveRequestor extends Requestor {
       // GET https://graph.microsoft.com/v1.0/me/drive/items/<FILE_ID>
       const urlRequest = this.buildRequest(query);
       return this.getOneDriveItems(urlRequest).then((response) => {
+        /* The response for a search returns an array only when the search text is a query and not a file id.
+         * response.value is undefined if the request is a file id search.
+         */
         if(response.value === undefined){
           const dummyArray: OneDriveResponse[] = [response];
           const items: CloudItem[] = dummyArray.map((oneDriveItem: OneDriveItem) => {
