@@ -125,7 +125,7 @@ class OneDriveRequestor extends Requestor {
     // GET https://graph.microsoft.com/v1.0/me/drive/root:/{item-path}:/content
     return this.baseUrl + fileID + ':/content';
   }
-  public buildRequest(searchText: string): string {
+  public buildRequestString(searchText: string): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
 
     if (Requestor.searchUrlRegex.test(searchText)) {
@@ -150,10 +150,10 @@ class OneDriveRequestor extends Requestor {
   public search(query: string): Promise<CloudItem[]> {
       // GET https://graph.microsoft.com/v1.0/me/drive/root/search(q='{<SEARCH_TEXT>}')
       // GET https://graph.microsoft.com/v1.0/me/drive/items/<FILE_ID>
-      const urlRequest = this.buildRequest(query);
+      const urlRequest = this.buildRequestString(query);
       return this.getOneDriveItems(urlRequest).then((response) => {
-        /* The response for a search returns an array only when the search text is a query and not a file id.
-         * response.value is undefined if the request is a file id search.
+        /* The response for a search returns an array only when the search text is a query and not a URL.
+         * response.value is undefined if the request is a URL search.
          */
         if (response.value === undefined) {
           const dummyArray: OneDriveResponse[] = [response];
