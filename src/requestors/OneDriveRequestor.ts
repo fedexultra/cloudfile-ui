@@ -124,7 +124,7 @@ class OneDriveRequestor extends Requestor {
     return this.baseUrl + fileID + ':/content';
   }
 
-  public buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
+  public buildRequestString(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
 
     if (typeOfSearch === SearchType.URL) {
@@ -158,7 +158,7 @@ class OneDriveRequestor extends Requestor {
     // GET https://graph.microsoft.com/v1.0/me/drive/root/search(q='{<SEARCH_TEXT>}')
     // GET https://graph.microsoft.com/v1.0/me/drive/items/<FILE_ID>
     const typeOfSearch = this.isSearchTextOrUrl(query);
-    const urlRequest = this.buildSearchRequest(query, typeOfSearch);
+    const urlRequest = this.buildRequestString(query, typeOfSearch);
     return this.getOneDriveItems(urlRequest).then((response) => {
       /* The response for a search returns an array only when the search text is a query and not a URL.
        */
