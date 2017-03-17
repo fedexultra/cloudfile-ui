@@ -31,8 +31,8 @@ interface OneDriveItem {
 
 interface OneDriveResponse {
   name: string;
-  file: Object; // Only defined if item is a file
-  folder: Object; // Only defined if item is a folder
+  file?: Object; // Only defined if item is a file
+  folder?: Object; // Only defined if item is a folder
   lastModifiedDateTime: string;
   parentReference: OneDrivePath; // Path of cloud item. Used for cloud item id and breadcrumb
   value: OneDriveItem[];
