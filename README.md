@@ -9,7 +9,7 @@ python build_deployment.py --clean --build --package
 ## Deploy
 1. From this repo's root, clone the gitlab-ci project:
 ```
-rm -rf gitlab-ci; git clone git@gitlab.tableausoftware.com:cloud-connect/gitlab-ci.git; cd gitlab-ci
+rm -rf gitlab-ci; git clone https://gitlab.tableausoftware.com/cloud-connect/gitlab-ci.git; cd gitlab-ci
 ```
 2. Install python3, pip3, and virtualenv if you don't already have these tools. Make a virtual environment, and install modules if necessary. If virtualenv gives you trouble, you can install pip3 modules system-wide (but at your own risk):
 ```
