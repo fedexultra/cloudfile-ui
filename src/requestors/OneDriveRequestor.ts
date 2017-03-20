@@ -124,7 +124,7 @@ class OneDriveRequestor extends Requestor {
     return this.baseUrl + fileID + ':/content';
   }
 
-  public buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
+  private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
 
     if (typeOfSearch === SearchType.URL) {
@@ -132,7 +132,7 @@ class OneDriveRequestor extends Requestor {
       const fileId = searchTextBits[2].split('=')[1];
       return this.baseUrl + '/drive/items/' + fileId;
     }
-    return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
+    return this.baseUrl + '/drive/root/search(q=\'{' + encodeURIComponent(searchText) + '}\')';
   }
 
   private isSearchTextOrUrl(searchText: string): SearchType {
