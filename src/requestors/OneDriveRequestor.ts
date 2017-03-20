@@ -119,59 +119,30 @@ class OneDriveRequestor extends Requestor {
     return this.baseUrl + fileID + ':/content';
   }
 
-  private getFileId(url: string): string | undefined {
+  private getFileId(url: string): string | null {
     /* Returns true and the resid if url:
      * Contains a 'cid' AND contains a 'resid'
      * TODO: find out why we want a cid to exist
      * Returns false otherwise.
     */
 
-    // Check if the url has resid and cid. indexOf returns -1 if it can't find the substring in the string.
-    if (url.indexOf('resid') === -1 || url.indexOf('cid') === -1) {
-      return undefined;
+    // Create the URLSearchParams object
+    const urlParams = new URLSearchParams(new URL(url).search);
+    // Check if the url has resid and cid. get returns null if it cannot find the params.
+    // It returns an empty string if the parameter is something like resid=& instead of resid=1234&
+    if (urlParams.get('resid') === null || urlParams.get('cid') === null) {
+      return null;
     }
-
-    // TODO: Check if we have a URL class to do the parsing for us here.
-    // This gets the url parameters.
-    const urlBits = url.split('?')[1];
-
-    // Split the parameters.
-    const urlQueryParameters = urlBits.split('&');
-
-    /* At this point, we know for sure that we have a resid and a cid somewhere in the url parameters.
-     * We want to get their index so we can split on the '=' sign afterwards. We init the index to -1,
-     * to mark it as unset. Then, we loop through urlQueryParameters making sure we don't do duplicate work.
-    */
-    let residIndex: number = -1;
-    let cidIndex: number = -1;
-    /* We use an iterative for loop instead of a for-in loop because a for-in loop is meant to enumerate
-     * an object's properties.
-    */
-    for (let parameterIndex = 0; parameterIndex < urlQueryParameters.length; parameterIndex++) {
-      if (residIndex === -1) {
-        residIndex = urlQueryParameters[parameterIndex].indexOf('resid') !== -1 ? parameterIndex : -1;
-      }
-      if (cidIndex === -1) {
-        cidIndex = urlQueryParameters[parameterIndex].indexOf('cid') !== -1 ? parameterIndex : -1;
-      }
-      if (residIndex !== -1 && cidIndex !== -1) {
-        break;
-      }
-    }
-
-    // Get the file id from the residIndex we got in the previous step
-    // resid=ABCDEFGHIJKLMNOP!123
-    const fileID = urlQueryParameters[residIndex].split('=')[1];
 
     // We have validated the url and have gotten the fileID
-    return fileID;
+    return urlParams.get('resid');
   }
 
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
 
-    const fileId = this.getFileId(searchText);
-    if (typeOfSearch === SearchType.URL && fileId !== undefined) {
+    if (typeOfSearch === SearchType.URL) {
+      const fileId = this.getFileId(searchText);
       return this.baseUrl + '/drive/items/' + fileId;
     }
     return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
@@ -205,7 +176,6 @@ class OneDriveRequestor extends Requestor {
     const urlRequest = this.buildSearchRequest(query, typeOfSearch);
     return this.getOneDriveItems(urlRequest).then((response) => {
       // Response is valid
-      console.log(response);
       if (response.value !== undefined || response.parentReference !== undefined) {
         // The response for a search returns an array only when the search text is a query and not a URL.
         if (typeOfSearch === SearchType.URL) {
