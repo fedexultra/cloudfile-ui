@@ -32,7 +32,7 @@ interface OneDriveItem {
 }
 
 interface OneDriveResponse {
-  /* We duplicate the OneDriveItem contents into OneDriveResponse because OneDrive can either return an 
+  /* We duplicate the OneDriveItem contents into OneDriveResponse because OneDrive can either return an
    * array called value that contains OneDriveItems or it can return a single OneDriveItem.
   */
   name: string;
@@ -160,7 +160,13 @@ class OneDriveRequestor extends Requestor {
         break;
       }
     }
-    return [true, undefined];
+
+    // Get the file id from the residIndex we got in the previous step
+    // resid=ABCDEFGHIJKLMNOPQRST
+    const fileID = urlQueryParameters[residIndex].split('=')[1];
+
+    // We have validated the url and have gotten the fileID
+    return [true, fileID];
   }
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
