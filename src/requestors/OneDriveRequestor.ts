@@ -176,7 +176,7 @@ class OneDriveRequestor extends Requestor {
       const fileId = searchTextBits[2].split('=')[1];
       return this.baseUrl + '/drive/items/' + fileId;
     }
-    return this.baseUrl + '/drive/root/search(q=\'{' + encodeURIComponent(searchText) + '}\')';
+    return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
   }
 
   private isSearchTextOrUrl(searchText: string): SearchType {
