@@ -31,15 +31,10 @@ interface OneDriveItem {
   parentReference: OneDrivePath; // Path of cloud item. Used for cloud item id and breadcrumb
 }
 
-interface OneDriveResponse {
-  /* We duplicate the OneDriveItem contents into OneDriveResponse because OneDrive can either return an
-   * array called value that contains OneDriveItems or it can return a single OneDriveItem.
-  */
-  name: string;
-  file?: Object; // Only defined if item is a file
-  folder?: Object; // Only defined if item is a folder
-  lastModifiedDateTime: string;
-  parentReference: OneDrivePath; // Path of cloud item. Used for cloud item id and breadcrumb
+/* OneDriveResponse extends OneDriveItem because sometimes the response we get is a OneDriveItem,
+ * and other times we get an array of OneDriveItems called 'value'
+*/
+interface OneDriveResponse extends OneDriveItem{
   value: OneDriveItem[];
 };
 
