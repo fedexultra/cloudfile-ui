@@ -124,16 +124,19 @@ class OneDriveRequestor extends Requestor {
     return this.baseUrl + fileID + ':/content';
   }
 
-  private validateURL(url: string): [boolean, string | undefined] {
+  private getFileId(url: string): string | undefined {
     /* Returns true and the resid if url:
      * Contains a 'cid' AND contains a 'resid'
+     * TODO: find out why we want a cid to exist
      * Returns false otherwise.
     */
 
     // Check if the url has resid and cid. indexOf returns -1 if it can't find the substring in the string.
-    if (url.indexOf('resid') === -1 && url.indexOf('cid') === -1) {
-      return [false, undefined];
+    if (url.indexOf('resid') === -1 || url.indexOf('cid') === -1) {
+      return undefined;
     }
+
+    // TODO: Check if we have a URL class to do the parsing for us here.
     // This gets the url parameters.
     const urlBits = url.split('?')[1];
 
@@ -151,10 +154,10 @@ class OneDriveRequestor extends Requestor {
     */
     for (let parameterIndex = 0; parameterIndex < urlQueryParameters.length; parameterIndex++) {
       if (residIndex === -1) {
-        residIndex = urlQueryParameters[parameterIndex].indexOf('resid');
+        residIndex = urlQueryParameters[parameterIndex].indexOf('resid') !== -1 ? parameterIndex : -1;
       }
       if (cidIndex === -1) {
-        cidIndex = urlQueryParameters[parameterIndex].indexOf('cid');
+        cidIndex = urlQueryParameters[parameterIndex].indexOf('cid') !== -1 ? parameterIndex : -1;
       }
       if (residIndex !== -1 && cidIndex !== -1) {
         break;
@@ -162,30 +165,31 @@ class OneDriveRequestor extends Requestor {
     }
 
     // Get the file id from the residIndex we got in the previous step
-    // resid=ABCDEFGHIJKLMNOPQRST
+    // resid=ABCDEFGHIJKLMNOP!123
     const fileID = urlQueryParameters[residIndex].split('=')[1];
 
     // We have validated the url and have gotten the fileID
-    return [true, fileID];
+    return fileID;
   }
+
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
 
-    if (typeOfSearch === SearchType.URL && this.validateURL(searchText)[0] === true) {
-      const searchTextBits = searchText.split('&');
-      const fileId = searchTextBits[2].split('=')[1];
+    const fileId = this.getFileId(searchText);
+    if (typeOfSearch === SearchType.URL && fileId !== undefined) {
       return this.baseUrl + '/drive/items/' + fileId;
     }
     return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
   }
 
-  private isSearchTextOrUrl(searchText: string): SearchType {
+  private getSearchType(searchText: string): SearchType {
     if (Requestor.searchUrlRegex.test(searchText)) {
       return SearchType.URL;
     } else {
       return SearchType.Text;
     }
   }
+
   private constructCloudItem(oneDriveItem: OneDriveItem): CloudItem {
     // This is a helper method for getting the correct data bits to create a cloud item.
     const type = this.determineCloudItemType(oneDriveItem);
@@ -198,25 +202,28 @@ class OneDriveRequestor extends Requestor {
       this.getPath(oneDriveItem.parentReference)
     );
   }
+
   public search(query: string): Promise<CloudItem[]> {
     // GET https://graph.microsoft.com/v1.0/me/drive/root/search(q='{<SEARCH_TEXT>}')
     // GET https://graph.microsoft.com/v1.0/me/drive/items/<FILE_ID>
-    const typeOfSearch = this.isSearchTextOrUrl(query);
+    const typeOfSearch = this.getSearchType(query);
     const urlRequest = this.buildSearchRequest(query, typeOfSearch);
     return this.getOneDriveItems(urlRequest).then((response) => {
-      /* The response for a search returns an array only when the search text is a query and not a URL.
-       */
-      if (typeOfSearch === SearchType.URL) {
-        const dummyArray: OneDriveResponse[] = [response];
-        const items: CloudItem[] = dummyArray.map((oneDriveItem: OneDriveItem) => {
-          return this.constructCloudItem(oneDriveItem);
-        });
-        return items;
+      // Response is valid
+      console.log(response);
+      if (response.value !== undefined || response.parentReference !== undefined) {
+        // The response for a search returns an array only when the search text is a query and not a URL.
+        if (typeOfSearch === SearchType.URL) {
+          return [this.constructCloudItem(response)];
+        } else {
+          const items: CloudItem[] = response.value.map((oneDriveItem: OneDriveItem) => {
+            return this.constructCloudItem(oneDriveItem);
+          });
+          return items;
+        }
       } else {
-        const items: CloudItem[] = response.value.map((oneDriveItem: OneDriveItem) => {
-          return this.constructCloudItem(oneDriveItem);
-        });
-        return items;
+        // Response is invalid, so we want to return an empty array to trigger to error widget
+        return [];
       }
     });
   }
