@@ -124,10 +124,48 @@ class OneDriveRequestor extends Requestor {
     return this.baseUrl + fileID + ':/content';
   }
 
+  private validateURL(url: string): [boolean, string | undefined] {
+    /* Returns true and the resid if url:
+     * Contains a 'cid' AND contains a 'resid'
+     * Returns false otherwise.
+    */
+
+    // Check if the url has resid and cid. indexOf returns -1 if it can't find the substring in the string.
+    if (url.indexOf('resid') === -1 && url.indexOf('cid') === -1) {
+      return [false, undefined];
+    }
+    // This gets the url parameters.
+    const urlBits = url.split('?')[1];
+
+    // Split the parameters.
+    const urlQueryParameters = urlBits.split('&');
+
+    /* At this point, we know for sure that we have a resid and a cid somewhere in the url parameters.
+     * We want to get their index so we can split on the '=' sign afterwards. We init the index to -1,
+     * to mark it as unset. Then, we loop through urlQueryParameters making sure we don't do duplicate work.
+    */
+    let residIndex: number = -1;
+    let cidIndex: number = -1;
+    /* We use an iterative for loop instead of a for-in loop because a for-in loop is meant to enumerate
+     * an object's properties.
+    */
+    for (let parameterIndex = 0; parameterIndex < urlQueryParameters.length; parameterIndex++) {
+      if (residIndex === -1) {
+        residIndex = urlQueryParameters[parameterIndex].indexOf('resid');
+      }
+      if (cidIndex === -1) {
+        cidIndex = urlQueryParameters[parameterIndex].indexOf('cid');
+      }
+      if (residIndex !== -1 && cidIndex !== -1) {
+        break;
+      }
+    }
+    return [true, undefined];
+  }
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
 
-    if (typeOfSearch === SearchType.URL) {
+    if (typeOfSearch === SearchType.URL && this.validateURL(searchText)[0] === true) {
       const searchTextBits = searchText.split('&');
       const fileId = searchTextBits[2].split('=')[1];
       return this.baseUrl + '/drive/items/' + fileId;
