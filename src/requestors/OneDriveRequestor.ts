@@ -162,7 +162,7 @@ class OneDriveRequestor extends Requestor {
 
     if (typeOfSearch === SearchType.URL) {
       return this.getOneDriveItem(urlRequest).then((response) => {
-        // This checks if the response is valid. This will go away when we have better error handling.
+        // This checks if the response is valid. This will go away when we have better error handling. Story 623632
         if (response.parentReference !== undefined) {
           return [this.constructCloudItem(response)];
         }
@@ -170,7 +170,7 @@ class OneDriveRequestor extends Requestor {
       });
     } else {
       return this.getOneDriveItems(urlRequest).then((response) => {
-        // This checks if the response is valid. This will go away when we have better error handling.
+        // This checks if the response is valid. This will go away when we have better error handling. Story 623632
         if (response.value !== undefined) {
           const items: CloudItem[] = response.value.map((oneDriveItem: OneDriveItem) => {
             return this.constructCloudItem(oneDriveItem);
