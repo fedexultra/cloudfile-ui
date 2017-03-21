@@ -120,30 +120,14 @@ class OneDriveRequestor extends Requestor {
     return this.baseUrl + fileID + ':/content';
   }
 
-  private getFileId(url: string): string | null {
-    /* Returns true and the resid if url:
-     * Contains a 'cid' AND contains a 'resid'
-     * TODO: find out why we want a cid to exist
-     * Returns false otherwise.
-    */
-
-    // Create the URLSearchParams object
-    const urlParams = new URLSearchParams(new URL(url).search);
-    // Check if the url has resid and cid. get returns null if it cannot find the params.
-    // It returns an empty string if the parameter is something like resid=& instead of resid=1234&
-    if (urlParams.get('resid') === null || urlParams.get('cid') === null) {
-      return null;
-    }
-
-    // We have validated the url and have gotten the fileID
-    return urlParams.get('resid');
-  }
-
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
 
     if (typeOfSearch === SearchType.URL) {
-      const fileId = this.getFileId(searchText);
+      /* fileId can return a null, which will, in turn, return an invalid response
+       * that eventually gets handled as an incorrect url error
+      */
+      const fileId = (new URLSearchParams(new URL(searchText).search)).get('resid');
       return this.baseUrl + '/drive/items/' + fileId;
     }
     return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
