@@ -31,10 +31,7 @@ interface OneDriveItem {
   parentReference: OneDrivePath; // Path of cloud item. Used for cloud item id and breadcrumb
 }
 
-/* OneDriveResponse extends OneDriveItem because sometimes the response we get is a OneDriveItem,
- * and other times we get an array of OneDriveItems called 'value'
-*/
-interface OneDriveResponse extends OneDriveItem{
+interface OneDriveFolder {
   value: OneDriveItem[];
 };
 
@@ -56,8 +53,12 @@ class OneDriveRequestor extends Requestor {
     });
   }
 
-  private getOneDriveItems(url: string): Promise<OneDriveResponse> {
-    return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveResponse>> response.json());
+  private getOneDriveItems(url: string): Promise<OneDriveFolder> {
+    return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveFolder>> response.json());
+  }
+
+  private getOneDriveItem(url: string): Promise<OneDriveItem> {
+    return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveItem>> response.json());
   }
 
   private determineCloudItemType(item: OneDriveItem): CloudItemType {
@@ -174,23 +175,27 @@ class OneDriveRequestor extends Requestor {
     // GET https://graph.microsoft.com/v1.0/me/drive/items/<FILE_ID>
     const typeOfSearch = this.getSearchType(query);
     const urlRequest = this.buildSearchRequest(query, typeOfSearch);
-    return this.getOneDriveItems(urlRequest).then((response) => {
-      // Response is valid
-      if (response.value !== undefined || response.parentReference !== undefined) {
-        // The response for a search returns an array only when the search text is a query and not a URL.
-        if (typeOfSearch === SearchType.URL) {
+
+    if (typeOfSearch === SearchType.URL) {
+      return this.getOneDriveItem(urlRequest).then((response) => {
+        // This checks if the response is valid. This will go away when we have better error handling.
+        if (response.parentReference !== undefined) {
           return [this.constructCloudItem(response)];
-        } else {
-          const items: CloudItem[] = response.value.map((oneDriveItem: OneDriveItem) => {
-            return this.constructCloudItem(oneDriveItem);
-          });
-          return items;
         }
-      } else {
-        // Response is invalid, so we want to return an empty array to trigger to error widget
         return [];
-      }
-    });
+      });
+    } else {
+      return this.getOneDriveItems(urlRequest).then((response) => {
+        // This checks if the response is valid. This will go away when we have better error handling.
+        if (response.value !== undefined) {
+        const items: CloudItem[] = response.value.map((oneDriveItem: OneDriveItem) => {
+          return this.constructCloudItem(oneDriveItem);
+        });
+        return items;
+       }
+       return [];
+      });
+    }
   }
 }
 
