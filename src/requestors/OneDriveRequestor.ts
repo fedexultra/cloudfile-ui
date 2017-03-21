@@ -188,12 +188,12 @@ class OneDriveRequestor extends Requestor {
       return this.getOneDriveItems(urlRequest).then((response) => {
         // This checks if the response is valid. This will go away when we have better error handling.
         if (response.value !== undefined) {
-        const items: CloudItem[] = response.value.map((oneDriveItem: OneDriveItem) => {
-          return this.constructCloudItem(oneDriveItem);
-        });
-        return items;
-       }
-       return [];
+          const items: CloudItem[] = response.value.map((oneDriveItem: OneDriveItem) => {
+            return this.constructCloudItem(oneDriveItem);
+          });
+          return items;
+        }
+        return [];
       });
     }
   }
