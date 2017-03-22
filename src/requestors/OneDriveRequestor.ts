@@ -127,7 +127,7 @@ class OneDriveRequestor extends Requestor {
       /* fileId can return a null, which will, in turn, return an invalid response
        * that eventually gets handled as an incorrect url error
       */
-      const fileId = (new URLSearchParams(new URL(searchText).search)).get('resid');
+      const fileId = new URLSearchParams(new URL(searchText).search).get('resid');
       return this.baseUrl + '/drive/items/' + fileId;
     }
     return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
