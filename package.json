@@ -44,7 +44,7 @@
     "react-addons-test-utils": "^15.4.2",
     "react-dom": "^15.4.2",
     "rimraf": "2.5.4",
-    "shared-widgets": "http://artifactory/artifactory/api/npm/tab-npm-local/shared-widgets/-/shared-widgets-1.0.1.tgz",
+    "shared-widgets": "http://artifactory/artifactory/api/npm/tab-npm-local/shared-widgets/-/shared-widgets-1.1.0.tgz",
     "source-map-loader": "0.1.5",
     "ts-loader": "^0.9.5",
     "tslint": "3.15.1",
