@@ -62,26 +62,28 @@ class OneDriveRequestor extends Requestor {
     return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveItem>> response.json());
   }
 
+  // Recursively calling Promises is stack-safe. We will not run into stack overflow errors.
+  private getAllOneDriveItemsHelper(currentListOfItems: CloudItem[], url: string | undefined): Promise<CloudItem[]> {
+    if (typeof url === 'undefined') {
+      return Promise.resolve(currentListOfItems);
+    }
+    return this.getOneDriveItems(url).then((oneDriveFolder: OneDriveFolder) => {
+      const newListOfItems: CloudItem[] = currentListOfItems.concat(oneDriveFolder.value.map((oneDriveItem: OneDriveItem) => {
+        return this.constructCloudItem(oneDriveItem);
+      }));
+      return this.getAllOneDriveItemsHelper(newListOfItems, oneDriveFolder['@odata.nextLink']);
+    });
+  }
+
   private getAllOneDriveItems(response: Promise<OneDriveFolder>, url: string): Promise<CloudItem[]> {
     return response.then((oneDriveFolder: OneDriveFolder) => {
       let cloudItems: CloudItem[] = oneDriveFolder.value.map((oneDriveItem: OneDriveItem) => {
         return this.constructCloudItem(oneDriveItem);
       });
-      console.log("asdf");
-      let nextLink: string | undefined = oneDriveFolder['@odata.nextLink'];
-      console.log(typeof nextLink);
-      console.log(typeof nextLink === 'undefined');
-      // We got a page link. Time to see how far this rabbit hole goes.
-      // while (typeof nextLink !== 'undefined') {
-      //   let nextPageOfItems: Promise<OneDriveFolder> = this.getOneDriveItems(nextLink);
-      //   nextPageOfItems.then((nextPage: OneDriveFolder) => {
-      //     cloudItems.concat(nextPage.value.map(this.constructCloudItem));
-      //     nextLink = nextPage['@odata.nextLink'];
-      //   });
-      // }
-      return cloudItems;
-    })
+      return this.getAllOneDriveItemsHelper(cloudItems, oneDriveFolder['@odata.nextLink']);
+    });
   }
+
   private determineCloudItemType(item: OneDriveItem): CloudItemType {
     if (typeof (item.folder) !== 'undefined') {
       return CloudItemType.Folder;
@@ -128,14 +130,7 @@ class OneDriveRequestor extends Requestor {
       // GET https://graph.microsoft.com/v1.0/me/drive/root:/{item-path}:/children
       urlRequest = this.baseUrl + folderID + ':/children';
     }
-    const response: Promise<OneDriveFolder> = this.getOneDriveItems(urlRequest);
-    return this.getAllOneDriveItems(response, urlRequest);
-    // return this.getOneDriveItems(urlRequest).then(response => {
-    //   const items: CloudItem[] = response.value.map((entry: OneDriveItem) => {
-    //     return this.constructCloudItem(entry);
-    //   });
-    //   return items;
-    // });
+    return this.getAllOneDriveItems(this.getOneDriveItems(urlRequest), urlRequest);
   }
 
   public getDownloadUrl(fileID: string): string {
@@ -192,16 +187,7 @@ class OneDriveRequestor extends Requestor {
         return [];
       });
     } else {
-      return this.getOneDriveItems(urlRequest).then((response) => {
-        // This checks if the response is valid. This will go away when we have better error handling. Story 623632
-        if (response.value !== undefined) {
-          const items: CloudItem[] = response.value.map((oneDriveItem: OneDriveItem) => {
-            return this.constructCloudItem(oneDriveItem);
-          });
-          return items;
-        }
-        return [];
-      });
+      return this.getAllOneDriveItems(this.getOneDriveItems(urlRequest), urlRequest);
     }
   }
 }
