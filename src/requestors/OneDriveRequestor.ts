@@ -63,24 +63,15 @@ class OneDriveRequestor extends Requestor {
   }
 
   // Recursively calling Promises is stack-safe. We will not run into stack overflow errors.
-  private getAllOneDriveItemsHelper(currentListOfItems: CloudItem[], url: string | undefined): Promise<CloudItem[]> {
-    if (typeof url === 'undefined') {
+  private getAllOneDriveItems(currentListOfItems: CloudItem[], url: string | undefined, firstCall: boolean): Promise<CloudItem[]> {
+    if (!url && !firstCall) {
       return Promise.resolve(currentListOfItems);
     }
-    return this.getOneDriveItems(url).then((oneDriveFolder: OneDriveFolder) => {
+    return this.getOneDriveItems(<string> url).then((oneDriveFolder: OneDriveFolder) => {
       const newListOfItems: CloudItem[] = currentListOfItems.concat(oneDriveFolder.value.map((oneDriveItem: OneDriveItem) => {
         return this.constructCloudItem(oneDriveItem);
       }));
-      return this.getAllOneDriveItemsHelper(newListOfItems, oneDriveFolder['@odata.nextLink']);
-    });
-  }
-
-  private getAllOneDriveItems(response: Promise<OneDriveFolder>, url: string): Promise<CloudItem[]> {
-    return response.then((oneDriveFolder: OneDriveFolder) => {
-      let cloudItems: CloudItem[] = oneDriveFolder.value.map((oneDriveItem: OneDriveItem) => {
-        return this.constructCloudItem(oneDriveItem);
-      });
-      return this.getAllOneDriveItemsHelper(cloudItems, oneDriveFolder['@odata.nextLink']);
+      return this.getAllOneDriveItems(newListOfItems, oneDriveFolder['@odata.nextLink'], false);
     });
   }
 
@@ -130,7 +121,7 @@ class OneDriveRequestor extends Requestor {
       // GET https://graph.microsoft.com/v1.0/me/drive/root:/{item-path}:/children
       urlRequest = this.baseUrl + folderID + ':/children';
     }
-    return this.getAllOneDriveItems(this.getOneDriveItems(urlRequest), urlRequest);
+    return this.getAllOneDriveItems([], urlRequest, true);
   }
 
   public getDownloadUrl(fileID: string): string {
@@ -187,7 +178,7 @@ class OneDriveRequestor extends Requestor {
         return [];
       });
     } else {
-      return this.getAllOneDriveItems(this.getOneDriveItems(urlRequest), urlRequest);
+      return this.getAllOneDriveItems([], urlRequest, true);
     }
   }
 }
