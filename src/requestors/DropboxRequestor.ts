@@ -94,7 +94,8 @@ class DropboxRequestor extends Requestor {
         path.push({
           id: this.providerInfo.getDefaultFolder(),
           name: this.providerInfo.getProviderName(),
-          type: CloudItemType.Folder });
+          type: CloudItemType.Folder
+        });
       } else if (i === pathArray.length - 1) {
         // path is used to set the Breadcrumb. The way FilterableDataGrid is set up assumes that we do not
         // include the current folder as part of the path. Dropbox does include the current folder as part
@@ -114,13 +115,13 @@ class DropboxRequestor extends Requestor {
   }
 
   private getDate(date: string): Date {
-    if (typeof(date) === 'undefined') { // cloud item is a folder
+    if (typeof (date) === 'undefined') { // cloud item is a folder
       return new Date(0);
     } else { // cloud item is a file
       return new Date(date);
     }
   }
-  
+
   private constructCloudItemFromDropboxItem(entry: DropboxItem): CloudItem {
     const type = this.determineCloudItemType(entry['.tag']);
     return createCloudItem(
@@ -146,31 +147,32 @@ class DropboxRequestor extends Requestor {
   }
 
   private getAllDropboxItems(currentListOfItems: CloudItem[], currentResponse: DropboxFolder): Promise<CloudItem[]> {
-    if(!currentResponse.has_more) {
+    if (!currentResponse.has_more) {
       return Promise.resolve(currentListOfItems);
     }
     const urlRequest = this.baseUrl + 'files/list_folder/continue';
     return this.getDropboxItems(urlRequest, { cursor: currentResponse.cursor }).then((response) => {
       currentListOfItems = currentListOfItems.concat(response.entries.map((entry: DropboxItem) => {
         return this.constructCloudItemFromDropboxItem(entry);
-      }))
+      }));
       return this.getAllDropboxItems(currentListOfItems, response);
-    })
+    });
   }
-  
-  private getAllDropboxMatches(currentListOfItems: CloudItem[], currentResponse: DropboxMatches, path: string, query: string): Promise<CloudItem[]> {
-    if(!currentResponse.more) {
+
+  private getAllDropboxMatches(currentListOfItems: CloudItem[], currentResponse: DropboxMatches,
+                               path: string, query: string): Promise<CloudItem[]> {
+    if (!currentResponse.more) {
       return Promise.resolve(currentListOfItems);
     }
     const urlRequest = this.baseUrl + 'files/search';
     return this.getDropboxMatches(urlRequest, { path: path, query: query, start: currentResponse.start }).then((response) => {
       currentListOfItems = currentListOfItems.concat(response.matches.map((entry: DropboxMatch) => {
         return this.constructCloudItemFromDropboxMatch(entry);
-      }))
+      }));
       return this.getAllDropboxMatches(currentListOfItems, response, path, query);
-    })
+    });
   }
-  
+
   public enumerateItems(folderPath: string = ''): Promise<CloudItem[]> {
     // POST https://api.dropboxapi.com/2/files/list_folder
     // body: {path: <cloud_item_path>}
@@ -179,7 +181,7 @@ class DropboxRequestor extends Requestor {
       let items: CloudItem[] = response.entries.map((entry: DropboxItem) => {
         return this.constructCloudItemFromDropboxItem(entry);
       });
-      if(response.has_more) {
+      if (response.has_more) {
         return this.getAllDropboxItems(items, response);
       }
       return items;
@@ -200,7 +202,7 @@ class DropboxRequestor extends Requestor {
       const items: CloudItem[] = response.matches.map((entry: DropboxMatch) => {
         return this.constructCloudItemFromDropboxMatch(entry);
       });
-      if(response.more) {
+      if (response.more) {
         return this.getAllDropboxMatches(items, response, '', query);
       }
       return items;
