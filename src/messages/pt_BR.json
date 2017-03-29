@@ -4,12 +4,12 @@
   "file": "arquivo",
   "folder": "pasta",
   "kind": "Tipo",
-  "lastModifiedOn": "Última modificação em",
+  "lastModifiedOn": "Ãšltima modificaÃ§Ã£o em",
   "name": "Nome",
-  "queryErrorMessage": "Não foram encontrados arquivos ou pastas com o nome correspondente ao pesquisado",
+  "queryErrorMessage": "NÃ£o foram encontrados arquivos ou pastas com o nome correspondente ao pesquisado",
   "search": "Pesquisar",
   "searchResultsMessage": "Resultados da pesquisa",
   "signedInAs": "conectado como {user} ",
   "signOut": "sair",
-  "urlErrorMessage": "A URL inserida é inválida ou direciona a um arquivo que você não tem permissão para visualizar"
+  "urlErrorMessage": "A URL inserida Ã© invÃ¡lida ou direciona a um arquivo que vocÃª nÃ£o tem permissÃ£o para visualizar"
 }
