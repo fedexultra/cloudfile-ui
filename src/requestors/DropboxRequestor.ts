@@ -26,6 +26,8 @@ interface DropboxItem {
 
 interface DropboxFolder {
   entries: DropboxItem[];
+  has_more: boolean;
+  cursor: string;
 };
 
 // Types for searching
@@ -34,6 +36,8 @@ interface DropboxMatch {
 }
 
 interface DropboxMatches {
+  more: boolean;
+  start: string;
   matches: DropboxMatch[];
 };
 
@@ -116,23 +120,68 @@ class DropboxRequestor extends Requestor {
       return new Date(date);
     }
   }
+  
+  private constructCloudItemFromDropboxItem(entry: DropboxItem): CloudItem {
+    const type = this.determineCloudItemType(entry['.tag']);
+    return createCloudItem(
+      entry.path_display, // id is its path
+      type,
+      entry.name,
+      determineExtension(type, entry.name),
+      this.getDate(entry.server_modified),
+      this.getPath(entry.path_display)
+    );
+  }
 
+  private constructCloudItemFromDropboxMatch(entry: DropboxMatch): CloudItem {
+    const type = this.determineCloudItemType(entry.metadata['.tag']);
+    return createCloudItem(
+      entry.metadata.path_display, // id is its path
+      type,
+      entry.metadata.name,
+      determineExtension(type, entry.metadata.name),
+      this.getDate(entry.metadata.server_modified),
+      this.getPath(entry.metadata.path_display)
+    );
+  }
+
+  private getAllDropboxItems(currentListOfItems: CloudItem[], currentResponse: DropboxFolder): Promise<CloudItem[]> {
+    if(!currentResponse.has_more) {
+      return Promise.resolve(currentListOfItems);
+    }
+    const urlRequest = this.baseUrl + 'files/list_folder/continue';
+    return this.getDropboxItems(urlRequest, { cursor: currentResponse.cursor }).then((response) => {
+      currentListOfItems = currentListOfItems.concat(response.entries.map((entry: DropboxItem) => {
+        return this.constructCloudItemFromDropboxItem(entry);
+      }))
+      return this.getAllDropboxItems(currentListOfItems, response);
+    })
+  }
+  
+  private getAllDropboxMatches(currentListOfItems: CloudItem[], currentResponse: DropboxMatches, path: string, query: string): Promise<CloudItem[]> {
+    if(!currentResponse.more) {
+      return Promise.resolve(currentListOfItems);
+    }
+    const urlRequest = this.baseUrl + 'files/search';
+    return this.getDropboxMatches(urlRequest, { path: path, query: query, start: currentResponse.start }).then((response) => {
+      currentListOfItems = currentListOfItems.concat(response.matches.map((entry: DropboxMatch) => {
+        return this.constructCloudItemFromDropboxMatch(entry);
+      }))
+      return this.getAllDropboxMatches(currentListOfItems, response, path, query);
+    })
+  }
+  
   public enumerateItems(folderPath: string = ''): Promise<CloudItem[]> {
     // POST https://api.dropboxapi.com/2/files/list_folder
     // body: {path: <cloud_item_path>}
     const urlRequest = this.baseUrl + 'files/list_folder';
     return this.getDropboxItems(urlRequest, { path: folderPath }).then((response) => {
-      const items: CloudItem[] = response.entries.map((entry: DropboxItem) => {
-        const type = this.determineCloudItemType(entry['.tag']);
-        return createCloudItem(
-          entry.path_display, // id is its path
-          type,
-          entry.name,
-          determineExtension(type, entry.name),
-          this.getDate(entry.server_modified),
-          this.getPath(entry.path_display)
-        );
+      let items: CloudItem[] = response.entries.map((entry: DropboxItem) => {
+        return this.constructCloudItemFromDropboxItem(entry);
       });
+      if(response.has_more) {
+        return this.getAllDropboxItems(items, response);
+      }
       return items;
     });
   }
@@ -149,16 +198,11 @@ class DropboxRequestor extends Requestor {
     const urlRequest = this.baseUrl + 'files/search';
     return this.getDropboxMatches(urlRequest, { path: '', query: query }).then((response) => {
       const items: CloudItem[] = response.matches.map((entry: DropboxMatch) => {
-        const type = this.determineCloudItemType(entry.metadata['.tag']);
-        return createCloudItem(
-          entry.metadata.path_display, // id is its path
-          type,
-          entry.metadata.name,
-          determineExtension(type, entry.metadata.name),
-          this.getDate(entry.metadata.server_modified),
-          this.getPath(entry.metadata.path_display)
-        );
+        return this.constructCloudItemFromDropboxMatch(entry);
       });
+      if(response.more) {
+        return this.getAllDropboxMatches(items, response, '', query);
+      }
       return items;
     });
   }
