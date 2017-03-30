@@ -33,30 +33,49 @@ def setup_parser():
                         "--package",
                         action="store_true",
                         help="package the necessary files for deployment")
+    parser.add_argument("-t",
+                        "--test",
+                        action="store_true",
+                        help="test the build")
     return parser.parse_args()
+
+
+def del_dir(dir_name):
+    if os.path.exists(dir_name):
+        print("Found {}".format(dir_name))
+        print("Deleting...")
+        shutil.rmtree(dir_name)
+        print("Delete has completed successfully!")
+    else:
+        print("{} was not found. Continuing.".format(dir_name))
 
 
 def clean():
     """
     Cleans the node_modules folder
     """
-    # check if the node_modules folder exists before deleting
-    if os.path.exists('node_modules'):
-        print("Found node_modules")
-        shutil.rmtree('node_modules')
-        print("Delete has completed successfully")
-    else:
-        print("node_modules was not found")
+    del_dir('node_modules')
 
 
 def build():
     """
     Build the UI
     """
-    if subprocess.check_call('npm install', shell=True) == 0 and subprocess.check_call('npm run all', shell=True) == 0:
-        print("Building has completed successfully")
+    if subprocess.check_call('npm install', shell=True) == 0:
+        print("Building has completed successfully!")
     else:
-        print("Errors detected during building")
+        print("Errors detected during building.")
+        sys.exit(1)
+
+
+def test():
+    """
+    Test the UI
+    """
+    if subprocess.check_call('npm run all', shell=True) == 0:
+        print("Testing has completed successfully")
+    else:
+        print("Errors detected during testing")
         sys.exit(1)
 
 
@@ -64,13 +83,7 @@ def package():
     """
     Grab the index.html, loc, imgs, and min.js files and put them into folder for easy deployment
     """
-
-    # Check if the deployment folder exists before deleting
-    if os.path.exists('deployment_files'):
-        print("Found deployment_files")
-        print("Deleting deployment files")
-        shutil.rmtree('deployment_files')
-        print("Delete has completed successfully")
+    del_dir('deployment_files')
 
     # Check if the files we want to grab exist
     if validate_files():
@@ -93,10 +106,10 @@ def package():
             print("Packaging has been successful")
 
         except:
-            print("Unexpected error: rolling back")
+            print("Unexpected error: rolling back.")
             shutil.rmtree('deployment_files')
     else:
-        print("Files for deployment don't exist. Please build first")
+        print("Files for deployment don't exist. Please build first.")
 
 
 def validate_files():
@@ -119,5 +132,7 @@ if __name__ == "__main__":
         clean()
     if args.build:
         build()
+    if args.test:
+        test()
     if args.package:
         package()
