@@ -64,11 +64,11 @@ class DropboxRequestor extends Requestor {
     });
   }
 
-  private getDropboxItems(url: string, body: Object): Promise<DropboxFolder> {
+  private getSinglePageOfDropboxItems(url: string, body: Object): Promise<DropboxFolder> {
     return this.sendDropboxRequest(url, body).then(response => <Promise<DropboxFolder>> response.json());
   }
 
-  private getDropboxMatches(url: string, body: Object): Promise<DropboxMatches> {
+  private getSinglePageOfDropboxMatches(url: string, body: Object): Promise<DropboxMatches> {
     return this.sendDropboxRequest(url, body).then(response => <Promise<DropboxMatches>> response.json());
   }
 
@@ -122,7 +122,7 @@ class DropboxRequestor extends Requestor {
     }
   }
 
-  private constructCloudItemFromDropboxItem(entry: DropboxItem): CloudItem {
+  private constructCloudItem(entry: DropboxItem): CloudItem {
     const type = this.determineCloudItemType(entry['.tag']);
     return createCloudItem(
       entry.path_display, // id is its path
@@ -134,26 +134,14 @@ class DropboxRequestor extends Requestor {
     );
   }
 
-  private constructCloudItemFromDropboxMatch(entry: DropboxMatch): CloudItem {
-    const type = this.determineCloudItemType(entry.metadata['.tag']);
-    return createCloudItem(
-      entry.metadata.path_display, // id is its path
-      type,
-      entry.metadata.name,
-      determineExtension(type, entry.metadata.name),
-      this.getDate(entry.metadata.server_modified),
-      this.getPath(entry.metadata.path_display)
-    );
-  }
-
   private getAllDropboxItems(currentListOfItems: CloudItem[], currentResponse: DropboxFolder): Promise<CloudItem[]> {
     if (!currentResponse.has_more) {
       return Promise.resolve(currentListOfItems);
     }
     const urlRequest = this.baseUrl + 'files/list_folder/continue';
-    return this.getDropboxItems(urlRequest, { cursor: currentResponse.cursor }).then((response) => {
+    return this.getSinglePageOfDropboxItems(urlRequest, { cursor: currentResponse.cursor }).then((response) => {
       currentListOfItems = currentListOfItems.concat(response.entries.map((entry: DropboxItem) => {
-        return this.constructCloudItemFromDropboxItem(entry);
+        return this.constructCloudItem(entry);
       }));
       return this.getAllDropboxItems(currentListOfItems, response);
     });
@@ -165,9 +153,9 @@ class DropboxRequestor extends Requestor {
       return Promise.resolve(currentListOfItems);
     }
     const urlRequest = this.baseUrl + 'files/search';
-    return this.getDropboxMatches(urlRequest, { path: path, query: query, start: currentResponse.start }).then((response) => {
+    return this.getSinglePageOfDropboxMatches(urlRequest, { path: path, query: query, start: currentResponse.start }).then((response) => {
       currentListOfItems = currentListOfItems.concat(response.matches.map((entry: DropboxMatch) => {
-        return this.constructCloudItemFromDropboxMatch(entry);
+        return this.constructCloudItem(entry.metadata);
       }));
       return this.getAllDropboxMatches(currentListOfItems, response, path, query);
     });
@@ -177,9 +165,9 @@ class DropboxRequestor extends Requestor {
     // POST https://api.dropboxapi.com/2/files/list_folder
     // body: {path: <cloud_item_path>}
     const urlRequest = this.baseUrl + 'files/list_folder';
-    return this.getDropboxItems(urlRequest, { path: folderPath }).then((response) => {
+    return this.getSinglePageOfDropboxItems(urlRequest, { path: folderPath }).then((response) => {
       let items: CloudItem[] = response.entries.map((entry: DropboxItem) => {
-        return this.constructCloudItemFromDropboxItem(entry);
+        return this.constructCloudItem(entry);
       });
       if (response.has_more) {
         return this.getAllDropboxItems(items, response);
@@ -198,9 +186,9 @@ class DropboxRequestor extends Requestor {
     // POST https://api.dropboxapi.com/2/files/search
     // body: {path: '', query: <query>}
     const urlRequest = this.baseUrl + 'files/search';
-    return this.getDropboxMatches(urlRequest, { path: '', query: query }).then((response) => {
+    return this.getSinglePageOfDropboxMatches(urlRequest, { path: '', query: query }).then((response) => {
       const items: CloudItem[] = response.matches.map((entry: DropboxMatch) => {
-        return this.constructCloudItemFromDropboxMatch(entry);
+        return this.constructCloudItem(entry.metadata);
       });
       if (response.more) {
         return this.getAllDropboxMatches(items, response, '', query);
