@@ -17,6 +17,9 @@ import { createCloudItem, determineExtension } from '../utils/CloudItemUtilities
 import { ProviderInfo } from '../providers/ProviderInfo';
 import { Requestor } from './Requestor';
 
+// This is 1000 because 1000 is the upper limit of allowed results per page for a search
+const MAX_RESULTS_FOR_SEARCH = 1000;
+
 interface DropboxItem {
   path_display: string; // Path of cloud item. Used for cloud item id and breadcrumb
   name: string;
@@ -153,7 +156,8 @@ class DropboxRequestor extends Requestor {
       return Promise.resolve(currentListOfItems);
     }
     const urlRequest = this.baseUrl + 'files/search';
-    return this.getSinglePageOfDropboxMatches(urlRequest, { path: path, query: query, start: currentResponse.start }).then((response) => {
+    return this.getSinglePageOfDropboxMatches(urlRequest, { path: path, query: query, start: currentResponse.start, 
+                                                            max_results: MAX_RESULTS_FOR_SEARCH }).then((response) => {
       currentListOfItems = currentListOfItems.concat(response.matches.map((entry: DropboxMatch) => {
         return this.constructCloudItem(entry.metadata);
       }));
@@ -186,7 +190,7 @@ class DropboxRequestor extends Requestor {
     // POST https://api.dropboxapi.com/2/files/search
     // body: {path: '', query: <query>}
     const urlRequest = this.baseUrl + 'files/search';
-    return this.getSinglePageOfDropboxMatches(urlRequest, { path: '', query: query }).then((response) => {
+    return this.getSinglePageOfDropboxMatches(urlRequest, { path: '', query: query, max_results: MAX_RESULTS_FOR_SEARCH }).then((response) => {
       const items: CloudItem[] = response.matches.map((entry: DropboxMatch) => {
         return this.constructCloudItem(entry.metadata);
       });
