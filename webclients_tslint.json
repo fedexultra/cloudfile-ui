@@ -1,0 +1,259 @@
+/**
+* For details on what these rules do, see: http://palantir.github.io/tslint/rules/. Comments in this file explain
+* the rationale.
+*
+* If you would like to disable a rule for one line or one file (please try not to do this),
+* see http://palantir.github.io/tslint/usage/rule-flags/
+*
+* If you would like to disable a rule for your whole project (please try not to do this), make your own "tslint.json"
+* file and use the "extends" field to point to this file. You can then overwrite specific rules.
+* See workgroup/vizportalclient/tslint.json for an example
+*/
+{
+  "rules": {
+
+    /* ======================================= TypeScript Specific Rules ========================================== */
+
+    "member-access": [
+      true,
+      "check-accessor",
+      "check-constructor"
+    ],
+
+    // consistency with class definitions makes scanning code easier. Likely controversial
+    "member-ordering": false,
+
+    // `any` is usually a work around for poor typing. Disable this rule at your own peril.
+    "no-any": true,
+
+    "no-inferrable-types": false,
+
+    "no-internal-module": true,
+
+    // We should only use ES6 style modules for code we write, but sometimes namespaces help
+    "no-namespace": false,
+
+    // We should use ES6 style imports. If needing to reference type definitions, do that
+    // in the files list of tsconfig.json
+    "no-reference": true,
+
+    "no-var-requires": true,
+
+    // The only type annotations not required are arrow lambda parameters and variable declarations.
+    // Variable declaration should be visibly close to where it's used, so inferring the type should be
+    // straightforward. For arrow lambdas, the type information often hurts readability when using collection
+    // functions like `map` and `filter`
+    "typedef": [
+      true,
+      "call-signature",
+      "parameter",
+      "property-declaration",
+      "member-variable-declaration"
+    ],
+
+    "typedef-whitespace": [
+      true,
+      {
+        // before colon
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      },
+      {
+        // after colon
+        "call-signature": "onespace",
+        "index-signature": "onespace",
+        "parameter": "onespace",
+        "property-declaration": "onespace",
+        "variable-declaration": "onespace"
+      }
+    ],
+
+    /* ================================== JavaScript - Removing the Bad Parts ===================================== */
+
+    "ban": false,
+
+    "curly": true,
+
+    "forin": true,
+
+    "label-position": true,
+
+    "label-undefined": true,
+
+    "no-arg": true,
+
+    "no-bitwise": true,
+
+    "no-conditional-assignment": true,
+
+    "no-console": [
+      true,
+      "debug",
+      "info",
+      "log",
+      "time",
+      "timeEnd",
+      "trace"
+    ],
+
+    "no-construct": true,
+
+    "no-debugger": true,
+
+    "no-duplicate-key": true,
+
+    "no-duplicate-variable": true,
+
+    "no-empty": true,
+
+    "no-eval": true,
+
+    "no-invalid-this": [
+      true,
+      "check-function-in-method"
+    ],
+
+    "no-null-keyword": false,
+
+    "no-shadowed-variable": true,
+
+    "no-string-literal": true,
+
+    "no-switch-case-fall-through": true,
+
+    "no-unreachable": true,
+
+    "no-unused-expression": true,
+
+    "no-unused-variable": [
+      true
+    ],
+
+    "no-use-before-declare": true,
+
+    "no-var-keyword": true,
+
+    "radix": true,
+
+    "switch-default": true,
+
+    "triple-equals": true,
+
+    "use-isnan": true,
+
+    /* ======================================== Maintainability =========================================== */
+
+    "eofline": true,
+
+    "indent": [
+      true,
+      "spaces"
+    ],
+
+    "linebreak-style": [
+      true,
+      "LF"
+    ],
+
+    "max-line-length": [
+      true,
+      140
+    ],
+
+    // Mixing named and default exports is awkward. Because one module usually exports multiple types, we almost
+    // always hit this awkwardness in the TypeScript world. See rule description for more rationale:
+    // http://palantir.github.io/tslint/rules/no-default-export/
+    "no-default-export": true,
+
+    "no-mergeable-namespace": true,
+
+    "no-require-imports": true,
+
+    "no-trailing-whitespace": true,
+
+    "object-literal-sort-keys": false,
+
+    // Likely controversial. This setting allows trailing and not trailing commas
+    "trailing-comma": false,
+
+    /* ======================================== Style =========================================== */
+
+    "align": [
+      true,
+      "parameters",
+      "arguments",
+      "statements"
+    ],
+
+    "class-name": true,
+
+    "comment-format": [
+      true,
+      "check-space"
+    ],
+
+    "interface-name": [
+      true,
+      "never-prefix"
+    ],
+
+    // We don't use jsdoc. Maybe we should change that. Maybe we shouldn't.
+    "jsdoc-format": false,
+
+    "new-parens": true,
+
+    // This is only useful when using TSX
+    "no-angle-bracket-type-assertion": false,
+
+    "no-consecutive-blank-lines": true,
+
+    "no-constructor-vars": false,
+
+    "one-line": [
+      true,
+      "check-catch",
+      "check-finally",
+      "check-else",
+      "check-open-brace",
+      "check-whitespace"
+    ],
+
+    "one-variable-per-declaration": [
+      true,
+      "ignore-for-loop"
+    ],
+
+    "quotemark": [
+      true,
+      "single",
+      "avoid-escape"
+    ],
+
+    "semicolon": [
+      true,
+      "always"
+    ],
+
+    // Likely controversial
+    "variable-name": [
+      true,
+      "ban-keywords",
+      "check-format",
+      "allow-pascal-case"
+    ],
+
+    "whitespace": [
+      true,
+      "check-branch",
+      "check-decl",
+      "check-operator",
+      "check-module",
+      "check-separator",
+      "check-type",
+      "check-typecast"
+    ]
+  }
+}

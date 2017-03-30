@@ -1,0 +1,22 @@
+# Codegen bits
+node_modules
+lib
+src/codegen
+dist
+build
+deployment_files
+
+# Logs
+npm-debug.log
+
+# Environments
+.env
+
+# Filesystem
+.DS_Store
+
+# Python compiled files
+*.pyc
+
+# CI files
+gitlab-ci
