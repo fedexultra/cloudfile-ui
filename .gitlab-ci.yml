@@ -8,6 +8,7 @@ before_script:
   - 'cd gitlab-ci; echo "Using gitlab-ci branch ${CI_REPO_BRANCH}"; git checkout ${CI_REPO_BRANCH}; cd ..'
   - 'export PATH=${PATH}:${PWD}/gitlab-ci/deploy_scripts'
   - 'before_script.sh'
+  - 'nvm use 4.4.7'
 
 after_script:
   - export PATH=${PATH}:${PWD}/gitlab-ci/deploy_scripts
@@ -21,7 +22,7 @@ stages:
 build_job:
   stage: build
   script:
-    - python build_deployment.py -c -b; EXIT_CODE=$?; echo ${EXIT_CODE} >> ~/${CI_PROJECT_ID}_build_status; exit ${EXIT_CODE}
+    - node --version; python build_deployment.py -c -b; EXIT_CODE=$?; echo ${EXIT_CODE} >> ~/${CI_PROJECT_ID}_build_status; exit ${EXIT_CODE}
 
 test_job:
   stage: test
