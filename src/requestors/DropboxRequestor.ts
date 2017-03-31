@@ -156,7 +156,9 @@ class DropboxRequestor extends Requestor {
       return Promise.resolve(currentListOfItems);
     }
     const urlRequest = this.baseUrl + 'files/search';
-    return this.getSinglePageOfDropboxMatches(urlRequest, { path: path, query: query, start: currentResponse.start, 
+    return this.getSinglePageOfDropboxMatches(urlRequest, { path: path,
+                                                            query: query,
+                                                            start: currentResponse.start,
                                                             max_results: MAX_RESULTS_FOR_SEARCH }).then((response) => {
       currentListOfItems = currentListOfItems.concat(response.matches.map((entry: DropboxMatch) => {
         return this.constructCloudItem(entry.metadata);
@@ -190,7 +192,9 @@ class DropboxRequestor extends Requestor {
     // POST https://api.dropboxapi.com/2/files/search
     // body: {path: '', query: <query>}
     const urlRequest = this.baseUrl + 'files/search';
-    return this.getSinglePageOfDropboxMatches(urlRequest, { path: '', query: query, max_results: MAX_RESULTS_FOR_SEARCH }).then((response) => {
+    return this.getSinglePageOfDropboxMatches(urlRequest, { path: '',
+                                                            query: query,
+                                                            max_results: MAX_RESULTS_FOR_SEARCH }).then((response) => {
       const items: CloudItem[] = response.matches.map((entry: DropboxMatch) => {
         return this.constructCloudItem(entry.metadata);
       });
