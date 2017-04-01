@@ -4,8 +4,11 @@ before_script:
   - 'eval $(ssh-agent -s)'
   # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
   - 'ssh-add <(echo "$SSH_PRIVATE_KEY")'
-  - 'rm -rf gitlab-ci; git clone --branch v0.0.1 git@gitlab.tableausoftware.com:cloud-connect/gitlab-ci.git'
+  - 'rm -rf gitlab-ci; git clone git@gitlab.tableausoftware.com:cloud-connect/gitlab-ci.git'
+  - 'cd gitlab-ci; echo "Using gitlab-ci branch ${CI_REPO_BRANCH}"; git checkout ${CI_REPO_BRANCH}; cd ..'
   - 'export PATH=${PATH}:${PWD}/gitlab-ci/deploy_scripts'
+  # default to a failed build status in case the EXIT_CODE doesn't populate
+  - 'echo 1 >> ~/${CI_PROJECT_ID}_build_status'
   - 'before_script.sh'
 
 after_script:

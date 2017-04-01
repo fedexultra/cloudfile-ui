@@ -66,7 +66,7 @@ const tableStyle: CSSProperties = {
   borderColor: Colors && Colors.L2,
   borderCollapse: 'collapse',
   height: `${TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 71}px`,
-  overflowY: 'overlay',
+  overflowY: 'inherit',
   width: '100%'
 };
 
