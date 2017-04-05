@@ -10,6 +10,7 @@
 // -----------------------------------------------------------------------------
 
 import 'isomorphic-fetch';
+import 'url';
 
 import { AuthInfo } from '../types/ShimTypes';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../types/CloudItemTypes';
@@ -129,15 +130,23 @@ class OneDriveRequestor extends Requestor {
     return this.baseUrl + fileID + ':/content';
   }
 
+  private getFileIdFromSearchParams(searchParams: string): string {
+    const listOfSearchParams: string[] = searchParams.split('?')[1].split('&');
+    for(let params of listOfSearchParams) {
+      if(params.indexOf('resid') !== -1) {
+        return params.split('=')[1];
+      }
+    }
+    return '';
+  }
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
 
     if (typeOfSearch === SearchType.URL) {
-      /* fileId can return a null, which will, in turn, return an invalid response
+      /* getFileIdFromSearchParams can return an empty string, which will return an invalid response
        * that eventually gets handled as an incorrect url error
       */
-      const fileId = new URLSearchParams(new URL(searchText).search).get('resid');
-      return this.baseUrl + '/drive/items/' + fileId;
+      return this.baseUrl + '/drive/items/' + this.getFileIdFromSearchParams(searchText);
     }
     return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
   }
