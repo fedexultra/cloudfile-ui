@@ -132,8 +132,8 @@ class OneDriveRequestor extends Requestor {
 
   private getFileIdFromSearchParams(searchParams: string): string {
     const listOfSearchParams: string[] = searchParams.split('?')[1].split('&');
-    for(let params of listOfSearchParams) {
-      if(params.indexOf('resid') !== -1) {
+    for (let params of listOfSearchParams) {
+      if (params.indexOf('resid') !== -1) {
         return params.split('=')[1];
       }
     }
