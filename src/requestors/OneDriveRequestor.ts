@@ -129,7 +129,7 @@ class OneDriveRequestor extends Requestor {
     return this.baseUrl + fileID + ':/content';
   }
 
-  private getFileIdFromSearchParams(searchParams: string): string {
+  private getFileIdFromSearchUrl(searchParams: string): string {
     const listOfSearchParams: string[] = searchParams.split('?')[1].split('&');
     for (let params of listOfSearchParams) {
       if (params.indexOf('resid') !== -1) {
@@ -145,7 +145,7 @@ class OneDriveRequestor extends Requestor {
       /* getFileIdFromSearchParams can return an empty string, which will return an invalid response
        * that eventually gets handled as an incorrect url error
       */
-      return this.baseUrl + '/drive/items/' + this.getFileIdFromSearchParams(searchText);
+      return this.baseUrl + '/drive/items/' + this.getFileIdFromSearchUrl(searchText);
     }
     return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
   }
