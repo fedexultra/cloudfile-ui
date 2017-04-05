@@ -9,6 +9,7 @@
 //
 // -----------------------------------------------------------------------------
 
+import 'url-search-params-polyfill';
 import 'isomorphic-fetch';
 
 import { AuthInfo } from '../types/ShimTypes';
@@ -129,14 +130,13 @@ class OneDriveRequestor extends Requestor {
     return this.baseUrl + fileID + ':/content';
   }
 
-  private getFileIdFromSearchUrl(searchParams: string): string {
-    const listOfSearchParams: string[] = searchParams.split('?')[1].split('&');
-    for (let params of listOfSearchParams) {
-      if (params.indexOf('resid') !== -1) {
-        return params.split('=')[1];
-      }
+  private getFileIdFromSearchUrl(searchUrl: string): string {
+    let fileId = new URLSearchParams(searchUrl).get('resid');
+    if (fileId === null)
+    {
+      return '';
     }
-    return '';
+    return fileId;
   }
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
