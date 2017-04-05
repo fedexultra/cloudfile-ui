@@ -141,7 +141,7 @@ class OneDriveRequestor extends Requestor {
     // This tries to determine if the searchText entered is a file url for OneDrive
 
     if (typeOfSearch === SearchType.URL) {
-      /* getFileIdFromSearchParams can return an empty string, which will return an invalid response
+      /* getFileIdFromSearchUrl can return an empty string, which will return an invalid response
        * that eventually gets handled as an incorrect url error
       */
       return this.baseUrl + '/drive/items/' + this.getFileIdFromSearchUrl(searchText);
