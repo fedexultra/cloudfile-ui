@@ -132,8 +132,7 @@ class OneDriveRequestor extends Requestor {
 
   private getFileIdFromSearchUrl(searchUrl: string): string {
     let fileId = new URLSearchParams(searchUrl).get('resid');
-    if (fileId === null)
-    {
+    if (fileId === null) {
       return '';
     }
     return fileId;
