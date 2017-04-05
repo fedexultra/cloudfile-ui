@@ -10,7 +10,6 @@
 // -----------------------------------------------------------------------------
 
 import 'isomorphic-fetch';
-import 'url';
 
 import { AuthInfo } from '../types/ShimTypes';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../types/CloudItemTypes';
