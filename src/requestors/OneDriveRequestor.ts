@@ -16,9 +16,7 @@ import { AuthInfo } from '../types/ShimTypes';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../types/CloudItemTypes';
 import { createCloudItem, determineExtension } from '../utils/CloudItemUtilities';
 import { ProviderInfo } from '../providers/ProviderInfo';
-import { Requestor } from './Requestor';
-
-enum SearchType { URL, Text };
+import { Requestor, SearchType } from './Requestor';
 
 interface OneDrivePath {
   path: string;
@@ -147,14 +145,6 @@ class OneDriveRequestor extends Requestor {
       return this.baseUrl + '/drive/items/' + this.getFileIdFromSearchUrl(searchText);
     }
     return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
-  }
-
-  private getSearchType(searchText: string): SearchType {
-    if (Requestor.searchUrlRegex.test(searchText)) {
-      return SearchType.URL;
-    } else {
-      return SearchType.Text;
-    }
   }
 
   private constructCloudItem(oneDriveItem: OneDriveItem): CloudItem {
