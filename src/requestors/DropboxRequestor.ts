@@ -10,12 +10,15 @@
 // -----------------------------------------------------------------------------
 
 import 'isomorphic-fetch';
+import 'url-search-params-polyfill';
 
 import { AuthInfo } from '../types/ShimTypes';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../types/CloudItemTypes';
+import { CloudItemNotFoundError } from '../utils/Errors';
 import { createCloudItem, determineExtension } from '../utils/CloudItemUtilities';
+import { log } from '../utils/Logger';
 import { ProviderInfo } from '../providers/ProviderInfo';
-import { Requestor } from './Requestor';
+import { Requestor, SearchType } from './Requestor';
 
 // This is 1000 because 1000 is the upper limit of allowed results per page for a search
 const MAX_RESULTS_FOR_SEARCH = 1000;
@@ -47,12 +50,16 @@ interface DropboxMatches {
 class DropboxRequestor extends Requestor {
   private baseUrl: string;
   private contentUrl: string;
+  private searchUrlHostName: string;
+  private searchUrlPathNamePrefix: string;
   private fields: string;
 
   public constructor(auth: AuthInfo, providerInfo: ProviderInfo) {
     super(auth, providerInfo);
     this.baseUrl = 'https://api.dropboxapi.com/2/';
     this.contentUrl = 'https://content.dropboxapi.com/2/';
+    this.searchUrlHostName = 'www.dropbox.com';
+    this.searchUrlPathNamePrefix = '/home';
     this.fields = 'fields=path_display,name,.tag,server_modified';
   }
 
@@ -188,21 +195,72 @@ class DropboxRequestor extends Requestor {
     return this.contentUrl + 'files/download';
   }
 
-  public search(query: string): Promise<CloudItem[]> {
-    // POST https://api.dropboxapi.com/2/files/search
-    // body: {path: '', query: <query>}
-    const urlRequest = this.baseUrl + 'files/search';
-    return this.getSinglePageOfDropboxMatches(urlRequest, { path: '',
-                                                            query: query,
-                                                            max_results: MAX_RESULTS_FOR_SEARCH }).then((response) => {
-      const items: CloudItem[] = response.matches.map((entry: DropboxMatch) => {
-        return this.constructCloudItem(entry.metadata);
+  private getDropboxItem(filePath: string): Promise<DropboxItem> {
+    // POST https://api.dropboxapi.com/2/files/get_metadata
+    // body: {path: <filePath>}
+    const url = this.baseUrl + 'files/get_metadata';
+    const body: Object = { path: filePath };
+    return this.sendDropboxRequest(url, body).then(response => <Promise<DropboxItem>> response.json());
+  }
+
+  private getDropboxFilePathFromSearchUrl(query: string): string {
+    // Convert https://www.dropbox.com/home/SubFolder?preview=1.xlsx TO SubFolder/1.xlsx
+    const url = new URL(query);
+    const filename = new URLSearchParams(url.search).get('preview');
+    // URL pathname (e.g. '/home/SubFolder') should start with '/home'
+    if (url.hostname === this.searchUrlHostName &&
+      url.pathname.indexOf(this.searchUrlPathNamePrefix) === 0 &&
+      filename !== null && filename !== '') {
+      // Remove '/home' from the pathname to get the directory path
+      const dir = decodeURIComponent(url.pathname.substr(this.searchUrlPathNamePrefix.length));
+      return dir + '/' + filename;
+    }
+    return '';
+  }
+
+  private getDropboxItemFromUrl(query: string): Promise<CloudItem> {
+    const filePath = this.getDropboxFilePathFromSearchUrl(query);
+    if (filePath !== '') {
+      return this.getDropboxItem(filePath).then((response) => {
+        // This checks if the response is valid. This will go away when we have better error handling. Story 623632
+        if (response.name !== '') {
+          return this.constructCloudItem(response);
+        }
+        throw new CloudItemNotFoundError();
       });
-      if (response.more) {
-        return this.getAllDropboxMatches(items, response, '', query);
-      }
-      return items;
-    });
+    }
+    return Promise.reject(new CloudItemNotFoundError());
+  }
+
+  public search(query: string): Promise<CloudItem[]> {
+    const typeOfSearch = this.getSearchType(query);
+    if (typeOfSearch === SearchType.URL) {
+      return this.getDropboxItemFromUrl(query)
+      .then(item => { return [ item ]; } )
+      .catch((error: Error) => {
+        if (<CloudItemNotFoundError> error !== undefined) {
+          return [];
+        } else {
+          log(`Unknown error was caught after entering invalid url ${query}. Error message: ${error.message}`);
+          return [];
+        }
+      });
+    } else {
+      // POST https://api.dropboxapi.com/2/files/search
+      // body: {path: '', query: <query>}
+      const urlRequest = this.baseUrl + 'files/search';
+      return this.getSinglePageOfDropboxMatches(urlRequest, { path: '',
+                                                              query: query,
+                                                              max_results: MAX_RESULTS_FOR_SEARCH }).then((response) => {
+        const items: CloudItem[] = response.matches.map((entry: DropboxMatch) => {
+          return this.constructCloudItem(entry.metadata);
+        });
+        if (response.more) {
+          return this.getAllDropboxMatches(items, response, '', query);
+        }
+        return items;
+      });
+    }
   }
 }
 
