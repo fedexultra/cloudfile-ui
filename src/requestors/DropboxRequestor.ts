@@ -215,7 +215,7 @@ class DropboxRequestor extends Requestor {
       // Remove '/home' from the pathname to get the directory path
       const dir = decodeURIComponent(url.pathname.substr(this.searchUrlPathNamePrefix.length));
       // Spaces in the filename need to be replaced separately since decodeURI does not handle it
-      filename = decodeURI(filename.replace(/\+/gm, ' '));
+      filename = decodeURIComponent(filename.replace(/\+/gm, ' '));
       return dir + '/' + filename;
     }
     return '';
