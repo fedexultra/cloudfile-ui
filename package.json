@@ -19,6 +19,7 @@
   "dependencies": {
     "es6-promise": "^4.0.5",
     "isomorphic-fetch": "^2.2.1",
+    "url-polyfill": "^1.0.3",
     "url-search-params-polyfill": "^1.1.0"
   },
   "devDependencies": {

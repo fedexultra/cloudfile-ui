@@ -10,6 +10,7 @@
 // -----------------------------------------------------------------------------
 
 import 'isomorphic-fetch';
+import 'url-polyfill';
 import 'url-search-params-polyfill';
 
 import { AuthInfo } from '../types/ShimTypes';
@@ -206,13 +207,15 @@ class DropboxRequestor extends Requestor {
   private getDropboxFilePathFromSearchUrl(query: string): string {
     // Convert https://www.dropbox.com/home/SubFolder?preview=1.xlsx TO SubFolder/1.xlsx
     const url = new URL(query);
-    const filename = new URLSearchParams(url.search).get('preview');
+    let filename = new URLSearchParams(url.search).get('preview');
     // URL pathname (e.g. '/home/SubFolder') should start with '/home'
     if (url.hostname === this.searchUrlHostName &&
       url.pathname.indexOf(this.searchUrlPathNamePrefix) === 0 &&
       filename !== null && filename !== '') {
       // Remove '/home' from the pathname to get the directory path
       const dir = decodeURIComponent(url.pathname.substr(this.searchUrlPathNamePrefix.length));
+      // Spaces in the filename need to be replaced separately since decodeURI does not handle it
+      filename = decodeURI(filename.replace(/\+/gm, ' '));
       return dir + '/' + filename;
     }
     return '';
