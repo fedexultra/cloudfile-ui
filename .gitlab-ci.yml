@@ -1,0 +1,76 @@
+before_script:
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  # Run ssh-agent (inside the build environment)
+  - 'eval $(ssh-agent -s)'
+  # Add the SSH key stored in SSH_PRIVATE_KEY variable to the agent store
+  - 'ssh-add <(echo "$SSH_PRIVATE_KEY")'
+  - 'rm -rf gitlab-ci; git clone git@gitlab.tableausoftware.com:cloud-connect/gitlab-ci.git'
+  - 'cd gitlab-ci; echo "Using gitlab-ci branch ${CI_REPO_BRANCH}"; git checkout ${CI_REPO_BRANCH}; cd ..'
+  - 'export PATH=${PATH}:${PWD}/gitlab-ci/deploy_scripts'
+  # default to a failed build status in case the EXIT_CODE doesn't populate
+  - 'echo 1 >> ~/${CI_PROJECT_ID}_build_status'
+  - 'before_script.sh'
+
+after_script:
+  - export PATH=${PATH}:${PWD}/gitlab-ci/deploy_scripts
+  - after_script.sh
+
+stages:
+  - build
+  - test
+  - deploy
+
+build_job:
+  stage: build
+  script:
+    - python build_deployment.py -c -b; EXIT_CODE=$?; echo ${EXIT_CODE} >> ~/${CI_PROJECT_ID}_build_status; exit ${EXIT_CODE}
+
+test_job:
+  stage: test
+  script:
+    - python build_deployment.py -c -b -t; EXIT_CODE=$?; echo ${EXIT_CODE} >> ~/${CI_PROJECT_ID}_build_status; exit ${EXIT_CODE}
+
+dev_deploy_job:
+  stage: deploy
+  script:
+    - python build_deployment.py -c -b -t -p
+    - deploy.sh
+  artifacts:
+    paths:
+    - deployment_files/
+  environment:
+    name: qa01
+    url: https://connectors.qa01.tabint.net/cloudfile-ui/1/index.html
+  only:
+    - /^dev$|^hotfix.*$/
+
+beta_deploy_job:
+  stage: deploy
+  script:
+    - python build_deployment.py -c -b -t -p
+    - deploy.sh
+  artifacts:
+    paths:
+    - deployment_files/
+  environment:
+    name: beta
+    url: https://beta-connectors.tableau.com/cloudfile-ui/1/index.html
+  only:
+    - beta
+
+prod_deploy_job:
+  stage: deploy
+  script:
+    - python build_deployment.py -c -b -t -p
+    - deploy.sh
+  artifacts:
+    paths:
+    - deployment_files/
+  environment:
+    name: prod-v1
+    url: https://connectors.tableau.com/cloudfile-ui/1/index.html
+  only:
+    - /^prod-v[1-9]$/
+
+variables:
+  HIPCHAT_ROOM_ID: "3417533"

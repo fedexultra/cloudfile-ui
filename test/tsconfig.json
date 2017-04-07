@@ -1,0 +1,41 @@
+/**
+ * typescript compiler options for the 'test' directory. This should largely mirror what is in "../src/tsconfig.json",
+ * but unfortunately there is no tsconfig.json inheritance yet
+ */
+
+{
+    "compilerOptions": {
+        "target": "es5",
+        "lib": ["dom", "es5", "es2015.promise"],
+        "module": "commonjs",
+        "jsx": "react",
+        "noImplicitAny": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": false,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitReturns": true,
+        "forceConsistentCasingInFileNames": true,
+        "pretty": true,
+        "skipLibCheck": true,
+        "types": [
+            "jasmine"
+        ],
+        "newLine": "LF",
+        "sourceMap": true,
+        "strictNullChecks": true,
+        "baseUrl": "../..",
+        "paths": {
+            // TODO: you can remove this once we update to typescript 2.0.5. See https://github.com/Microsoft/TypeScript/issues/10968
+            "react": ["cloud-file-connector/node_modules/@types/react/index"]
+        }
+    },
+    "files": [
+        "../typings/index.d.ts"
+    ],
+    "include": [
+        "../custom-types/**/*.d.ts",
+        "./**/*.tsx",
+        "./**/*.ts"
+    ]
+}

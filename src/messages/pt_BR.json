@@ -1,0 +1,15 @@
+{
+  "cancel": "Cancelar",
+  "connect": "Conectar",
+  "file": "arquivo",
+  "folder": "pasta",
+  "kind": "Tipo",
+  "lastModifiedOn": "Última modificação em",
+  "name": "Nome",
+  "queryErrorMessage": "Não foram encontrados arquivos ou pastas com o nome correspondente ao pesquisado",
+  "search": "Pesquisar",
+  "searchResultsMessage": "Resultados da pesquisa",
+  "signedInAs": "conectado como {user} ",
+  "signOut": "sair",
+  "urlErrorMessage": "A URL inserida é inválida ou direciona a um arquivo que você não tem permissão para visualizar"
+}

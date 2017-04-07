@@ -1,0 +1,15 @@
+{
+  "cancel": "キャンセル",
+  "connect": "接続",
+  "file": "ファイル",
+  "folder": "フォルダー",
+  "kind": "種類",
+  "lastModifiedOn": "最終更新日",
+  "name": "名前",
+  "queryErrorMessage": "検索した名前と一致するファイルおよびフォルダーは見つかりません",
+  "search": "検索",
+  "searchResultsMessage": "検索結果",
+  "signedInAs": "{user} としてサインインしました",
+  "signOut": "サインアウト",
+  "urlErrorMessage": "入力した URL が無効であるか、表示するパーミッションがないファイルを指しています"
+}

@@ -1,0 +1,15 @@
+{
+  "cancel": "취소",
+  "connect": "연결",
+  "file": "파일",
+  "folder": "폴더",
+  "kind": "종료",
+  "lastModifiedOn": "마지막으로 수정한 날짜",
+  "name": "이름",
+  "queryErrorMessage": "검색된 이름과 일치하는 파일 또는 폴더가 없음",
+  "search": "검색",
+  "searchResultsMessage": "검색 결과",
+  "signedInAs": "{user}(으)로 로그인함 ",
+  "signOut": "로그아웃",
+  "urlErrorMessage": "입력한 URL이 잘못되었거나 보기 권한이 없는 파일을 가리킴"
+}

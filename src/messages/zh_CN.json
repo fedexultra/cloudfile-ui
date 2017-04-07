@@ -1,0 +1,15 @@
+{
+  "cancel": "取消",
+  "connect": "连接",
+  "file": "文件",
+  "folder": "文件夹",
+  "kind": "类型",
+  "lastModifiedOn": "上次修改日期",
+  "name": "名称",
+  "queryErrorMessage": "未找到与搜索名称匹配的文件或文件夹",
+  "search": "搜索",
+  "searchResultsMessage": "搜索结果",
+  "signedInAs": "已以 {user} 身份登录",
+  "signOut": "注销",
+  "urlErrorMessage": "您输入的 URL 无效或指向您无权查看的文件"
+}
