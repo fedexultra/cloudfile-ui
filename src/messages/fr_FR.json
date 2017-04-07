@@ -4,12 +4,12 @@
   "file": "fichier",
   "folder": "dossier",
   "kind": "Type",
-  "lastModifiedOn": "Dernière modification le",
+  "lastModifiedOn": "DerniÃ¨re modification le",
   "name": "Nom",
-  "queryErrorMessage": "Aucun fichier ou dossier correspondant au nom recherché n'a été trouvé",
+  "queryErrorMessage": "Aucun fichier ou dossier correspondant au nom recherchÃ© n'a Ã©tÃ© trouvÃ©",
   "search": "Rechercher",
-  "searchResultsMessage": "Résultats de la recherche",
-  "signedInAs": "connecté en tant que {user} ",
-  "signOut": "déconnexion",
-  "urlErrorMessage": "L'URL saisie n'est pas valide ou pointe vers un fichier que vous n'êtes pas autorisé à visualiser"
+  "searchResultsMessage": "RÃ©sultats de la recherche",
+  "signedInAs": "connectÃ© en tant que {user} ",
+  "signOut": "dÃ©connexion",
+  "urlErrorMessage": "L'URL saisie n'est pas valide ou pointe vers un fichier que vous n'Ãªtes pas autorisÃ© Ã  visualiser"
 }

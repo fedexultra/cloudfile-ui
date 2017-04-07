@@ -9,15 +9,14 @@
 //
 // -----------------------------------------------------------------------------
 
+import 'url-search-params-polyfill';
 import 'isomorphic-fetch';
 
 import { AuthInfo } from '../types/ShimTypes';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../types/CloudItemTypes';
 import { createCloudItem, determineExtension } from '../utils/CloudItemUtilities';
 import { ProviderInfo } from '../providers/ProviderInfo';
-import { Requestor } from './Requestor';
-
-enum SearchType { URL, Text };
+import { Requestor, SearchType } from './Requestor';
 
 interface OneDrivePath {
   path: string;
@@ -32,6 +31,7 @@ interface OneDriveItem {
 }
 
 interface OneDriveFolder {
+  ['@odata.nextLink']?: string;
   value: OneDriveItem[];
 };
 
@@ -59,6 +59,19 @@ class OneDriveRequestor extends Requestor {
 
   private getOneDriveItem(url: string): Promise<OneDriveItem> {
     return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveItem>> response.json());
+  }
+
+  // Recursively calling Promises is stack-safe. We will not run into stack overflow errors.
+  private getAllOneDriveItems(currentListOfItems: CloudItem[], url: string | undefined, firstCall: boolean): Promise<CloudItem[]> {
+    if (!url && !firstCall) {
+      return Promise.resolve(currentListOfItems);
+    }
+    return this.getOneDriveItems(<string> url).then((oneDriveFolder: OneDriveFolder) => {
+      const newListOfItems: CloudItem[] = currentListOfItems.concat(oneDriveFolder.value.map((oneDriveItem: OneDriveItem) => {
+        return this.constructCloudItem(oneDriveItem);
+      }));
+      return this.getAllOneDriveItems(newListOfItems, oneDriveFolder['@odata.nextLink'], false);
+    });
   }
 
   private determineCloudItemType(item: OneDriveItem): CloudItemType {
@@ -107,12 +120,7 @@ class OneDriveRequestor extends Requestor {
       // GET https://graph.microsoft.com/v1.0/me/drive/root:/{item-path}:/children
       urlRequest = this.baseUrl + folderID + ':/children';
     }
-    return this.getOneDriveItems(urlRequest).then(response => {
-      const items: CloudItem[] = response.value.map((entry: OneDriveItem) => {
-        return this.constructCloudItem(entry);
-      });
-      return items;
-    });
+    return this.getAllOneDriveItems([], urlRequest, true);
   }
 
   public getDownloadUrl(fileID: string): string {
@@ -120,25 +128,23 @@ class OneDriveRequestor extends Requestor {
     return this.baseUrl + fileID + ':/content';
   }
 
+  private getFileIdFromSearchUrl(searchUrl: string): string {
+    let fileId = new URLSearchParams(searchUrl).get('resid');
+    if (fileId === null) {
+      return '';
+    }
+    return fileId;
+  }
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
 
     if (typeOfSearch === SearchType.URL) {
-      /* fileId can return a null, which will, in turn, return an invalid response
+      /* getFileIdFromSearchUrl can return an empty string, which will return an invalid response
        * that eventually gets handled as an incorrect url error
       */
-      const fileId = new URLSearchParams(new URL(searchText).search).get('resid');
-      return this.baseUrl + '/drive/items/' + fileId;
+      return this.baseUrl + '/drive/items/' + this.getFileIdFromSearchUrl(searchText);
     }
     return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
-  }
-
-  private getSearchType(searchText: string): SearchType {
-    if (Requestor.searchUrlRegex.test(searchText)) {
-      return SearchType.URL;
-    } else {
-      return SearchType.Text;
-    }
   }
 
   private constructCloudItem(oneDriveItem: OneDriveItem): CloudItem {
@@ -169,16 +175,7 @@ class OneDriveRequestor extends Requestor {
         return [];
       });
     } else {
-      return this.getOneDriveItems(urlRequest).then((response) => {
-        // This checks if the response is valid. This will go away when we have better error handling. Story 623632
-        if (response.value !== undefined) {
-          const items: CloudItem[] = response.value.map((oneDriveItem: OneDriveItem) => {
-            return this.constructCloudItem(oneDriveItem);
-          });
-          return items;
-        }
-        return [];
-      });
+      return this.getAllOneDriveItems([], urlRequest, true);
     }
   }
 }

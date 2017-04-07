@@ -15,6 +15,8 @@ import { log } from '../utils/Logger';
 import { ProviderInfo } from '../providers/ProviderInfo';
 import { shim } from '../shim/Shim';
 
+export enum SearchType { URL, Text };
+
 abstract class Requestor {
   public auth: AuthInfo;
   public providerInfo: ProviderInfo;
@@ -47,6 +49,14 @@ abstract class Requestor {
         return response;
       }
     });
+  }
+
+  protected getSearchType(searchText: string): SearchType {
+    if (Requestor.searchUrlRegex.test(searchText)) {
+      return SearchType.URL;
+    } else {
+      return SearchType.Text;
+    }
   }
 
   public abstract enumerateItems(folder: string): Promise<CloudItem[]>;

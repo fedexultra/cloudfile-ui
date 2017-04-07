@@ -4,12 +4,12 @@
   "file": "Datei",
   "folder": "Ordner",
   "kind": "Art",
-  "lastModifiedOn": "Letzte Änderung am",
+  "lastModifiedOn": "Letzte Ã„nderung am",
   "name": "Name",
-  "queryErrorMessage": "Es wurden keine mit dem Suchnamen übereinstimmenden Dateien oder Ordner gefunden.",
+  "queryErrorMessage": "Es wurden keine mit dem Suchnamen Ã¼bereinstimmenden Dateien oder Ordner gefunden.",
   "search": "Suche",
   "searchResultsMessage": "Suchergebnisse",
   "signedInAs": "Angemeldet als {user} ",
   "signOut": "Abmelden",
-  "urlErrorMessage": "Die von Ihnen eingegebene URL ist ungültig oder verweist auf eine Datei, zu deren Anzeige Sie nicht berechtigt sind."
+  "urlErrorMessage": "Die von Ihnen eingegebene URL ist ungÃ¼ltig oder verweist auf eine Datei, zu deren Anzeige Sie nicht berechtigt sind."
 }
