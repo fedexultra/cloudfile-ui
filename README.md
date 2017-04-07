@@ -44,6 +44,6 @@ git checkout -b feature/123456-my_awesome_feature
 7. When feedback is addressed and approval is granted from a reviewer, accept the merge request  back to `dev`.
 
 Note: Try to use lower caps in the branch name while creating it.
-If you create your branch using capitalized letters, sometimes 'git' internally converts some letters to lower caps.
-If you try to 'push' your changes using original branch name (with capitalized letters), git might throw an error.
+If you create your branch using capitalized letters, they might get internally converted to lower caps.
+If you try to 'push' your changes using original branch name (with capitalized letters), you might get an error.
 
