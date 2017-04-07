@@ -42,3 +42,8 @@ git checkout -b feature/123456-my_awesome_feature
 5. Hack away! Commit work often as you make progress. Push to the remote branch as often as you feel comfortable.
 6. When finished with the work, `git push` and create a [Merge Request](https://gitlab.tableausoftware.com/cloud-connect/cloudfile-ui/merge_requests/new) back to `dev` using the gitlab UI.
 7. When feedback is addressed and approval is granted from a reviewer, accept the merge request  back to `dev`.
+
+Note: Try to use lower caps in the branch name while creating it.
+If you create your branch using capitalized letters, sometimes 'git' internally converts some letters to lower caps.
+If you try to 'push' your changes using original branch name (with capitalized letters), git might throw an error.
+
