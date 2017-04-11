@@ -19,7 +19,8 @@ const cellStyle: CSSProperties = {
   display: 'table-cell',
   paddingBottom: 0,
   paddingLeft: Spacing && Spacing.DefaultSpace,
-  paddingRight: Spacing && Spacing.DefaultSpace
+  paddingRight: Spacing && Spacing.DefaultSpace,
+  opacity: 0.8
 };
 
 const rowStyle: CSSProperties = {
