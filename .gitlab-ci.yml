@@ -57,6 +57,8 @@ beta_deploy_job:
     url: https://beta-connectors.tableau.com/cloudfile-ui/1/index.html
   only:
     - beta
+  when: manual
+  allow_failure: false
 
 prod_deploy_job:
   stage: deploy
@@ -71,6 +73,8 @@ prod_deploy_job:
     url: https://connectors.tableau.com/cloudfile-ui/1/index.html
   only:
     - /^prod-v[1-9]$/
+  when: manual
+  allow_failure: false
 
 variables:
   HIPCHAT_ROOM_ID: "3417533"
