@@ -23,8 +23,8 @@ $ git checkout dev; git pull
 $ git checkout -b feature/123456-my_awesome_feature
 ```
 
-5. Hack away! Commit work often as you make progress and push as often as you want it backed up or able for teammates to review.
-6. It's recommended that your work be condensed into a single commit before submitting a merge request. If you're the only one working on this branch, this is mostly straightforward. We do this through `git rebase`:
+5. Hack away! Commit work often as you make progress but avoid pushing until commits are locally squashed.
+6. It's recommended that your work be condensed into a single commit before submitting a merge request. If you're the only one working on this branch, this is straightforward. We do this through `git rebase`:
 ```
 # Show the most recent commits in chronological order - count the number since you started the branch:
 $ git log
@@ -33,7 +33,7 @@ $ git rebase -i HEAD~4
 # Within this rebase session, change all lines except the first from 'pick' to 's'. Once saved, a second dialog will follow allowing you to alter commit messages. Keep the first message and alter its contents to reflect the overall change.
 ```
 
-7. Once all feature work has been pushed, create a [Merge Request](https://gitlab.tableausoftware.com/cloud-connect/cloudfile-ui/merge_requests/new) back to `dev` using the gitlab UI.
+7. Once the feature branch has been pushed, create a [Merge Request](https://gitlab.tableausoftware.com/cloud-connect/cloudfile-ui/merge_requests/new) back to `dev` using the gitlab UI.
 8. When feedback is addressed and approval is granted from a reviewer, accept the merge request  back to `dev`.
 9. When the team wants to release, `dev` should be merged to `beta`, and `beta` to `prod-vn`. This can all be driven from the gitlab UI.
 
