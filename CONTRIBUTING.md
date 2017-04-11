@@ -12,14 +12,17 @@ $ git config --global core.autocrlf false; git config --global core.eol lf
 ```
 $ git clone https://gitlab.tableausoftware.com/cloud-connect/cloudfile-ui
 ```
+
 2. Checkout the `dev` branch and pull the latest changes:
 ```
 $ git checkout dev; git pull
 ```
+
 3. Create a feature branch for your work as formatted `feature/<TFS_ID>-<feature_name>` like so:
 ```
 $ git checkout -b feature/123456-my_awesome_feature
 ```
+
 5. Hack away! Commit work often as you make progress. Push to the remote branch as often as you feel comfortable.
 6. It's recommended that your work be condensed into a single commit before submitting a merge request. If you're the only one working on this branch, this is mostly straightforward. We do this through `git rebase`:
 ```
@@ -31,6 +34,7 @@ $ git rebase -i HEAD~4
 
 # Within this rebase session, change all lines except the first from 'pick' to 's'. Once saved, a second dialog will follow allowing you to alter commit messages. Keep the first message and alter its contents to reflect the overall change.
 ```
+
 7. Once all feature work has been pushed, create a [Merge Request](https://gitlab.tableausoftware.com/cloud-connect/cloudfile-ui/merge_requests/new) back to `dev` using the gitlab UI.
 8. When feedback is addressed and approval is granted from a reviewer, accept the merge request  back to `dev`.
 9. When the team wants to release, `dev` should be merged to `beta`, and `beta` to `prod-vn`. This can all be driven from the gitlab UI.
