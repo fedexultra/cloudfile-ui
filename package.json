@@ -23,7 +23,7 @@
     "url-search-params-polyfill": "1.1.0"
   },
   "devDependencies": {
-    "@tableau/localize": "localize-v2.0.3-c882918c27a969aec9380a4eef4955e3cf650e80.tar",
+    "@tableau/localize": "2.0.3",
     "@types/enzyme": "2.4.35",
     "@types/jasmine": "2.5.47",
     "@types/lodash": "4.14.62",
