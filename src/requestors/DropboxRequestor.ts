@@ -179,15 +179,15 @@ class DropboxRequestor extends Requestor {
     // POST https://api.dropboxapi.com/2/files/list_folder
     // body: {path: <cloud_item_path>}
     const urlRequest = this.baseUrl + 'files/list_folder';
-    return this.getSinglePageOfDropboxItems(urlRequest, { path: folderPath }).then((response) => {
-      let items: CloudItem[] = response.entries.map((entry: DropboxItem) => {
-        return this.constructCloudItem(entry);
+      return this.getSinglePageOfDropboxItems(urlRequest, { path: folderPath }).then((response) => {
+        let items: CloudItem[] = response.entries.map((entry: DropboxItem) => {
+          return this.constructCloudItem(entry);
+        });
+        if (response.has_more) {
+          return this.getAllDropboxItems(items, response);
+        }
+        return items;
       });
-      if (response.has_more) {
-        return this.getAllDropboxItems(items, response);
-      }
-      return items;
-    });
   }
 
   public getDownloadUrl(): string {

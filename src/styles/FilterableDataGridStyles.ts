@@ -13,8 +13,21 @@ import { CSSProperties } from 'react';
 import { TabStyles } from 'shared-widgets';
 
 const FilterableDataGridStyle: CSSProperties = {
+  height: '100%',
   padding: TabStyles && TabStyles.Spacing && TabStyles.Spacing.LargeSpace,
   position: 'relative',
+  boxSizing: 'border-box',
+  display: '-webkit-flex',
+  flexFlow: 'column',
+  WebkitFlexFlow: 'column'
 };
 
-export { FilterableDataGridStyle };
+const WrapperStyle: CSSProperties = {
+  flex: '1 1 auto',
+  WebkitFlex: '1 1 auto',
+  display: '-webkit-flex',
+  flexFlow: 'column',
+  WebkitFlexFlow: 'column'
+};
+
+export { FilterableDataGridStyle, WrapperStyle };

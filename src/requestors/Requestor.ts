@@ -9,7 +9,7 @@
 //
 // -----------------------------------------------------------------------------
 
-import { AuthInfo } from '../types/ShimTypes';
+import { AuthInfo, CloudFileError } from '../types/ShimTypes';
 import { CloudItem } from '../types/CloudItemTypes';
 import { log } from '../utils/Logger';
 import { ProviderInfo } from '../providers/ProviderInfo';
@@ -26,6 +26,10 @@ abstract class Requestor {
   public constructor(auth: AuthInfo, providerInfo: ProviderInfo) {
     this.auth = auth;
     this.providerInfo = providerInfo;
+
+    this.enumerateItems = this.enumerateItems.bind(this);
+    this.getDownloadUrl = this.getDownloadUrl.bind(this);
+    this.search = this.search.bind(this);
   }
 
   private sendRequest(url: string, httpRequest: Object): Promise<Response> {
@@ -42,9 +46,17 @@ abstract class Requestor {
     })
     .then((response) => {
       if (!response || response.status === 401) {
+        /*if (!!response && response.status == 401) {
+          shim.reportError({message: 'Goood', code: 500, abort: true});
+          return response;
+        }*/
         // If a new access token cannot be retrieved, the shim does not return
         this.auth.accessToken = shim.refreshAuth();
         return this.sendRequest(url, httpRequest);
+      } else if (!response.ok) {
+        const error: CloudFileError = {message: response.statusText, code: response.status, abort: false};
+        shim.reportError(error);
+        return Promise.reject(response.statusText);
       } else {
         return response;
       }

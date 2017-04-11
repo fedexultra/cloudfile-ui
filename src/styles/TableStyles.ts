@@ -50,7 +50,8 @@ const headerRowStyle: CSSProperties = assign({}, rowStyle, {
   borderTopColor: Colors && Colors.L2,
   fontSize: Typography && Typography.Sizing && Typography.Sizing.Default,
   fontWeight: 'normal',
-  textAlign: 'left'
+  textAlign: 'left',
+  WebkitFlex: '0 0 auto',
 });
 
 const stripedRowStyle: CSSProperties = assign({}, rowStyle, {
@@ -65,9 +66,10 @@ const tableStyle: CSSProperties = {
   border: `${Sizing && Sizing.BorderWidth}px solid`,
   borderColor: Colors && Colors.L2,
   borderCollapse: 'collapse',
-  height: `${TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 71}px`,
   overflowY: 'auto',
-  width: '100%'
+  width: '100%',
+  flex: '1 1 auto',
+  WebkitFlex: '1 1 auto',
 };
 
 export { cellStyle, rowStyle, headerRowStyle, stripedRowStyle, tableStyle, rowHighlightStyle, rowUnsupportedFileTypeStyle };

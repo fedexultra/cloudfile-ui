@@ -61,4 +61,6 @@ formattersScript.onload = () => {
     <Container providerInfo={providerInfo} requestor={requestor} supportedFileTypes={supportedFileTypes} />,
     document.getElementById('root')
   );
+
+  // shim.reportError({message: "poop", code: 400, abort: true});
 };
