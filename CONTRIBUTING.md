@@ -28,10 +28,8 @@ $ git checkout -b feature/123456-my_awesome_feature
 ```
 # Show the most recent commits in chronological order - count the number since you started the branch:
 $ git log
-
 # The following opens an interactive rebase session for the 4 topmost commits listed in the git log.
 $ git rebase -i HEAD~4
-
 # Within this rebase session, change all lines except the first from 'pick' to 's'. Once saved, a second dialog will follow allowing you to alter commit messages. Keep the first message and alter its contents to reflect the overall change.
 ```
 
