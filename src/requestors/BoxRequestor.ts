@@ -17,7 +17,7 @@ import { createCloudItem, determineExtension } from '../utils/CloudItemUtilities
 import { CloudItemNotFoundError } from '../utils/Errors';
 import { log } from '../utils/Logger';
 import { ProviderInfo } from '../providers/ProviderInfo';
-import { Requestor } from './Requestor';
+import { Requestor, SearchType } from './Requestor';
 
 // This interface is a filtered set of key names that Box returns
 // as its basic representation of a file in a path_collection.
@@ -169,7 +169,8 @@ class BoxRequestor extends Requestor {
   }
 
   public search(query: string): Promise<CloudItem[]> {
-      if (BoxRequestor.searchUrlRegex.test(query)) {
+    const typeOfSearch: SearchType = this.getSearchType(query);
+    if (typeOfSearch === SearchType.URL) {
         return this.getItemFromUrl(query)
         .then(item => { return [ item ]; } )
         .catch((error: Error) => {

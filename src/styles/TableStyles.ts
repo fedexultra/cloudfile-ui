@@ -19,7 +19,8 @@ const cellStyle: CSSProperties = {
   display: 'table-cell',
   paddingBottom: 0,
   paddingLeft: Spacing && Spacing.DefaultSpace,
-  paddingRight: Spacing && Spacing.DefaultSpace
+  paddingRight: Spacing && Spacing.DefaultSpace,
+  opacity: 0.8
 };
 
 const rowStyle: CSSProperties = {
@@ -66,7 +67,7 @@ const tableStyle: CSSProperties = {
   borderColor: Colors && Colors.L2,
   borderCollapse: 'collapse',
   height: `${TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 71}px`,
-  overflowY: 'overlay',
+  overflowY: 'auto',
   width: '100%'
 };
 

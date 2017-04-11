@@ -9,15 +9,14 @@
 //
 // -----------------------------------------------------------------------------
 
+import 'url-search-params-polyfill';
 import 'isomorphic-fetch';
 
 import { AuthInfo } from '../types/ShimTypes';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../types/CloudItemTypes';
 import { createCloudItem, determineExtension } from '../utils/CloudItemUtilities';
 import { ProviderInfo } from '../providers/ProviderInfo';
-import { Requestor } from './Requestor';
-
-enum SearchType { URL, Text };
+import { Requestor, SearchType } from './Requestor';
 
 interface OneDrivePath {
   path: string;
@@ -129,25 +128,23 @@ class OneDriveRequestor extends Requestor {
     return this.baseUrl + fileID + ':/content';
   }
 
+  private getFileIdFromSearchUrl(searchUrl: string): string {
+    let fileId = new URLSearchParams(searchUrl).get('resid');
+    if (fileId === null) {
+      return '';
+    }
+    return fileId;
+  }
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
 
     if (typeOfSearch === SearchType.URL) {
-      /* fileId can return a null, which will, in turn, return an invalid response
+      /* getFileIdFromSearchUrl can return an empty string, which will return an invalid response
        * that eventually gets handled as an incorrect url error
       */
-      const fileId = new URLSearchParams(new URL(searchText).search).get('resid');
-      return this.baseUrl + '/drive/items/' + fileId;
+      return this.baseUrl + '/drive/items/' + this.getFileIdFromSearchUrl(searchText);
     }
     return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
-  }
-
-  private getSearchType(searchText: string): SearchType {
-    if (Requestor.searchUrlRegex.test(searchText)) {
-      return SearchType.URL;
-    } else {
-      return SearchType.Text;
-    }
   }
 
   private constructCloudItem(oneDriveItem: OneDriveItem): CloudItem {

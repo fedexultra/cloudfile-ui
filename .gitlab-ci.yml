@@ -7,6 +7,8 @@ before_script:
   - 'rm -rf gitlab-ci; git clone git@gitlab.tableausoftware.com:cloud-connect/gitlab-ci.git'
   - 'cd gitlab-ci; echo "Using gitlab-ci branch ${CI_REPO_BRANCH}"; git checkout ${CI_REPO_BRANCH}; cd ..'
   - 'export PATH=${PATH}:${PWD}/gitlab-ci/deploy_scripts'
+  # default to a failed build status in case the EXIT_CODE doesn't populate
+  - 'echo 1 >> ~/${CI_PROJECT_ID}_build_status'
   - 'before_script.sh'
   - 'nvm use 4.4.7'
 
@@ -56,6 +58,8 @@ beta_deploy_job:
     url: https://beta-connectors.tableau.com/cloudfile-ui/1/index.html
   only:
     - beta
+  when: manual
+  allow_failure: false
 
 prod_deploy_job:
   stage: deploy
@@ -70,6 +74,8 @@ prod_deploy_job:
     url: https://connectors.tableau.com/cloudfile-ui/1/index.html
   only:
     - /^prod-v[1-9]$/
+  when: manual
+  allow_failure: false
 
 variables:
   HIPCHAT_ROOM_ID: "3417533"

@@ -32,7 +32,7 @@ export function getCloudFileColumns(): Column[] {
     {
       id: 1,
       title: Messages.kind(),
-      width: `${TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 36}px`,
+      width: `${TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 15}px`,
       hasBorder: true,
       getIconFromRow: (row) => EmptyIcon,
       getCellFromRow: (row) => row.cloudItem.displayKind
@@ -40,7 +40,7 @@ export function getCloudFileColumns(): Column[] {
     {
       id: 2,
       title: Messages.lastModifiedOn(),
-      width: `${TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 31}px`,
+      width: `${TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 30}px`,
       hasBorder: false,
       getIconFromRow: (row) => EmptyIcon,
       getCellFromRow: (row) => Formatters.formatMediumDate(row.cloudItem.modifiedAt)
