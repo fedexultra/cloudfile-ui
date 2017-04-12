@@ -60,7 +60,7 @@ class Body extends React.Component<BodyProps, BodyState> {
         rowId={i}
         currentHighlightedRow={this.state.highlightRow}/>;
     });
-    return <div>{ bodyRows }</div>;
+    return <div tabIndex={0}>{ bodyRows }</div>;
   }
 
 }
