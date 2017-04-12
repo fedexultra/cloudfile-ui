@@ -82,6 +82,30 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
     this.doRequest(this.props.requestor.enumerateItems, this.state.folderId, this.state);
   }
 
+  private doRequest(requestorFunc: (param: string) => Promise<CloudItem[]>, param: string, nextState: FilterableDataGridState): void {
+    this.setDisplaySpinnerState();
+    requestorFunc(param)
+    .catch(() => {
+      // If the request failed, display an empty grid
+      return [];
+    })
+    .then((items) => {
+      let rows: Row[] = items.map(item => ({cloudItem: item}));
+      rows = ColumnUtilities.sortColumn(rows, nextState.sortableColumnId, nextState.sortOrder);
+      this.setState({
+        query: nextState.query,
+        resetQuery: nextState.resetQuery,
+        folderId: nextState.folderId,
+        displayBreadcrumb: nextState.displayBreadcrumb,
+        breadcrumb: nextState.breadcrumb,
+        sortableColumnId: nextState.sortableColumnId,
+        sortOrder: nextState.sortOrder,
+        displaySpinner: false,
+        rows: rows
+      });
+    });
+  }
+
   private getBreadCrumb(): JSX.Element {
     if (this.state.displayBreadcrumb) {
       return <Breadcrumb trail={this.state.breadcrumb} onItemSelected={this.onBreadcrumbSelected} />;
@@ -244,29 +268,6 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
       sortOrder: this.state.sortOrder,
       displaySpinner: true,
       rows: this.state.rows
-    });
-  }
-
-  private doRequest(requestorFunc: (param: string) => Promise<CloudItem[]>, param: string, nextState: FilterableDataGridState): void {
-    this.setDisplaySpinnerState();
-    requestorFunc(param)
-    .catch(() => {
-      return [];
-    })
-    .then((items) => {
-      let rows: Row[] = items.map(item => ({cloudItem: item}));
-      rows = ColumnUtilities.sortColumn(rows, nextState.sortableColumnId, nextState.sortOrder);
-      this.setState({
-        query: nextState.query,
-        resetQuery: nextState.resetQuery,
-        folderId: nextState.folderId,
-        displayBreadcrumb: nextState.displayBreadcrumb,
-        breadcrumb: nextState.breadcrumb,
-        sortableColumnId: nextState.sortableColumnId,
-        sortOrder: nextState.sortOrder,
-        displaySpinner: false,
-        rows: rows
-      });
     });
   }
 

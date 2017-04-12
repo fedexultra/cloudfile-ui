@@ -58,7 +58,7 @@ class BoxRequestor extends Requestor {
   }
 
   private sendBoxRequest(url: string): Promise<Response> {
-    return this.sendRequestWithRetry(url, {
+    return this.sendRequest(url, {
       method: 'GET',
       headers: {
         'Authorization': 'Bearer ' + this.auth.accessToken
