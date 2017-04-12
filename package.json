@@ -3,6 +3,7 @@
   "description": "Tableau Native Cloud File Connector",
   "main": "./lib/CloudFileConnector.js",
   "typings": "./lib/CloudFileConnector.d.ts",
+  "version": "0.1.0",
   "scripts": {
     "all": "npm run clean && npm run localize-codegen  && npm run localize-compile && npm run ts && npm run bundle && npm run bundle-min && npm run lint && npm run test",
     "clean": "./node_modules/.bin/rimraf dist lib src/codegen",
