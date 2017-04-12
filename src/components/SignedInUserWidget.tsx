@@ -23,7 +23,7 @@ interface SignedInUserWidgetProps extends React.Props<void> {
 
 class SignedInUserWidget extends React.Component<SignedInUserWidgetProps, void> {
 
-  constructor(props: SignedInUserWidgetProps) {
+  public constructor(props: SignedInUserWidgetProps) {
     super(props);
     this.handleKeyDown = this.handleKeyDown.bind(this);
   }
