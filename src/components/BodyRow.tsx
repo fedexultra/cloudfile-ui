@@ -89,7 +89,7 @@ class BodyRow extends React.Component<BodyRowProps, void> {
     let renderedStyle: React.CSSProperties = this.getRenderedStyle();
     return (
       <PointerEventWrapper { ...pointerEventProps }>
-        <div onKeyDown={ this.handleKeyDown } style={ renderedStyle } tabIndex={0}>{ cells }</div>
+        <div onKeyDown={ this.handleKeyDown } style={ renderedStyle }>{ cells }</div>
       </PointerEventWrapper>
     );
   }
