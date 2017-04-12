@@ -10,6 +10,7 @@ before_script:
   # default to a failed build status in case the EXIT_CODE doesn't populate
   - 'echo 1 >> ~/${CI_PROJECT_ID}_build_status'
   - 'before_script.sh'
+  - 'nvm use 4.4.7'
 
 after_script:
   - export PATH=${PATH}:${PWD}/gitlab-ci/deploy_scripts
@@ -23,7 +24,7 @@ stages:
 build_job:
   stage: build
   script:
-    - python build_deployment.py -c -b; EXIT_CODE=$?; echo ${EXIT_CODE} >> ~/${CI_PROJECT_ID}_build_status; exit ${EXIT_CODE}
+    - node --version; python build_deployment.py -c -b; EXIT_CODE=$?; echo ${EXIT_CODE} >> ~/${CI_PROJECT_ID}_build_status; exit ${EXIT_CODE}
 
 test_job:
   stage: test
