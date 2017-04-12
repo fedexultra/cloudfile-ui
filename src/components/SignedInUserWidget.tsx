@@ -23,6 +23,17 @@ interface SignedInUserWidgetProps extends React.Props<void> {
 
 class SignedInUserWidget extends React.Component<SignedInUserWidgetProps, void> {
 
+  constructor(props: SignedInUserWidgetProps) {
+    super(props);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
+  }
+
+  private handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
+    if (event.key === 'Enter') {
+      shim.signOut();
+    }
+  }
+
   public render(): JSX.Element {
     const interactiveDomProps: InteractiveDomProps = {
       interactiveStyles: {
@@ -43,7 +54,7 @@ class SignedInUserWidget extends React.Component<SignedInUserWidgetProps, void> 
       <section style={signedInUserStyle}>
         <InputLabelWidget style={signedInStyle} {...signedInProps}>{ signedInProps.label }</InputLabelWidget>
         <InteractiveDomWrapper { ...interactiveDomProps }>
-          <span style={signOutStyle} data-tb-test-id={signOutId}>{ signOutLabel }</span>
+          <span style={signOutStyle} data-tb-test-id={signOutId} tabIndex={0} onKeyDown={this.handleKeyDown}>{ signOutLabel }</span>
         </InteractiveDomWrapper>
       </section>
     );
