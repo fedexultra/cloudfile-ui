@@ -43,7 +43,12 @@ export function getCloudFileColumns(): Column[] {
       width: `${TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 30}px`,
       hasBorder: false,
       getIconFromRow: (row) => EmptyIcon,
-      getCellFromRow: (row) => Formatters.formatMediumDate(row.cloudItem.modifiedAt)
+      getCellFromRow: (row) => {
+        if ((row.cloudItem.modifiedAt.getDate() === new Date(0).getDate())) {
+          return '--';
+        }
+        return Formatters.formatMediumDate(row.cloudItem.modifiedAt);
+      }
     }
   ];
 }
