@@ -11,7 +11,6 @@
 
 import 'isomorphic-fetch';
 import 'url-polyfill';
-import 'url-search-params-polyfill';
 
 import { AuthInfo } from '../types/ShimTypes';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../types/CloudItemTypes';
