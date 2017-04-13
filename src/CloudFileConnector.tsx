@@ -41,7 +41,6 @@ if (localeRegEx.test(environment.locale)) {
 
 // Load the files required for localization.
 messagesScript.src = localeMessagesFile;
-formattersScript.src = localeFormattersFile;
 
 // Initialize Container's props based on shim-provided environment info
 const provider: Provider = shim.getCloudProvider();
@@ -52,6 +51,12 @@ const supportedFileTypes = environment.supportedFileTypes;
 // configuration globals to tell whether we are in release or debug
 const providerInfo: ProviderInfo = ProviderInfoFactory.getProviderInfo(provider);
 const requestor: Requestor = RequestorFactory.getRequestor(provider, providerInfo);
+
+// Due to how the localize library is set up, we need to load the messages script before
+// loading the formatters script.
+messagesScript.onload = () => {
+  formattersScript.src = localeFormattersFile;
+};
 
 formattersScript.onload = () => {
   ReactDOM.render(
