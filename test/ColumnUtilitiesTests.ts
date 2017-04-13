@@ -37,6 +37,23 @@ describe('ColumnUtilities', () => {
       expect(ColumnUtilities.getColumn(2).title).toBe(getCloudFileColumns()[2].title);
     });
 
+    it('should return "--" when modifiedAt is Date(0)', () => {
+      const row: Row = {
+        cloudItem: {
+          id: '1',
+          name: 'Banana',
+          type: CloudItemType.File,
+          modifiedAt: new Date(0),
+          canBeSelected: true,
+          displayAsEnabled: true,
+          displayKind: '.xls',
+          extension: 'xls',
+          icon: EnabledFileIcon,
+          path: []
+        }
+      };
+      expect(ColumnUtilities.getColumn(2).getCellFromRow(row)).toBe('--');
+    });
   });
 
   describe('sortColumn', () => {
