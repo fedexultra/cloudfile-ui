@@ -52,8 +52,8 @@ const supportedFileTypes = environment.supportedFileTypes;
 const providerInfo: ProviderInfo = ProviderInfoFactory.getProviderInfo(provider);
 const requestor: Requestor = RequestorFactory.getRequestor(provider, providerInfo);
 
-// Due to how the localize library is set up, we need to load the messages script before
-// loading the formatters script.
+// Occasionally, the formatterScript won't load properly causing the ui to become blank.
+// We want to make the load synchronous to prevent that from happening.
 messagesScript.onload = () => {
   formattersScript.src = localeFormattersFile;
 };
