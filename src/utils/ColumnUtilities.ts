@@ -10,6 +10,7 @@
 // -----------------------------------------------------------------------------
 
 import { CloudItem, CloudItemType } from '../types/CloudItemTypes';
+import { Formatters } from '../codegen/Localize';
 import { getCloudFileColumns } from '../constants/CloudFileColumns';
 import { Column, Row } from '../types/DataGridTypes';
 import { SortOrder } from '../types/SortOrderTypes';
@@ -41,6 +42,10 @@ export function getColumn(columnId: number): Column {
 
 function isFolder(item: CloudItem): number {
   return (item.type === CloudItemType.Folder ? 1 : 0);
+}
+
+export function getFormattedDateString(row: Row): string {
+  return (row.cloudItem.modifiedAt.getDate() === new Date(0).getDate()) ? '--' : Formatters.formatMediumDate(row.cloudItem.modifiedAt);
 }
 
 export function sortColumn(rows: Row[], columnId: number, sortOrder: SortOrder): Row[] {
