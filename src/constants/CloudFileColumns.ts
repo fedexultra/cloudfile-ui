@@ -20,6 +20,7 @@ import { getFormattedDateString } from '../utils/ColumnUtilities';
 // We export a function that returns a column array instead of exporting a static constant.
 // The reason is because the array makes references to the localization library, which is
 // loaded at run-time.
+// DON'T USE THIS FUNCTION FOR SORTING UNLESS YOU CHANGE HOW WE GET THE FORMATTED DATE STRING
 export function getCloudFileColumns(): Column[] {
   return [
     {
