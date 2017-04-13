@@ -36,23 +36,23 @@ describe('ColumnUtilities', () => {
       expect(ColumnUtilities.getColumn(2).id).toBe(getCloudFileColumns()[2].id);
       expect(ColumnUtilities.getColumn(2).title).toBe(getCloudFileColumns()[2].title);
     });
+  });
 
+  describe('getFormattedDateString', () => {
     it('should return "--" when modifiedAt is Date(0)', () => {
       const row: Row = {
-        cloudItem: {
-          id: '1',
-          name: 'Banana',
-          type: CloudItemType.File,
-          modifiedAt: new Date(0),
-          canBeSelected: true,
-          displayAsEnabled: true,
-          displayKind: '.xls',
-          extension: 'xls',
-          icon: EnabledFileIcon,
-          path: []
-        }
+        cloudItem: { id: '1', name: 'Banana', type: CloudItemType.File, modifiedAt: new Date(0),
+        canBeSelected: true, displayAsEnabled: true, displayKind: '.xls', extension: 'xls', icon: EnabledFileIcon, path: [] }
       };
       expect(ColumnUtilities.getColumn(2).getCellFromRow(row)).toBe('--');
+    });
+
+    it('should return the formatted date when modifiedAt is not Date(0)', () => {
+      const row: Row = {
+        cloudItem: { id: '1', name: 'Banana', type: CloudItemType.File, modifiedAt: new Date(2013, 11, 8),
+        canBeSelected: true, displayAsEnabled: true, displayKind: '.xls', extension: 'xls', icon: EnabledFileIcon, path: [] }
+      };
+      expect(ColumnUtilities.getColumn(2).getCellFromRow(row)).toBe('Dec 8, 2013');
     });
   });
 
@@ -61,15 +61,15 @@ describe('ColumnUtilities', () => {
     const rows: Row[] = [
       { cloudItem: { id: '1', name: 'Banana', type: CloudItemType.File, modifiedAt: new Date(2014, 12, 12),
         canBeSelected: true, displayAsEnabled: true, displayKind: '.xls', extension: 'xls', icon: EnabledFileIcon, path: [] } },
-      { cloudItem: { id: '2', name: 'apple', type: CloudItemType.File, modifiedAt: new Date(2015, 2, 4),
+      { cloudItem: { id: '2', name: 'Apple', type: CloudItemType.File, modifiedAt: new Date(2015, 2, 4),
         canBeSelected: true, displayAsEnabled: true, displayKind: 'file', extension: '', icon: EnabledFileIcon, path: [] } },
-      { cloudItem: { id: '3', name: 'orange', type: CloudItemType.Folder, modifiedAt: new Date(2010, 4, 6),
+      { cloudItem: { id: '3', name: 'Orange', type: CloudItemType.Folder, modifiedAt: new Date(2010, 4, 6),
         canBeSelected: true, displayAsEnabled: true, displayKind: 'folder', extension: '', icon: FolderIcon, path: [] } },
       { cloudItem: { id: '4', name: 'Cherry', type: CloudItemType.File, modifiedAt: new Date(2014, 12, 12),
         canBeSelected: true, displayAsEnabled: true, displayKind: '.txt', extension: 'txt', icon: EnabledFileIcon, path: [] } },
       { cloudItem: { id: '5', name: 'Cherry', type: CloudItemType.File, modifiedAt: new Date(2014, 8, 15),
         canBeSelected: true, displayAsEnabled: true, displayKind: '.xls', extension: 'xls', icon: EnabledFileIcon, path: [] } },
-      { cloudItem: { id: '6', name: 'lime', type: CloudItemType.File, modifiedAt: new Date(2013, 11, 8),
+      { cloudItem: { id: '6', name: 'Lime', type: CloudItemType.File, modifiedAt: new Date(2013, 11, 8),
         canBeSelected: true, displayAsEnabled: true, displayKind: 'file', extension: '', icon: EnabledFileIcon, path: [] } },
       { cloudItem: { id: '7', name: 'Grape', type: CloudItemType.Folder, modifiedAt: new Date(2009, 10, 1),
         canBeSelected: true, displayAsEnabled: true, displayKind: 'folder', extension: '', icon: FolderIcon, path: [] } },

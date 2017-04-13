@@ -11,8 +11,9 @@
 
 import { Column } from '../types/DataGridTypes';
 import { EmptyIcon} from '../icons/Icons';
-import { Formatters, Messages } from '../codegen/Localize';
+import { Messages } from '../codegen/Localize';
 import { TabStyles } from 'shared-widgets';
+import { getFormattedDateString } from '../utils/ColumnUtilities';
 
 // Columns for all cloud providers
 // Note: id = array index
@@ -43,12 +44,7 @@ export function getCloudFileColumns(): Column[] {
       width: `${TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 30}px`,
       hasBorder: false,
       getIconFromRow: (row) => EmptyIcon,
-      getCellFromRow: (row) => {
-        if ((row.cloudItem.modifiedAt.getDate() === new Date(0).getDate())) {
-          return '--';
-        }
-        return Formatters.formatMediumDate(row.cloudItem.modifiedAt);
-      }
+      getCellFromRow: (row) => getFormattedDateString(row),
     }
   ];
 }
