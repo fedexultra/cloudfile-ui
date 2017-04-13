@@ -20,8 +20,7 @@
   "dependencies": {
     "es6-promise": "4.1.0",
     "isomorphic-fetch": "2.2.1",
-    "url-polyfill": "1.0.3",
-    "url-search-params-polyfill": "1.1.0"
+    "url-polyfill": "1.0.3"
   },
   "devDependencies": {
     "@tableau/localize": "http://artifactory/artifactory/api/npm/tab-npm-local/@tableau/localize/-/@tableau/localize-2.0.3.tgz",
