@@ -11,14 +11,16 @@
 
 import { Column } from '../types/DataGridTypes';
 import { EmptyIcon} from '../icons/Icons';
-import { Formatters, Messages } from '../codegen/Localize';
+import { Messages } from '../codegen/Localize';
 import { TabStyles } from 'shared-widgets';
+import { getFormattedDateString } from '../utils/ColumnUtilities';
 
 // Columns for all cloud providers
 // Note: id = array index
 // We export a function that returns a column array instead of exporting a static constant.
 // The reason is because the array makes references to the localization library, which is
 // loaded at run-time.
+// DON'T USE THIS FUNCTION FOR SORTING UNLESS YOU CHANGE HOW WE GET THE FORMATTED DATE STRING
 export function getCloudFileColumns(): Column[] {
   return [
     {
@@ -43,7 +45,7 @@ export function getCloudFileColumns(): Column[] {
       width: `${TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 30}px`,
       hasBorder: false,
       getIconFromRow: (row) => EmptyIcon,
-      getCellFromRow: (row) => Formatters.formatMediumDate(row.cloudItem.modifiedAt)
+      getCellFromRow: (row) => getFormattedDateString(row),
     }
   ];
 }
