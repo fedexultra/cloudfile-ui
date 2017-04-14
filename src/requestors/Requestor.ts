@@ -38,7 +38,7 @@ abstract class Requestor {
     return (Math.floor(statusCode / 100) === 5) || (statusCode === 401);
   }
 
-  protected sendRequest(url: string, httpRequest: Object, retryLeft = maxRetry): Promise<Response> {
+  protected sendRequest(url: string, httpRequest: Object, retryLeft: number = maxRetry): Promise<Response> {
     return fetch(url, httpRequest)
     .then((response) => {
       if (response.ok) {
@@ -53,7 +53,7 @@ abstract class Requestor {
           return new Promise((resolve, reject) => {
             setTimeout(() => {
               resolve(this.sendRequest(url, httpRequest, --retryLeft));
-            }, Math.pow(2, maxRetry - retryLeft) * 1000);
+            },         Math.pow(2, maxRetry - retryLeft) * 1000);
           });
         }
       } else {

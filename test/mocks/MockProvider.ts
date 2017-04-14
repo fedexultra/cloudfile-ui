@@ -17,17 +17,19 @@ import { Requestor } from '../../src/requestors/Requestor';
 export class MockProvider extends ProviderInfo {
 
   public constructDownloadRequest(item: CloudItem, requestor: Requestor): Request {
-    const request: Request = {'downloadURL': requestor.getDownloadUrl(),
-                              'downloadHeaders': {'MockHeader1': 'A', 'MockHeader2': 'B'}};
+    const request: Request = {
+      'downloadURL': requestor.getDownloadUrl(),
+      'downloadHeaders': { 'MockHeader1': 'A', 'MockHeader2': 'B' }
+    };
     return request;
   }
 
   public getDefaultFolder(): string {
-      return 'MockDefaultFolder';
+    return 'MockDefaultFolder';
   }
 
   public getProviderName(): string {
-      return 'MockProvider';
+    return 'MockProvider';
   }
-  
+
 }
