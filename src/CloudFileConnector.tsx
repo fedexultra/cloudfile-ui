@@ -38,6 +38,8 @@ if (localeRegEx.test(environment.locale)) {
   localeMessagesFile = 'dist/compiled-locales/messages.' + environment.locale + '.js';
   localeFormattersFile = 'dist/compiled-locales/formatters-and-parsers.' + environment.locale + '.js';
 }
+
+// Load the files required for localization.
 messagesScript.src = localeMessagesFile;
 
 // Initialize Container's props based on shim-provided environment info
@@ -50,8 +52,8 @@ const supportedFileTypes = environment.supportedFileTypes;
 const providerInfo: ProviderInfo = ProviderInfoFactory.getProviderInfo(provider);
 const requestor: Requestor = RequestorFactory.getRequestor(provider, providerInfo);
 
-// Due to how the localize library is set up, we need to load the messages script before
-// loading the formatters script.
+// Occasionally, the formatterScript won't load properly causing the ui to become blank.
+// We want to make the load synchronous to prevent that from happening.
 messagesScript.onload = () => {
   formattersScript.src = localeFormattersFile;
 };
