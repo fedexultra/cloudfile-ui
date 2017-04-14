@@ -97,13 +97,6 @@ class OneDriveRequestor extends Requestor {
     // pathReference.path is returned as /drive/root:/<cloud_item_path>/<cloud_item>
     // pathArray is created as ["", "drive", "root:", <names_of_the_rest>]
 
-    // For OneDrive business accounts, the search request doesn't return pathReference.path
-    // Futhermore, since we don't care about paths for search, this is only used for bread crumbs,
-    // we can just return an empty array.
-    if (typeof pathReference.path === 'undefined') {
-      return [];
-    }
-
     const pathArray: string[] = pathReference.path.split('/');
     let path: BasicCloudItem[] = [];
     for (let i = 0; i < pathArray.length; i++) {
@@ -161,7 +154,7 @@ class OneDriveRequestor extends Requestor {
       */
       return this.baseUrl + '/drive/items/' + this.getFileIdFromSearchUrl(searchText);
     }
-    return this.baseUrl + '/drive/root/search(q=\'' + searchText + '\')';
+    return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
   }
 
   private constructCloudItem(oneDriveItem: OneDriveItem): CloudItem {
