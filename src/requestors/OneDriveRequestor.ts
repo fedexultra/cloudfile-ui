@@ -44,6 +44,8 @@ class OneDriveRequestor extends Requestor {
   public constructor(auth: AuthInfo, providerInfo: ProviderInfo) {
     super(auth, providerInfo);
     this.baseUrl = 'https://graph.microsoft.com/v1.0/me';
+    this.getOneDriveDefaultDrive = this.getOneDriveDefaultDrive.bind(this);
+    this.isSearchDisabled = this.isSearchDisabled.bind(this);
   }
 
   private sendOneDriveRequest(url: string): Promise<Response> {
