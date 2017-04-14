@@ -37,9 +37,9 @@ class Body extends React.Component<BodyProps, BodyState> {
     this.state = {highlightRow: -1};
   }
 
-  public componentWillReceiveProps(nextProps: BodyProps) {
+  public componentWillReceiveProps(nextProps: BodyProps): void {
     // If the parent triggers a re-render (e.g. when clicking a breadcrumb), reset the active row
-    if (nextProps.rows.length != this.props.rows.length) {
+    if (nextProps.rows.length !== this.props.rows.length) {
       // Quick and dirty check if we are receiving new rows. Better to be a little conservative than do an
       // expensive array comparison.
       this.setState({highlightRow: -1});
@@ -50,12 +50,12 @@ class Body extends React.Component<BodyProps, BodyState> {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault(); // Prevent the auto-scroll behavior
       const nextHighlightRow = this.getNextSelectableRow(event.key === 'ArrowDown' ? this.incrementRow : this.decrementRow);
-      if (nextHighlightRow != -1) {
+      if (nextHighlightRow !== -1) {
         // Notify parent that we arrow'ed to a new item
         this.props.onItemSelected(this.props.rows[nextHighlightRow].cloudItem);
       }
       this.setState({highlightRow: nextHighlightRow});
-      
+
       // Scroll to keep the focused grid row in view, if needed
       let row: HTMLElement = document.getElementById('gridRow_' + nextHighlightRow)!;
       row.scrollIntoView(false); // Keep bottom of element aligned with the visible area
@@ -80,7 +80,7 @@ class Body extends React.Component<BodyProps, BodyState> {
   }
 
   private incrementRow(rowId: number): number {
-    if (rowId == this.props.rows.length - 1) {
+    if (rowId === this.props.rows.length - 1) {
       return 0;
     } else {
       return ++rowId;
