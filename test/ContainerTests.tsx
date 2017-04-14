@@ -15,8 +15,6 @@ import * as React from 'react';
 
 import { Body } from '../src/components/Body';
 import { BodyRow } from '../src/components/BodyRow';
-import { Box } from '../src/providers/Box';
-import { BoxRequestor } from '../src/requestors/BoxRequestor';
 import { Breadcrumb } from '../src/components/Breadcrumb';
 import { BreadcrumbItem } from '../src/components/BreadcrumbItem';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../src/types/CloudItemTypes';
@@ -26,8 +24,12 @@ import { DataGrid } from '../src/components/DataGrid';
 import { EnabledFileIcon, FolderIcon } from '../src/icons/Icons';
 import { FileTypeMap } from '../src/types/ShimTypes';
 import { FilterableDataGrid } from '../src/components/FilterableDataGrid';
+import { MockProvider } from './mocks/MockProvider';
+import { MockRequestor } from './mocks/MockRequestor';
 import { mount } from 'enzyme';
+import { ProviderInfo } from '../src/providers/ProviderInfo';
 import { ReactWrapper } from 'enzyme';
+import { Requestor } from '../src/requestors/Requestor';
 import { SearchBar } from '../src/components/SearchBar';
 import { SearchFieldWidget } from 'shared-widgets';
 
@@ -71,8 +73,8 @@ describe('Container', () => {
       path: [pathEntries]
     },
   ];
-  const testProviderInfo: Box = new Box();
-  const testRequestor: BoxRequestor = new BoxRequestor({accessToken: '', userId: ''}, new Box());
+  const testProviderInfo: ProviderInfo = new MockProvider();
+  const testRequestor: Requestor = new MockRequestor({accessToken: '', userId: ''}, testProviderInfo);
   const testSupportedFileTypes: FileTypeMap = {'test': ['xlsx', 'txt'] };
   const mockContainerProps = {
     providerInfo: testProviderInfo,
@@ -87,7 +89,7 @@ describe('Container', () => {
   beforeEach(() => {
     MockPromises.install(Promise);
     requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
-    enumerateItemsSpy = spyOn(BoxRequestor.prototype, 'enumerateItems').and.returnValue(requestorPromise);
+    enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
     connectSpy = spyOn(Container.prototype, 'connect');
   });
 
@@ -151,7 +153,7 @@ describe('Container', () => {
       const wrapper: ReactWrapper<ContainerProps, {}> = mount(<Container { ...mockContainerProps } />);
       const connectButton = wrapper.find(ConnectButton);
       const searchInput = wrapper.find(FilterableDataGrid).find(SearchBar).find(SearchFieldWidget).find('input');
-      spyOn(BoxRequestor.prototype, 'search').and.returnValue(requestorPromise);
+      spyOn(testRequestor, 'search').and.returnValue(requestorPromise);
       MockPromises.executeForPromise(requestorPromise);
 
       // Select a file first to be sure that opening a folder actually disables the connect button
@@ -165,7 +167,7 @@ describe('Container', () => {
       const wrapper: ReactWrapper<ContainerProps, {}> = mount(<Container { ...mockContainerProps } />);
       const connectButton = wrapper.find(ConnectButton);
       const searchInput = wrapper.find(FilterableDataGrid).find(SearchBar).find(SearchFieldWidget).find('input');
-      spyOn(BoxRequestor.prototype, 'search').and.returnValue(requestorPromise);
+      spyOn(testRequestor, 'search').and.returnValue(requestorPromise);
       MockPromises.executeForPromise(requestorPromise);
 
       searchInput.simulate('change', { target: { value: 'test' } });

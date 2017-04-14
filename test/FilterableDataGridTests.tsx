@@ -17,8 +17,6 @@ import { ArrowDownIcon, ArrowUpIcon } from '../src/icons/Icons';
 import { Body } from '../src/components/Body';
 import { BodyCell } from '../src/components/BodyCell';
 import { BodyRow } from '../src/components/BodyRow';
-import { Box } from '../src/providers/Box';
-import { BoxRequestor } from '../src/requestors/BoxRequestor';
 import { Breadcrumb } from '../src/components/Breadcrumb';
 import { BreadcrumbItem } from '../src/components/BreadcrumbItem';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../src/types/CloudItemTypes';
@@ -28,16 +26,20 @@ import { EnabledFileIcon, FolderIcon } from '../src/icons/Icons';
 import { FilterableDataGridProps, FilterableDataGrid } from '../src/components/FilterableDataGrid';
 import { HeaderCell } from '../src/components/HeaderCell';
 import { Messages } from '../src/codegen/Localize';
+import { MockProvider } from './mocks/MockProvider';
+import { MockRequestor } from './mocks/MockRequestor';
 import { mount, shallow } from 'enzyme';
+import { ProviderInfo } from '../src/providers/ProviderInfo';
 import { ReactWrapper, ShallowWrapper } from 'enzyme';
+import { Requestor } from '../src/requestors/Requestor';
 import { SearchBar } from '../src/components/SearchBar';
 import { SearchFieldWidget } from 'shared-widgets';
 import { SortOrder } from '../src/types/SortOrderTypes';
 import { Spinner } from '../src/components/Spinner';
 
 describe('Filterable Data Grid', () => {
-  const testProviderInfo: Box = new Box();
-  const testRequestor: BoxRequestor = new BoxRequestor({accessToken: '', userId: ''}, new Box());
+  const testProviderInfo: ProviderInfo = new MockProvider();
+  const testRequestor: Requestor = new MockRequestor({accessToken: '', userId: ''}, testProviderInfo);
   const pathContent: BasicCloudItem = { id: '4', name: 'D', type: CloudItemType.Folder };
   const testCloudFiles: CloudItem[] = [
     {
@@ -108,7 +110,7 @@ describe('Filterable Data Grid', () => {
     beforeEach(() => {
       MockPromises.install(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
-      enumerateItemsSpy = spyOn(BoxRequestor.prototype, 'enumerateItems').and.returnValue(requestorPromise);
+      enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
     });
 
     afterEach(() => {
@@ -155,8 +157,8 @@ describe('Filterable Data Grid', () => {
     beforeEach(() => {
       MockPromises.install(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
-      enumerateItemsSpy = spyOn(BoxRequestor.prototype, 'enumerateItems').and.returnValue(requestorPromise);
-      searchSpy = spyOn(BoxRequestor.prototype, 'search').and.returnValue(requestorPromise);
+      enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
+      searchSpy = spyOn(testRequestor, 'search').and.returnValue(requestorPromise);
     });
 
     afterEach(() => {
@@ -218,9 +220,9 @@ describe('Filterable Data Grid', () => {
     beforeEach(() => {
       MockPromises.install(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
-      enumerateItemsSpy = spyOn(BoxRequestor.prototype, 'enumerateItems').and.returnValue(requestorPromise);
+      enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
       emptyRequestorPromise = MockPromises.getMockPromise(Promise).resolve(emptySearchResults);
-      searchSpy = spyOn(BoxRequestor.prototype, 'search').and.returnValue(emptyRequestorPromise);
+      searchSpy = spyOn(testRequestor, 'search').and.returnValue(emptyRequestorPromise);
     });
 
     afterEach(() => {
@@ -265,7 +267,7 @@ describe('Filterable Data Grid', () => {
     beforeEach(() => {
       MockPromises.install(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
-      enumerateItemsSpy = spyOn(BoxRequestor.prototype, 'enumerateItems').and.returnValue(requestorPromise);
+      enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
     });
 
     afterEach(() => {
@@ -294,8 +296,8 @@ describe('Filterable Data Grid', () => {
     beforeEach(() => {
       MockPromises.install(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
-      enumerateItemsSpy = spyOn(BoxRequestor.prototype, 'enumerateItems').and.returnValue(requestorPromise);
-      searchSpy = spyOn(BoxRequestor.prototype, 'search').and.returnValue(requestorPromise);
+      enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
+      searchSpy = spyOn(testRequestor, 'search').and.returnValue(requestorPromise);
     });
 
     afterEach(() => {
@@ -407,9 +409,9 @@ describe('Filterable Data Grid', () => {
     beforeEach(() => {
       MockPromises.install(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
-      enumerateItemsSpy = spyOn(BoxRequestor.prototype, 'enumerateItems').and.returnValue(requestorPromise);
+      enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
       emptyRequestorPromise = MockPromises.getMockPromise(Promise).resolve(emptySearchResults);
-      searchSpy = spyOn(BoxRequestor.prototype, 'search').and.returnValue(emptyRequestorPromise);
+      searchSpy = spyOn(testRequestor, 'search').and.returnValue(emptyRequestorPromise);
     });
 
     afterEach(() => {
