@@ -51,6 +51,10 @@ abstract class Requestor {
     });
   }
 
+  public isSearchDisabled(): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
   protected getSearchType(searchText: string): SearchType {
     if (Requestor.searchUrlRegex.test(searchText)) {
       return SearchType.URL;

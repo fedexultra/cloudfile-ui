@@ -19,17 +19,22 @@ interface SearchBarProps {
   resetQuery: boolean;
   handleCancel: () => void;
   handleEnter: (query: string) => void;
+  isSearchDisabled: () => Promise<boolean>;
 }
 
 interface SearchBarState {
   query: string;
+  disableSearch: boolean;
 }
 
 class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
 
   public constructor(props: SearchBarProps) {
     super(props);
-    this.state = {query: this.props.displayText};
+    this.state = {query: this.props.displayText, disableSearch: false};
+    this.props.isSearchDisabled().then((value: boolean) => {
+      this.state = {query: this.props.displayText, disableSearch: value};
+    });
   }
 
   public componentWillReceiveProps(nextProps: SearchBarProps): void {
@@ -51,12 +56,20 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
     this.props.handleEnter(this.state.query);
   }
 
+  private getPlaceHolderText(): string {
+    if (this.state.disableSearch) {
+      return Messages.searchDisabledForOneDrive();
+    }
+    return Messages.search();
+  }
+
   public render(): JSX.Element {
     const searchFieldProps = {
       text: this.state.query,
+      disabled: this.state.disableSearch,
       handleChange: (text: string) => this.handleChange(text),
       handleEnter: () => this.handleEnter(),
-      placeholder: Messages.search(),
+      placeholder: this.getPlaceHolderText(),
       containerStyle: SpaceStyle,
       testId: 'search-bar',
       handleCancelSearch: () => this.handleCancelSearch(),

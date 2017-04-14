@@ -8,6 +8,7 @@
   "name": "名前",
   "queryErrorMessage": "検索した名前と一致するファイルおよびフォルダーは見つかりません",
   "search": "検索",
+  "searchDisabledForOneDrive": "Search not supported for OneDrive Business accounts",
   "searchResultsMessage": "検索結果",
   "signedInAs": "{user} としてサインインしました",
   "signOut": "サインアウト",

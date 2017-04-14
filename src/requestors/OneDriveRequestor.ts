@@ -34,6 +34,10 @@ interface OneDriveFolder {
   value: OneDriveItem[];
 };
 
+interface OneDriveDefaultDriveResponse {
+  driveType: string;
+};
+
 class OneDriveRequestor extends Requestor {
   private baseUrl: string;
 
@@ -58,6 +62,10 @@ class OneDriveRequestor extends Requestor {
 
   private getOneDriveItem(url: string): Promise<OneDriveItem> {
     return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveItem>> response.json());
+  }
+
+  private getOneDriveDefaultDrive(url: string): Promise<OneDriveDefaultDriveResponse> {
+    return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveDefaultDriveResponse>> response.json());
   }
 
   // Recursively calling Promises is stack-safe. We will not run into stack overflow errors.
@@ -157,6 +165,15 @@ class OneDriveRequestor extends Requestor {
       new Date(oneDriveItem.lastModifiedDateTime),
       this.getPath(oneDriveItem.parentReference)
     );
+  }
+
+  public isSearchDisabled(): Promise<boolean> {
+    return Promise.resolve(this.getOneDriveDefaultDrive(this.baseUrl + '/drive').then((response: OneDriveDefaultDriveResponse) => {
+      if (response.driveType.indexOf('business') !== -1) {
+        return true;
+      }
+      return false;
+    }));
   }
 
   public search(query: string): Promise<CloudItem[]> {

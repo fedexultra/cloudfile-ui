@@ -8,6 +8,7 @@
   "name": "Nombre",
   "queryErrorMessage": "No se ha encontrado ningún archivo o carpeta que coincida con el nombre de la búsqueda",
   "search": "Buscar",
+  "searchDisabledForOneDrive": "Search not supported for OneDrive Business accounts",
   "searchResultsMessage": "Resultados de la búsqueda",
   "signedInAs": "sesión iniciada como {user}",
   "signOut": "cerrar sesión",
