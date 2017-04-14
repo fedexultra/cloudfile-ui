@@ -9,13 +9,15 @@
 //
 // -----------------------------------------------------------------------------
 
-import { AuthInfo } from '../types/ShimTypes';
+import { AuthInfo, CloudFileError } from '../types/ShimTypes';
 import { CloudItem } from '../types/CloudItemTypes';
-import { log } from '../utils/Logger';
 import { ProviderInfo } from '../providers/ProviderInfo';
 import { shim } from '../shim/Shim';
 
 export enum SearchType { URL, Text };
+
+// Max number of times requests that return retryable error codes should be retried
+const maxRetry = 4;
 
 abstract class Requestor {
   public auth: AuthInfo;
@@ -26,27 +28,40 @@ abstract class Requestor {
   public constructor(auth: AuthInfo, providerInfo: ProviderInfo) {
     this.auth = auth;
     this.providerInfo = providerInfo;
+
+    this.enumerateItems = this.enumerateItems.bind(this);
+    this.getDownloadUrl = this.getDownloadUrl.bind(this);
+    this.search = this.search.bind(this);
   }
 
-  private sendRequest(url: string, httpRequest: Object): Promise<Response> {
-    return fetch(url, httpRequest);
+  private retryableCode(statusCode: number): boolean {
+    // Retry all 5xx responses and 401 responses (after refreshing)
+    return (Math.floor(statusCode / 100) === 5) || (statusCode === 401);
   }
 
-  protected sendRequestWithRetry(url: string, httpRequest: Object): Promise<Response> {
-    return this.sendRequest(url, httpRequest)
-    .catch((error) => {
-      log('The sendRequest promise was rejected with message "' + error + '". Calling the refreshAuth method.');
-      // When debugging in the browser, 401 errors cause the promise to be rejected,
-      // seemingly because of a CORS issue. So, we optimistically assume that
-      // that is why the promise was rejected and proceed to do a refresh.
-    })
+  protected sendRequest(url: string, httpRequest: Object, retryLeft: number = maxRetry): Promise<Response> {
+    return fetch(url, httpRequest)
     .then((response) => {
-      if (!response || response.status === 401) {
-        // If a new access token cannot be retrieved, the shim does not return
-        this.auth.accessToken = shim.refreshAuth();
-        return this.sendRequest(url, httpRequest);
-      } else {
+      if (response.ok) {
         return response;
+      } else if (this.retryableCode(response.status) && retryLeft > 0) {
+        if (response.status === 401) {
+          // Ask Tableau to retrieve a new access token and try once more
+          this.auth.accessToken = shim.refreshAuth();
+          return this.sendRequest(url, httpRequest, 0);
+        } else {
+          // Retry the request using exponential backoff
+          return new Promise((resolve, reject) => {
+            setTimeout(() => {
+              resolve(this.sendRequest(url, httpRequest, --retryLeft));
+            },         Math.pow(2, maxRetry - retryLeft) * 1000);
+          });
+        }
+      } else {
+        // Tell Tableau to display an error dialog
+        const error: CloudFileError = {message: response.statusText, code: response.status, abort: false};
+        shim.reportError(error);
+        return Promise.reject(response.statusText);
       }
     });
   }

@@ -51,10 +51,10 @@ interface FileTypeMap {
   [name: string]: string[];
 }
 
-// $TODO - TFSID:591658  Update this to allow passing multiple
-// error messages (and more detailed info)
 interface CloudFileError {
   message: string;
+  code: number;
+  abort: boolean;
 }
 
 interface LogMessage {

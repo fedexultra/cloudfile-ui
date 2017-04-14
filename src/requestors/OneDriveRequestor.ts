@@ -43,7 +43,7 @@ class OneDriveRequestor extends Requestor {
   }
 
   private sendOneDriveRequest(url: string): Promise<Response> {
-    return this.sendRequestWithRetry(url, {
+    return this.sendRequest(url, {
       method: 'GET',
       headers: {
         'Authorization': 'Bearer ' + this.auth.accessToken,
