@@ -34,7 +34,7 @@ interface OneDriveFolder {
   value: OneDriveItem[];
 };
 
-interface OneDriveDefaultDriveResponse {
+interface DriveTypeResponse {
   driveType: string;
 };
 
@@ -44,7 +44,7 @@ class OneDriveRequestor extends Requestor {
   public constructor(auth: AuthInfo, providerInfo: ProviderInfo) {
     super(auth, providerInfo);
     this.baseUrl = 'https://graph.microsoft.com/v1.0/me';
-    this.getOneDriveDefaultDrive = this.getOneDriveDefaultDrive.bind(this);
+    this.getDriveTypeResponse = this.getDriveTypeResponse.bind(this);
     this.isSearchDisabled = this.isSearchDisabled.bind(this);
   }
 
@@ -66,8 +66,8 @@ class OneDriveRequestor extends Requestor {
     return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveItem>> response.json());
   }
 
-  private getOneDriveDefaultDrive(url: string): Promise<OneDriveDefaultDriveResponse> {
-    return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveDefaultDriveResponse>> response.json());
+  private getDriveTypeResponse(url: string): Promise<DriveTypeResponse> {
+    return this.sendOneDriveRequest(url).then(response => <Promise<DriveTypeResponse>> response.json());
   }
 
   // Recursively calling Promises is stack-safe. We will not run into stack overflow errors.
@@ -171,7 +171,7 @@ class OneDriveRequestor extends Requestor {
   }
 
   public isSearchDisabled(): Promise<boolean> {
-    return Promise.resolve(this.getOneDriveDefaultDrive(this.baseUrl + '/drive').then((response: OneDriveDefaultDriveResponse) => {
+    return Promise.resolve(this.getDriveTypeResponse(this.baseUrl + '/drive').then((response: DriveTypeResponse) => {
       if (response.driveType.indexOf('business') !== -1) {
         return true;
       }
