@@ -16,6 +16,7 @@ import { shim } from '../shim/Shim';
 
 export enum SearchType { URL, Text };
 
+// Max number of times requests that return retryable error codes should be retried
 const maxRetry = 4;
 
 abstract class Requestor {
