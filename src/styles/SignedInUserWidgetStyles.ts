@@ -13,10 +13,12 @@ import { CSSProperties } from 'react';
 import { TabStyles } from 'shared-widgets';
 
 const SignedInUserWidgetStyle: CSSProperties = {
+  flex: '0 0 auto',
   position: 'absolute',
   right: TabStyles && TabStyles.Spacing && TabStyles.Spacing.LargeSpace,
   textAlign: 'right',
   top: TabStyles && TabStyles.Spacing && TabStyles.Spacing.LargeSpace,
+  WebkitFlex: '0 0 auto'
 };
 
 export { SignedInUserWidgetStyle };
