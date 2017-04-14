@@ -26,7 +26,6 @@ interface OneDriveItem {
   file?: Object; // Only defined if item is a file
   folder?: Object; // Only defined if item is a folder
   lastModifiedDateTime: string;
-  package: Object; // Only defined for packages. We want to use this as a way to filter away packages
   parentReference: OneDrivePath; // Path of cloud item. Used for cloud item id and breadcrumb
 }
 
@@ -75,12 +74,7 @@ class OneDriveRequestor extends Requestor {
       return Promise.resolve(currentListOfItems);
     }
     return this.getOneDriveItems(<string> url).then((oneDriveFolder: OneDriveFolder) => {
-      const newListOfItems: CloudItem[] = currentListOfItems.concat(oneDriveFolder.value
-      .filter((oneDriveItem: OneDriveItem) => {
-        // Packages exist in OneDrive Business accounts that don't contain paths which can break us. We filter those results out.
-        return (typeof oneDriveItem.package === 'undefined') ? true : false;
-      })
-      .map((oneDriveItem: OneDriveItem) => {
+      const newListOfItems: CloudItem[] = currentListOfItems.concat(oneDriveFolder.value.map((oneDriveItem: OneDriveItem) => {
         return this.constructCloudItem(oneDriveItem);
       }));
       return this.getAllOneDriveItems(newListOfItems, oneDriveFolder['@odata.nextLink'], false);
@@ -191,7 +185,7 @@ class OneDriveRequestor extends Requestor {
   }
 
   public search(query: string): Promise<CloudItem[]> {
-    // GET https://graph.microsoft.com/v1.0/me/drive/root/search(q='<SEARCH_TEXT>')
+    // GET https://graph.microsoft.com/v1.0/me/drive/root/search(q='{<SEARCH_TEXT>}')
     // GET https://graph.microsoft.com/v1.0/me/drive/items/<FILE_ID>
     const typeOfSearch = this.getSearchType(query);
     const urlRequest = this.buildSearchRequest(query, typeOfSearch);
