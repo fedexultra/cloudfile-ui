@@ -50,11 +50,16 @@ class Body extends React.Component<BodyProps, BodyState> {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault(); // Prevent the auto-scroll behavior
       const nextHighlightRow = this.getNextSelectableRow(event.key === 'ArrowDown' ? this.incrementRow : this.decrementRow);
+      if (nextHighlightRow != -1) {
+        // Notify parent that we arrow'ed to a new item
+        this.props.onItemSelected(this.props.rows[nextHighlightRow].cloudItem);
+      }
       this.setState({highlightRow: nextHighlightRow});
       
       // Scroll to keep the focused grid row in view, if needed
       let row: HTMLElement = document.getElementById('gridRow_' + nextHighlightRow)!;
       row.scrollIntoView(false); // Keep bottom of element aligned with the visible area
+      row.focus(); // Let the row know it is active so it can capture 'enter' events to connect
     }
   }
 
