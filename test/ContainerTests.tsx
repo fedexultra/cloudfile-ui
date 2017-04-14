@@ -22,10 +22,10 @@ import { ConnectButton } from '../src/components/ConnectButton';
 import { Container, ContainerProps } from '../src/components/Container';
 import { DataGrid } from '../src/components/DataGrid';
 import { EnabledFileIcon, FolderIcon } from '../src/icons/Icons';
+import { executeRequestorPromises, MockRequestor } from './mocks/MockRequestor';
 import { FileTypeMap } from '../src/types/ShimTypes';
 import { FilterableDataGrid } from '../src/components/FilterableDataGrid';
 import { MockProvider } from './mocks/MockProvider';
-import { MockRequestor } from './mocks/MockRequestor';
 import { mount } from 'enzyme';
 import { ProviderInfo } from '../src/providers/ProviderInfo';
 import { ReactWrapper } from 'enzyme';
@@ -87,21 +87,21 @@ describe('Container', () => {
   let connectSpy: jasmine.Spy;
 
   beforeEach(() => {
-    MockPromises.install(Promise);
+    Promise = MockPromises.getMockPromise(Promise);
     requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
     enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
     connectSpy = spyOn(Container.prototype, 'connect');
   });
 
   afterEach(() => {
-    MockPromises.uninstall();
+    Promise = MockPromises.getOriginalPromise();
   });
 
   describe('connect button', () => {
     it('should be disabled initially', () => {
       const wrapper: ReactWrapper<ContainerProps, {}> = mount(<Container { ...mockContainerProps } />);
       const connectButton = wrapper.find(ConnectButton);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       expect(connectButton.props().enabled).toBe(false);
     });
@@ -109,7 +109,7 @@ describe('Container', () => {
     it('should be disabled when a folder is selected', () => {
       const wrapper: ReactWrapper<ContainerProps, {}> = mount(<Container { ...mockContainerProps } />);
       const connectButton = wrapper.find(ConnectButton);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       // Select a file first to be sure that selecting a folder actually disables the connect button
       wrapper.find(FilterableDataGrid).find(DataGrid).find(Body).find(BodyRow).at(1).simulate('click');
@@ -120,7 +120,7 @@ describe('Container', () => {
     it('should be disabled after opening a folder', () => {
       const wrapper: ReactWrapper<ContainerProps, {}> = mount(<Container { ...mockContainerProps } />);
       const connectButton = wrapper.find(ConnectButton);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       // Select a file first to be sure that opening a folder actually disables the connect button
       wrapper.find(FilterableDataGrid).find(DataGrid).find(Body).find(BodyRow).at(1).simulate('click');
@@ -131,7 +131,7 @@ describe('Container', () => {
     it('should be disabled after clicking a breadcrumb item', () => {
       const wrapper: ReactWrapper<ContainerProps, {}> = mount(<Container { ...mockContainerProps } />);
       const connectButton = wrapper.find(ConnectButton);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       // Select a file first to be sure that selecting a breadcrumb actually disables the connect button
       wrapper.find(FilterableDataGrid).find(DataGrid).find(Body).find(BodyRow).at(1).simulate('click');
@@ -143,7 +143,7 @@ describe('Container', () => {
     it('should be enabled when a file is selected', () => {
       const wrapper: ReactWrapper<ContainerProps, {}> = mount(<Container { ...mockContainerProps } />);
       const connectButton = wrapper.find(ConnectButton);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       wrapper.find(FilterableDataGrid).find(DataGrid).find(Body).find(BodyRow).at(1).simulate('click');
       expect(connectButton.props().enabled).toBe(true);
@@ -154,7 +154,7 @@ describe('Container', () => {
       const connectButton = wrapper.find(ConnectButton);
       const searchInput = wrapper.find(FilterableDataGrid).find(SearchBar).find(SearchFieldWidget).find('input');
       spyOn(testRequestor, 'search').and.returnValue(requestorPromise);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       // Select a file first to be sure that opening a folder actually disables the connect button
       wrapper.find(FilterableDataGrid).find(DataGrid).find(Body).find(BodyRow).at(1).simulate('click');
@@ -168,11 +168,11 @@ describe('Container', () => {
       const connectButton = wrapper.find(ConnectButton);
       const searchInput = wrapper.find(FilterableDataGrid).find(SearchBar).find(SearchFieldWidget).find('input');
       spyOn(testRequestor, 'search').and.returnValue(requestorPromise);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       searchInput.simulate('change', { target: { value: 'test' } });
       searchInput.simulate('keyDown', { key: 'Enter', keyCode: 13, which: 13});
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       // Select a file first to be sure that cancelling a search actually disables the connect button
       wrapper.find(FilterableDataGrid).find(DataGrid).find(Body).find(BodyRow).at(1).simulate('click');
@@ -183,7 +183,7 @@ describe('Container', () => {
 
   it('should connect when a file is double-clicked on', () => {
       const container: ReactWrapper<ContainerProps, {}> = mount(<Container { ...mockContainerProps } />);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       container.find(FilterableDataGrid).find(BodyRow).at(1).simulate('doubleclick');
       expect(connectSpy).toHaveBeenCalled();
@@ -191,7 +191,7 @@ describe('Container', () => {
 
   it('should connect when a file is selected and the enter key is pressed down', () => {
       const container: ReactWrapper<ContainerProps, {}> = mount(<Container { ...mockContainerProps } />);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       container.find(FilterableDataGrid).find(BodyRow).at(1).simulate('click');
       container.find(FilterableDataGrid).find(BodyRow).at(1).simulate('keyDown', {key: 'Enter', keyCode: 13, which: 13});

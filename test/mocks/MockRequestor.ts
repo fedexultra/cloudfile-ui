@@ -29,3 +29,16 @@ export class MockRequestor extends Requestor {
   }
 
 }
+
+// This function is used to fully resolve a MockPromise corresponding to an enumerateItems
+// or search call on a requestor via FilterableDataGrid.doRequest
+export function executeRequestorPromises(promise: Promise<CloudItem[]>): void {
+  // Resolve the promise for the catch clause
+  MockPromises.executeForPromise(promise);
+  // Resolve the promise for the then clause
+  MockPromises.iterateForPromise(promise);
+  // This function isn't documented at all on the web, but it is necessary in
+  // case we reuse a mock promise within a single unit test -- i.e. if doRequest
+  // gets called multiple times
+  MockPromises.executeForResolvedPromises();
+}

@@ -23,11 +23,11 @@ import { BasicCloudItem, CloudItem, CloudItemType } from '../src/types/CloudItem
 import { DataGrid } from '../src/components/DataGrid';
 import { ErrorWidget } from '../src/components/ErrorWidget';
 import { EnabledFileIcon, FolderIcon } from '../src/icons/Icons';
+import { executeRequestorPromises, MockRequestor } from './mocks/MockRequestor';
 import { FilterableDataGridProps, FilterableDataGrid } from '../src/components/FilterableDataGrid';
 import { HeaderCell } from '../src/components/HeaderCell';
 import { Messages } from '../src/codegen/Localize';
 import { MockProvider } from './mocks/MockProvider';
-import { MockRequestor } from './mocks/MockRequestor';
 import { mount, shallow } from 'enzyme';
 import { ProviderInfo } from '../src/providers/ProviderInfo';
 import { ReactWrapper, ShallowWrapper } from 'enzyme';
@@ -108,13 +108,13 @@ describe('Filterable Data Grid', () => {
     let enumerateItemsSpy: jasmine.Spy;
 
     beforeEach(() => {
-      MockPromises.install(Promise);
+      Promise = MockPromises.getMockPromise(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
       enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
     });
 
     afterEach(() => {
-      MockPromises.uninstall();
+      Promise = MockPromises.getOriginalPromise();
     });
 
     it('should render a spinner initially', () => {
@@ -138,7 +138,7 @@ describe('Filterable Data Grid', () => {
     it('should render a body', () => {
       const wrapper: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const spinner = wrapper.find(Spinner);
       expect(spinner.length).toBe(0);
@@ -155,14 +155,14 @@ describe('Filterable Data Grid', () => {
     let searchSpy: jasmine.Spy;
 
     beforeEach(() => {
-      MockPromises.install(Promise);
+      Promise = MockPromises.getMockPromise(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
       enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
       searchSpy = spyOn(testRequestor, 'search').and.returnValue(requestorPromise);
     });
 
     afterEach(() => {
-      MockPromises.uninstall();
+      Promise = MockPromises.getOriginalPromise();
     });
 
     it('should render a spinner before displaying search results', () => {
@@ -181,7 +181,7 @@ describe('Filterable Data Grid', () => {
 
       const mockTextInput = 'text text input';
       simulateTextInput(wrapper, mockTextInput);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
       expect(searchBar.props().displayText).toBe(mockTextInput);
     });
 
@@ -198,13 +198,13 @@ describe('Filterable Data Grid', () => {
       const wrapper: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
       const searchBar = wrapper.find(SearchBar);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const mockTextInput = 'text text input';
       simulateTextInput(wrapper, mockTextInput);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
       searchBar.props().handleCancel();
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
       expect(searchBar.props().displayText).toBe('');
     });
 
@@ -218,7 +218,7 @@ describe('Filterable Data Grid', () => {
     let emptyRequestorPromise: Promise<CloudItem[]>;
 
     beforeEach(() => {
-      MockPromises.install(Promise);
+      Promise = MockPromises.getMockPromise(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
       enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
       emptyRequestorPromise = MockPromises.getMockPromise(Promise).resolve(emptySearchResults);
@@ -226,7 +226,7 @@ describe('Filterable Data Grid', () => {
     });
 
     afterEach(() => {
-      MockPromises.uninstall();
+      Promise = MockPromises.getOriginalPromise();
     });
 
     it('should display error widget when no text search results are returned', () => {
@@ -236,7 +236,7 @@ describe('Filterable Data Grid', () => {
       const mockTextInput = 'text text input';
       simulateTextInput(filterableDataGrid, mockTextInput);
       expect(searchSpy).toHaveBeenCalled();
-      MockPromises.executeForPromise(emptyRequestorPromise);
+      executeRequestorPromises(emptyRequestorPromise);
 
       const expectedErrorText = Messages.queryErrorMessage();
       const result = filterableDataGrid.find(ErrorWidget).props().errorMessage;
@@ -246,11 +246,11 @@ describe('Filterable Data Grid', () => {
     it('should display error widget when no http results are returned', () => {
       const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const mockTextInput = 'http://dummy.com';
       simulateTextInput(filterableDataGrid, mockTextInput);
-      MockPromises.executeForPromise(emptyRequestorPromise);
+      executeRequestorPromises(emptyRequestorPromise);
 
       const expectedErrorText = Messages.urlErrorMessage();
       const result = filterableDataGrid.find(ErrorWidget).props().errorMessage;
@@ -265,19 +265,19 @@ describe('Filterable Data Grid', () => {
     let enumerateItemsSpy: jasmine.Spy;
 
     beforeEach(() => {
-      MockPromises.install(Promise);
+      Promise = MockPromises.getMockPromise(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
       enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
     });
 
     afterEach(() => {
-      MockPromises.uninstall();
+      Promise = MockPromises.getOriginalPromise();
     });
 
     it('should render a spinner before displaying folder content', () => {
       const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const breadcrumbText = filterableDataGrid.find(BreadcrumbItem).first().find('span').first().childAt(0);
       breadcrumbText.simulate('click');
@@ -294,20 +294,20 @@ describe('Filterable Data Grid', () => {
     let searchSpy: jasmine.Spy;
 
     beforeEach(() => {
-      MockPromises.install(Promise);
+      Promise = MockPromises.getMockPromise(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
       enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
       searchSpy = spyOn(testRequestor, 'search').and.returnValue(requestorPromise);
     });
 
     afterEach(() => {
-      MockPromises.uninstall();
+      Promise = MockPromises.getOriginalPromise();
     });
 
     it('should render a spinner after clicking on a folder text', () => {
       const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const bodyRow = filterableDataGrid.find(BodyRow).first();
       const bodyCell = bodyRow.find(BodyCell).first();
@@ -320,7 +320,7 @@ describe('Filterable Data Grid', () => {
     it('should render a spinner after double-clicking on a folder', () => {
       const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const bodyRow = filterableDataGrid.find(DataGrid).find(Body).find(BodyRow).first();
       bodyRow.simulate('doubleclick');
@@ -331,7 +331,7 @@ describe('Filterable Data Grid', () => {
     it('should render a spinner after pressing the enter key on a folder', () => {
       const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const bodyRow = filterableDataGrid.find(BodyRow).first();
       bodyRow.simulate('click');
@@ -343,17 +343,17 @@ describe('Filterable Data Grid', () => {
     it('by double-clicking a folder row should update data grid and clear search text', () => {
       const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const searchBar = filterableDataGrid.find(SearchBar);
       const mockTextInput = 'text text input';
       simulateTextInput(filterableDataGrid, mockTextInput);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
       expect(searchBar.props().displayText).toBe(mockTextInput);
 
       const bodyRow = filterableDataGrid.find(DataGrid).find(Body).find(BodyRow).first();
       bodyRow.simulate('doubleclick');
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
       expect(enumerateItemsSpy).toHaveBeenCalledTimes(2);
       expect(searchBar.props().displayText).toBe('');
     });
@@ -361,19 +361,19 @@ describe('Filterable Data Grid', () => {
     it('by clicking folder text should update data grid and clear search text', () => {
       const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const searchBar = filterableDataGrid.find(SearchBar);
       const mockTextInput = 'text text input';
       simulateTextInput(filterableDataGrid, mockTextInput);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
       expect(searchBar.props().displayText).toBe(mockTextInput);
 
       const bodyRow = filterableDataGrid.find(DataGrid).find(Body).find(BodyRow).first();
       const bodyCell = bodyRow.find(BodyCell).first();
       const folderText = bodyCell.find('.data-grid-body-cell-value');
       folderText.simulate('click');
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
       expect(enumerateItemsSpy).toHaveBeenCalledTimes(2);
       expect(searchBar.props().displayText).toBe('');
     });
@@ -381,18 +381,18 @@ describe('Filterable Data Grid', () => {
     it('by pressing the enter key on a folder should update data grid and clear search text', () => {
       const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const searchBar = filterableDataGrid.find(SearchBar);
       const mockTextInput = 'text text input';
       simulateTextInput(filterableDataGrid, mockTextInput);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
       expect(searchBar.props().displayText).toBe(mockTextInput);
 
       const bodyRow = filterableDataGrid.find(BodyRow).first();
       bodyRow.simulate('click');
       bodyRow.simulate('keyDown', {key: 'Enter', keyCode: 13, which: 13});
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
       expect(enumerateItemsSpy).toHaveBeenCalledTimes(2);
       expect(searchBar.props().displayText).toBe('');
     });
@@ -407,7 +407,7 @@ describe('Filterable Data Grid', () => {
     let emptyRequestorPromise: Promise<CloudItem[]>;
 
     beforeEach(() => {
-      MockPromises.install(Promise);
+      Promise = MockPromises.getMockPromise(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
       enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
       emptyRequestorPromise = MockPromises.getMockPromise(Promise).resolve(emptySearchResults);
@@ -415,7 +415,7 @@ describe('Filterable Data Grid', () => {
     });
 
     afterEach(() => {
-      MockPromises.uninstall();
+      Promise = MockPromises.getOriginalPromise();
     });
 
     it('should be "Name" column in ascending order initially', () => {
@@ -483,14 +483,14 @@ describe('Filterable Data Grid', () => {
     it('should remain the same after breadcrumb navigation', () => {
       const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const secondColumn = filterableDataGrid.find(HeaderCell).at(1);
       secondColumn.simulate('click');
 
       const bodyRow = filterableDataGrid.find(DataGrid).find(BodyRow).first();
       bodyRow.simulate('click');
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const breadcrumbText = filterableDataGrid.find(BreadcrumbItem).first().find('span').first().childAt(0);
       breadcrumbText.simulate('click');
@@ -503,14 +503,14 @@ describe('Filterable Data Grid', () => {
     it('should remain the same after folder navigation by double-clicking a row', () => {
       const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const secondColumn = filterableDataGrid.find(HeaderCell).at(1);
       secondColumn.simulate('click');
 
       const bodyRow = filterableDataGrid.find(DataGrid).find(BodyRow).first();
       bodyRow.simulate('doubleclick');
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const dataGrid = filterableDataGrid.find(DataGrid);
       expect(dataGrid.props().sortableColumnId).toBe(1);
@@ -520,7 +520,7 @@ describe('Filterable Data Grid', () => {
     it('should remain the same after folder navigation by clicking folder text', () => {
       const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const secondColumn = filterableDataGrid.find(HeaderCell).at(1);
       secondColumn.simulate('click');
@@ -529,7 +529,7 @@ describe('Filterable Data Grid', () => {
       const bodyCell = bodyRow.find(BodyCell).first();
       const folderText = bodyCell.find('.data-grid-body-cell-value');
       folderText.simulate('click');
-      MockPromises.executeForPromise(requestorPromise);
+      executeRequestorPromises(requestorPromise);
 
       const dataGrid = filterableDataGrid.find(DataGrid);
       expect(dataGrid.props().sortableColumnId).toBe(1);
