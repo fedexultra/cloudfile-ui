@@ -83,13 +83,12 @@ describe('Container', () => {
   };
 
   let requestorPromise: Promise<CloudItem[]>;
-  let enumerateItemsSpy: jasmine.Spy;
   let connectSpy: jasmine.Spy;
 
   beforeEach(() => {
     Promise = MockPromises.getMockPromise(Promise);
     requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
-    enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
+    spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
     connectSpy = spyOn(Container.prototype, 'connect');
   });
 

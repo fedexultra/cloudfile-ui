@@ -151,13 +151,12 @@ describe('Filterable Data Grid', () => {
   describe('standard search behavior', () => {
 
     let requestorPromise: Promise<CloudItem[]>;
-    let enumerateItemsSpy: jasmine.Spy;
     let searchSpy: jasmine.Spy;
 
     beforeEach(() => {
       Promise = MockPromises.getMockPromise(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
-      enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
+      spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
       searchSpy = spyOn(testRequestor, 'search').and.returnValue(requestorPromise);
     });
 
@@ -213,14 +212,13 @@ describe('Filterable Data Grid', () => {
   describe('empty search behavior', () => {
 
     let requestorPromise: Promise<CloudItem[]>;
-    let enumerateItemsSpy: jasmine.Spy;
     let searchSpy: jasmine.Spy;
     let emptyRequestorPromise: Promise<CloudItem[]>;
 
     beforeEach(() => {
       Promise = MockPromises.getMockPromise(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
-      enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
+      spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
       emptyRequestorPromise = MockPromises.getMockPromise(Promise).resolve(emptySearchResults);
       searchSpy = spyOn(testRequestor, 'search').and.returnValue(emptyRequestorPromise);
     });
@@ -262,12 +260,11 @@ describe('Filterable Data Grid', () => {
   describe('breadcrumb', () => {
 
     let requestorPromise: Promise<CloudItem[]>;
-    let enumerateItemsSpy: jasmine.Spy;
 
     beforeEach(() => {
       Promise = MockPromises.getMockPromise(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
-      enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
+      spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
     });
 
     afterEach(() => {
@@ -291,13 +288,12 @@ describe('Filterable Data Grid', () => {
 
     let requestorPromise: Promise<CloudItem[]>;
     let enumerateItemsSpy: jasmine.Spy;
-    let searchSpy: jasmine.Spy;
 
     beforeEach(() => {
       Promise = MockPromises.getMockPromise(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
       enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
-      searchSpy = spyOn(testRequestor, 'search').and.returnValue(requestorPromise);
+      spyOn(testRequestor, 'search').and.returnValue(requestorPromise);
     });
 
     afterEach(() => {
@@ -402,16 +398,14 @@ describe('Filterable Data Grid', () => {
   describe('sortable column and order', () => {
 
     let requestorPromise: Promise<CloudItem[]>;
-    let enumerateItemsSpy: jasmine.Spy;
-    let searchSpy: jasmine.Spy;
     let emptyRequestorPromise: Promise<CloudItem[]>;
 
     beforeEach(() => {
       Promise = MockPromises.getMockPromise(Promise);
       requestorPromise = MockPromises.getMockPromise(Promise).resolve(testCloudFiles);
-      enumerateItemsSpy = spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
+      spyOn(testRequestor, 'enumerateItems').and.returnValue(requestorPromise);
       emptyRequestorPromise = MockPromises.getMockPromise(Promise).resolve(emptySearchResults);
-      searchSpy = spyOn(testRequestor, 'search').and.returnValue(emptyRequestorPromise);
+      spyOn(testRequestor, 'search').and.returnValue(emptyRequestorPromise);
     });
 
     afterEach(() => {

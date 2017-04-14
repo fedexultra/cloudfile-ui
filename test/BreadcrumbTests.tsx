@@ -82,14 +82,12 @@ describe('Breadcrumb', () => {
   };
 
   let enumerateItemsPromise: Promise<CloudItem[]>;
-  let enumerateItemsSpy: jasmine.Spy;
   let searchPromise: Promise<CloudItem[]>;
-  let searchSpy: jasmine.Spy;
 
   beforeEach(() => {
     Promise = MockPromises.getMockPromise(Promise);
     enumerateItemsPromise = MockPromises.getMockPromise(Promise).resolve(cloudItems);
-    enumerateItemsSpy = spyOn(requestor, 'enumerateItems').and.returnValue(enumerateItemsPromise);
+    spyOn(requestor, 'enumerateItems').and.returnValue(enumerateItemsPromise);
   });
 
   afterEach(() => {
@@ -208,7 +206,7 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(requestor, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
@@ -240,7 +238,7 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(requestor, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
@@ -275,7 +273,7 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(requestor, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
@@ -310,7 +308,7 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(requestor, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
@@ -346,7 +344,7 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(requestor, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
@@ -385,7 +383,7 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(requestor, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
@@ -424,7 +422,7 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(requestor, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
