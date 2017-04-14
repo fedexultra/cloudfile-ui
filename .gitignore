@@ -20,7 +20,3 @@ npm-debug.log
 
 # CI files
 gitlab-ci
-
-# RSA
-gitrsa
-gitrsa.pub

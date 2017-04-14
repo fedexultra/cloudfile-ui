@@ -30,14 +30,14 @@ export class ShimDebug implements ShimInterface {
     log('GetAuthInfo shim method invoked. Returning dummy data.');
     const auth: AuthInfo = {
       userId: 'dummy@gmail.com',
-      accessToken: 'fHoVJjqPK7AAAAAAAAAAUKu5uhEwox1q-TR3btH6dpO6fpdKnd_cvLJ4t8ApSME6'
+      accessToken: '0UQLbIImR4gljBygJcgZT2XBHebz8hqY'
     };
     return auth;
   }
 
   public getCloudProvider(): Provider {
     log('GetCloudProvider shim method invoked. Returning dummy data.');
-    return Provider.dropbox;
+    return Provider.box;
   }
 
   public getConnectedFile(): FileAttrs {

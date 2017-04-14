@@ -18,7 +18,6 @@ import { BreadcrumbTextStyle } from '../styles/BreadcrumbStyles';
 import { createBasicCloudItem } from '../utils/CloudItemUtilities';
 import { DataGrid } from './DataGrid';
 import { ErrorWidget } from './ErrorWidget';
-import { WrapperStyle } from '../styles/FilterableDataGridStyles';
 import { Messages } from '../codegen/Localize';
 import { ProviderInfo } from '../providers/ProviderInfo';
 import { Requestor } from '../requestors/Requestor';
@@ -273,7 +272,7 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
 
   public render(): JSX.Element {
     return (
-      <div style={WrapperStyle}>
+      <div>
         <div style={SearchBarStyle}>
           <SearchBar displayText={this.state.query}
             resetQuery={this.state.resetQuery}

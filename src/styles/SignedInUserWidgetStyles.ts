@@ -17,7 +17,6 @@ const SignedInUserWidgetStyle: CSSProperties = {
   right: TabStyles && TabStyles.Spacing && TabStyles.Spacing.LargeSpace,
   textAlign: 'right',
   top: TabStyles && TabStyles.Spacing && TabStyles.Spacing.LargeSpace,
-  WebkitFlex: '0 0 auto',
 };
 
 export { SignedInUserWidgetStyle };

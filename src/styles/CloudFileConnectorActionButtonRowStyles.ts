@@ -12,11 +12,7 @@
 import { CSSProperties } from 'react';
 
 const CloudFileConnectorActionButtonRowStyle: CSSProperties = {
-  textAlign: 'right',
-  height: '25px',
-  marginTop: '18px',
-  flex: '0 0 auto',
-  WebkitFlex: '0 0 auto',
+  textAlign: 'right'
 };
 
 export { CloudFileConnectorActionButtonRowStyle };

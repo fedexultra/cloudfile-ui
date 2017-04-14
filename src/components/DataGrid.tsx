@@ -15,8 +15,8 @@ import { CloudItem } from '../types/CloudItemTypes';
 import { Row } from '../types/DataGridTypes';
 import { HeaderRow } from './HeaderRow';
 import { SortOrder } from '../types/SortOrderTypes';
+import { SpaceStyle } from '../styles/SpaceStyles';
 import { tableStyle } from '../styles/TableStyles';
-import { WrapperStyle } from '../styles/FilterableDataGridStyles';
 
 interface DataGridProps extends React.Props<void> {
   rows: Row[];
@@ -32,7 +32,7 @@ class DataGrid extends React.Component<DataGridProps, void> {
 
   public render(): JSX.Element {
     return (
-      <div style={WrapperStyle}>
+      <div style={SpaceStyle}>
         <HeaderRow onColumnSelected={this.props.onColumnSelected}
           sortableColumnId={this.props.sortableColumnId}
           sortOrder={this.props.sortOrder} />
