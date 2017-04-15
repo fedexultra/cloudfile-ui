@@ -12,7 +12,7 @@
 import { CSSProperties } from 'react';
 
 const SearchBarStyle: CSSProperties = {
-  width: 300,
+  width: 390,
   flex: '0 0 auto',
   WebkitFlex: '0 0 auto'
 };

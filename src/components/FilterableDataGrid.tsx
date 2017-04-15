@@ -69,7 +69,6 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
       rows: []
     };
 
-    this.fetchItemsAndUpdateState = this.fetchItemsAndUpdateState.bind(this);
     this.handleQueryCancel = this.handleQueryCancel.bind(this);
     this.handleQueryEnter = this.handleQueryEnter.bind(this);
     this.onBreadcrumbSelected = this.onBreadcrumbSelected.bind(this);
@@ -80,12 +79,17 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
   }
 
   public componentDidMount(): void {
-    this.fetchItemsAndUpdateState(this.state);
+    this.doRequest(this.props.requestor.enumerateItems, this.state.folderId, this.state);
   }
 
-  private fetchItemsAndUpdateState(nextState: FilterableDataGridState): void {
+  private doRequest(requestorFunc: (param: string) => Promise<CloudItem[]>, param: string, nextState: FilterableDataGridState): void {
     this.setDisplaySpinnerState();
-    this.props.requestor.enumerateItems(nextState.folderId).then((items) => {
+    requestorFunc(param)
+    .catch(() => {
+      // If the request failed, display an empty grid
+      return [];
+    })
+    .then((items) => {
       let rows: Row[] = items.map(item => ({cloudItem: item}));
       rows = ColumnUtilities.sortColumn(rows, nextState.sortableColumnId, nextState.sortOrder);
       this.setState({
@@ -140,7 +144,7 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
     if (this.state.breadcrumb[this.state.breadcrumb.length - 1].id !== this.state.folderId) {
       newBreadcrumb.pop();
     }
-    this.fetchItemsAndUpdateState({
+    this.doRequest(this.props.requestor.enumerateItems, this.state.folderId, {
       query: '',
       resetQuery: true,
       folderId: this.state.folderId,
@@ -151,6 +155,7 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
       displaySpinner: this.state.displaySpinner,
       rows: this.state.rows
     });
+
     this.props.onFolderOpened(this.state.folderId);
   };
 
@@ -158,21 +163,16 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
     if (query === '') { // Display current folder's contents
       this.handleQueryCancel();
     } else { // Search through Box account
-      this.setDisplaySpinnerState();
-      this.props.requestor.search(query).then((items) => {
-        let rows: Row[] = items.map(item => ({cloudItem: item}));
-        rows = ColumnUtilities.sortColumn(rows, this.state.sortableColumnId, this.state.sortOrder);
-        this.setState({
-          query: query,
-          resetQuery: true,
-          folderId: this.state.folderId,
-          displayBreadcrumb: false, // 'Search Results' message should be displayed
-          breadcrumb: this.state.breadcrumb,
-          sortableColumnId: this.state.sortableColumnId,
-          sortOrder: this.state.sortOrder,
-          displaySpinner: false,
-          rows: rows
-        });
+      this.doRequest(this.props.requestor.search, query, {
+        query: query,
+        resetQuery: true,
+        folderId: this.state.folderId,
+        displayBreadcrumb: false, // 'Search Results' message should be displayed
+        breadcrumb: this.state.breadcrumb,
+        sortableColumnId: this.state.sortableColumnId,
+        sortOrder: this.state.sortOrder,
+        displaySpinner: false,
+        rows: this.state.rows
       });
 
       this.props.onFolderOpened(this.state.folderId);
@@ -183,7 +183,7 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
     const index: number = this.state.breadcrumb.indexOf(item);
     const newBreadcrumb: BasicCloudItem[] = this.state.breadcrumb.slice(0, index + 1);
 
-    this.fetchItemsAndUpdateState({
+    this.doRequest(this.props.requestor.enumerateItems, item.id, {
       query: '',
       resetQuery: true,
       folderId: item.id,
@@ -242,7 +242,7 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
     newBreadcrumb.push(createBasicCloudItem(item));
     newBreadcrumb[0].name = this.props.providerInfo.getProviderName();
 
-    this.fetchItemsAndUpdateState({
+    this.doRequest(this.props.requestor.enumerateItems, item.id, {
       query: '',
       resetQuery: true,
       folderId: item.id,
@@ -278,7 +278,8 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
           <SearchBar displayText={this.state.query}
             resetQuery={this.state.resetQuery}
             handleCancel={this.handleQueryCancel}
-            handleEnter={this.handleQueryEnter} />
+            handleEnter={this.handleQueryEnter}
+            isSearchDisabled={this.props.requestor.isSearchDisabled}/>
         </div>
         <div style={SignedInUserWidgetStyle}>
           <SignedInUserWidget email={this.props.requestor.auth.userId} />

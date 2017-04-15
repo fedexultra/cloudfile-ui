@@ -8,6 +8,7 @@
   "name": "Nom",
   "queryErrorMessage": "Aucun fichier ou dossier correspondant au nom recherché n'a été trouvé",
   "search": "Rechercher",
+  "searchDisabledForOneDriveForBusiness": "Search not supported for Business accounts",
   "searchResultsMessage": "Résultats de la recherche",
   "signedInAs": "connecté en tant que {user} ",
   "signOut": "déconnexion",
