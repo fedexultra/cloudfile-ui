@@ -27,7 +27,7 @@ interface BodyState {
 
 class Body extends React.Component<BodyProps, BodyState> {
 
-  static defaultHighlightRow: number = -1;
+  private static defaultHighlightRow: number = -1;
 
   public constructor(props: BodyProps) {
     super(props);
