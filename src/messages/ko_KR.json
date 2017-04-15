@@ -8,6 +8,7 @@
   "name": "이름",
   "queryErrorMessage": "검색된 이름과 일치하는 파일 또는 폴더가 없음",
   "search": "검색",
+  "searchDisabledForOneDriveForBusiness": "Search not supported for Business accounts",
   "searchResultsMessage": "검색 결과",
   "signedInAs": "{user}(으)로 로그인함 ",
   "signOut": "로그아웃",

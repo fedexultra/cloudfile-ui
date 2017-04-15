@@ -34,16 +34,22 @@ interface OneDriveFolder {
   value: OneDriveItem[];
 };
 
+interface DriveTypeResponse {
+  driveType: string;
+};
+
 class OneDriveRequestor extends Requestor {
   private baseUrl: string;
 
   public constructor(auth: AuthInfo, providerInfo: ProviderInfo) {
     super(auth, providerInfo);
     this.baseUrl = 'https://graph.microsoft.com/v1.0/me';
+    this.getDriveTypeResponse = this.getDriveTypeResponse.bind(this);
+    this.isSearchDisabled = this.isSearchDisabled.bind(this);
   }
 
   private sendOneDriveRequest(url: string): Promise<Response> {
-    return this.sendRequestWithRetry(url, {
+    return this.sendRequest(url, {
       method: 'GET',
       headers: {
         'Authorization': 'Bearer ' + this.auth.accessToken,
@@ -58,6 +64,10 @@ class OneDriveRequestor extends Requestor {
 
   private getOneDriveItem(url: string): Promise<OneDriveItem> {
     return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveItem>> response.json());
+  }
+
+  private getDriveTypeResponse(url: string): Promise<DriveTypeResponse> {
+    return this.sendOneDriveRequest(url).then(response => <Promise<DriveTypeResponse>> response.json());
   }
 
   // Recursively calling Promises is stack-safe. We will not run into stack overflow errors.
@@ -86,6 +96,12 @@ class OneDriveRequestor extends Requestor {
   private getPath(pathReference: OneDrivePath): BasicCloudItem[] {
     // pathReference.path is returned as /drive/root:/<cloud_item_path>/<cloud_item>
     // pathArray is created as ["", "drive", "root:", <names_of_the_rest>]
+
+    // If we ever get an undefined path, we want to return an empty array, we can't connect to that file
+    // anyway so this is to make sure we don't crash.
+    if (typeof pathReference.path === 'undefined') {
+      return [];
+    }
     const pathArray: string[] = pathReference.path.split('/');
     let path: BasicCloudItem[] = [];
     for (let i = 0; i < pathArray.length; i++) {
@@ -157,6 +173,15 @@ class OneDriveRequestor extends Requestor {
       new Date(oneDriveItem.lastModifiedDateTime),
       this.getPath(oneDriveItem.parentReference)
     );
+  }
+
+  public isSearchDisabled(): Promise<boolean> {
+    return Promise.resolve(this.getDriveTypeResponse(this.baseUrl + '/drive').then((response: DriveTypeResponse) => {
+      if (response.driveType.indexOf('business') !== -1) {
+        return true;
+      }
+      return false;
+    }));
   }
 
   public search(query: string): Promise<CloudItem[]> {

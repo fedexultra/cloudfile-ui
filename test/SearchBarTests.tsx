@@ -22,7 +22,8 @@ describe('Search bar', () => {
     displayText: '',
     resetQuery: true,
     handleCancel: () => { return; },
-    handleEnter: () => handleEnterSpy()
+    handleEnter: () => handleEnterSpy(),
+    isSearchDisabled: () => { return Promise.resolve(false); }
   };
 
   describe('rendering', () => {
