@@ -8,7 +8,7 @@
   "name": "Nome",
   "queryErrorMessage": "Não foram encontrados arquivos ou pastas com o nome correspondente ao pesquisado",
   "search": "Pesquisar",
-  "searchDisabledForOneDrive": "Search not supported for Business accounts",
+  "searchDisabledForOneDriveForBusiness": "Search not supported for Business accounts",
   "searchResultsMessage": "Resultados da pesquisa",
   "signedInAs": "conectado como {user} ",
   "signOut": "sair",
