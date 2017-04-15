@@ -97,6 +97,11 @@ class OneDriveRequestor extends Requestor {
     // pathReference.path is returned as /drive/root:/<cloud_item_path>/<cloud_item>
     // pathArray is created as ["", "drive", "root:", <names_of_the_rest>]
 
+    // If we ever get an undefined path, we want to return an empty array, we can't connect to that file
+    // anyway so this is to make sure we don't crash.
+    if (typeof pathReference.path === 'undefined') {
+      return [];
+    }
     const pathArray: string[] = pathReference.path.split('/');
     let path: BasicCloudItem[] = [];
     for (let i = 0; i < pathArray.length; i++) {
