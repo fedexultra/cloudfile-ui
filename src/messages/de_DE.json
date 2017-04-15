@@ -8,6 +8,7 @@
   "name": "Name",
   "queryErrorMessage": "Es wurden keine mit dem Suchnamen übereinstimmenden Dateien oder Ordner gefunden.",
   "search": "Suche",
+  "searchDisabledForOneDriveForBusiness": "Search not supported for Business accounts",
   "searchResultsMessage": "Suchergebnisse",
   "signedInAs": "Angemeldet als {user} ",
   "signOut": "Abmelden",

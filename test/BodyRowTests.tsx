@@ -56,7 +56,7 @@ describe('Body row', () => {
       onFolderOpened: (rowId: number) => { return; },
       onRowSelected: (rowId: number) => { return; },
       rowId: 0,
-      currentHighlightedRow: testFileRow
+      currentHighlightedRow: 0
     };
     const wrapper: ShallowWrapper<BodyRowProps, {}> = shallow(<BodyRow { ...mockBodyRowProps } />);
 
@@ -72,7 +72,7 @@ describe('Body row', () => {
       onFolderOpened: (rowId: number) => { return; },
       onRowSelected: (rowId: number) => { onRowSelectedSpy(rowId); },
       rowId: 0,
-      currentHighlightedRow: testFileRow
+      currentHighlightedRow: 0
     };
     const wrapper: ReactWrapper<BodyRowProps, {}> = mount (<BodyRow { ...mockBodyRowProps } />);
     wrapper.simulate('click');
@@ -101,7 +101,7 @@ describe('Body row', () => {
       onFolderOpened: (rowId: number) => { return; },
       onRowSelected: (rowId: number) => { onRowSelectedSpy(rowId); },
       rowId: 0,
-      currentHighlightedRow: testFileRow
+      currentHighlightedRow: 0
     };
     const wrapper: ReactWrapper<BodyRowProps, {}> = mount (<BodyRow { ...mockBodyRowProps } />);
     wrapper.simulate('click');
@@ -116,7 +116,7 @@ describe('Body row', () => {
       onFolderOpened: (rowId: number) => { return; },
       onRowSelected: (rowId: number) => { onRowSelectedSpy(rowId); },
       rowId: 0,
-      currentHighlightedRow: testFolderRow
+      currentHighlightedRow: 1
     };
     const wrapper: ReactWrapper<BodyRowProps, {}> = mount (<BodyRow { ...mockBodyRowProps } />);
     wrapper.simulate('click');
@@ -131,7 +131,7 @@ describe('Body row', () => {
       onFolderOpened: (rowId: number) => { onFolderOpenedSpy(rowId); },
       onRowSelected: (rowId: number) => { return; },
       rowId: 0,
-      currentHighlightedRow: testFolderRow
+      currentHighlightedRow: 1
     };
     const bodyRow: ReactWrapper<BodyRowProps, {}> = mount (<BodyRow { ...mockBodyRowProps } />);
     bodyRow.simulate('doubleclick');

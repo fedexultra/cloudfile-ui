@@ -64,7 +64,7 @@ class DropboxRequestor extends Requestor {
   }
 
   private sendDropboxRequest(url: string, body: Object): Promise<Response> {
-    return this.sendRequestWithRetry(url, {
+    return this.sendRequest(url, {
       method: 'POST',
       headers: {
         'Authorization': 'Bearer ' + this.auth.accessToken,

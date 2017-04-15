@@ -16,21 +16,23 @@ import * as React from 'react';
 import { Body } from '../src/components/Body';
 import { BodyCell } from '../src/components/BodyCell';
 import { BodyRow } from '../src/components/BodyRow';
-import { Box } from '../src/providers/Box';
-import { BoxRequestor } from '../src/requestors/BoxRequestor';
 import { Breadcrumb } from '../src/components/Breadcrumb';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../src/types/CloudItemTypes';
 import { DataGrid } from '../src/components/DataGrid';
 import { EnabledFileIcon, FolderIcon } from '../src/icons/Icons';
+import { executeRequestorPromises, MockRequestor } from './mocks/MockRequestor';
 import { FilterableDataGridProps, FilterableDataGrid } from '../src/components/FilterableDataGrid';
 import { Messages } from '../src/codegen/Localize';
+import { MockProvider } from './mocks/MockProvider';
 import { mount, ReactWrapper } from 'enzyme';
+import { ProviderInfo } from '../src/providers/ProviderInfo';
+import { Requestor } from '../src/requestors/Requestor';
 import { SearchBar } from '../src/components/SearchBar';
 import { SearchFieldWidget } from 'shared-widgets';
 
 describe('Breadcrumb', () => {
-  const providerInfo: Box = new Box();
-  const requestor: BoxRequestor = new BoxRequestor({accessToken: '', userId: ''}, new Box());
+  const providerInfo: ProviderInfo = new MockProvider();
+  const requestor: Requestor = new MockRequestor({accessToken: '', userId: ''}, providerInfo);
   const pathEntries: BasicCloudItem = { id: '4', name: 'D', type: CloudItemType.Folder };
   const cloudItems: CloudItem[] = [
     {
@@ -80,18 +82,16 @@ describe('Breadcrumb', () => {
   };
 
   let enumerateItemsPromise: Promise<CloudItem[]>;
-  let enumerateItemsSpy: jasmine.Spy;
   let searchPromise: Promise<CloudItem[]>;
-  let searchSpy: jasmine.Spy;
 
   beforeEach(() => {
-    MockPromises.install(Promise);
+    Promise = MockPromises.getMockPromise(Promise);
     enumerateItemsPromise = MockPromises.getMockPromise(Promise).resolve(cloudItems);
-    enumerateItemsSpy = spyOn(BoxRequestor.prototype, 'enumerateItems').and.returnValue(enumerateItemsPromise);
+    spyOn(requestor, 'enumerateItems').and.returnValue(enumerateItemsPromise);
   });
 
   afterEach(() => {
-    MockPromises.uninstall();
+    Promise = MockPromises.getOriginalPromise();
   });
 
   const simulateTextInput = (wrapper: ReactWrapper<FilterableDataGridProps, {}>, inputText: string) => {
@@ -110,7 +110,7 @@ describe('Breadcrumb', () => {
   it('should render root directory on intial display', () => {
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     const breadcrumb = filterableDataGrid.find(Breadcrumb);
     expect(breadcrumb.props().trail.length).toBe(1);
@@ -120,11 +120,11 @@ describe('Breadcrumb', () => {
   it('should update after selecting a folder', () => {
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     const bodyRow = filterableDataGrid.find(DataGrid).find(Body).find(BodyRow).first();
     bodyRow.simulate('click');
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     // Breadcrumb should be 'D' -> 'A'
     const breadcrumb = filterableDataGrid.find(Breadcrumb);
@@ -138,11 +138,11 @@ describe('Breadcrumb', () => {
   it('should update after double-clicking a folder row', () => {
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     const bodyRow = filterableDataGrid.find(DataGrid).find(Body).find(BodyRow).first();
     bodyRow.simulate('doubleclick');
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     // Breadcrumb should be 'D' -> 'A'
     const breadcrumb = filterableDataGrid.find(Breadcrumb);
@@ -156,13 +156,13 @@ describe('Breadcrumb', () => {
   it('should update after clicking on folder text', () => {
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     const bodyRow = filterableDataGrid.find(DataGrid).find(Body).find(BodyRow).first();
     const bodyCell = bodyRow.find(BodyCell).first();
     const folderText = bodyCell.find('.data-grid-body-cell-value');
     folderText.simulate('click');
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     // Breadcrumb should be 'D' -> 'A'
     const breadcrumb = filterableDataGrid.find(Breadcrumb);
@@ -176,7 +176,7 @@ describe('Breadcrumb', () => {
   it('should update after selecting a file', () => {
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     const bodyRow = filterableDataGrid.find(DataGrid).find(Body).find(BodyRow).at(1);
     bodyRow.simulate('click');
@@ -206,15 +206,15 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(BoxRequestor.prototype, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     const mockTextInput = 'test text input';
     simulateTextInput(filterableDataGrid, mockTextInput);
-    MockPromises.executeForPromise(searchPromise);
+    executeRequestorPromises(searchPromise);
 
     const searchResultsMessage = filterableDataGrid.findWhere(wrapper => {
       return wrapper.props()['data-tb-test-id'] === 'filterable-data-grid-search-results-message';
@@ -238,15 +238,15 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(BoxRequestor.prototype, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     const mockTextInput = 'test text input';
     simulateTextInput(filterableDataGrid, mockTextInput);
-    MockPromises.executeForPromise(searchPromise);
+    executeRequestorPromises(searchPromise);
 
     const bodyRow = filterableDataGrid.find(DataGrid).find(Body).find(BodyRow).childAt(1);
     bodyRow.simulate('click');
@@ -273,15 +273,15 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(BoxRequestor.prototype, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     const mockTextInput = 'test text input';
     simulateTextInput(filterableDataGrid, mockTextInput);
-    MockPromises.executeForPromise(searchPromise);
+    executeRequestorPromises(searchPromise);
 
     const bodyRow = filterableDataGrid.find(DataGrid).find(Body).find(BodyRow).first();
     bodyRow.simulate('click');
@@ -308,19 +308,19 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(BoxRequestor.prototype, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     const mockTextInput = 'test text input';
     simulateTextInput(filterableDataGrid, mockTextInput);
-    MockPromises.executeForPromise(searchPromise);
+    executeRequestorPromises(searchPromise);
 
     const emptyTextInput = '';
     simulateTextInput(filterableDataGrid, emptyTextInput);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     // Breadcrumb should be 'Box'
     const breadcrumb = filterableDataGrid.find(Breadcrumb);
@@ -344,22 +344,22 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(BoxRequestor.prototype, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     const bodyRow = filterableDataGrid.find(DataGrid).find(Body).find(BodyRow).at(1);
     bodyRow.simulate('click');
 
     const mockTextInput = 'test text input';
     simulateTextInput(filterableDataGrid, mockTextInput);
-    MockPromises.executeForPromise(searchPromise);
+    executeRequestorPromises(searchPromise);
 
     const emptyTextInput = '';
     simulateTextInput(filterableDataGrid, emptyTextInput);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     // Breadcrumb should be 'D'
     const breadcrumb = filterableDataGrid.find(Breadcrumb);
@@ -383,19 +383,19 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(BoxRequestor.prototype, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     const mockTextInput = 'test text input';
     simulateTextInput(filterableDataGrid, mockTextInput);
-    MockPromises.executeForPromise(searchPromise);
+    executeRequestorPromises(searchPromise);
 
     const bodyRow = filterableDataGrid.find(DataGrid).find(Body).find(BodyRow).first();
     bodyRow.simulate('doubleclick');
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     // Breadcrumb should be 'D' -> 'test text input'
     const breadcrumb = filterableDataGrid.find(Breadcrumb);
@@ -422,21 +422,21 @@ describe('Breadcrumb', () => {
       },
     ];
     searchPromise = MockPromises.getMockPromise(Promise).resolve(searchResults);
-    searchSpy = spyOn(BoxRequestor.prototype, 'search').and.returnValue(searchPromise);
+    spyOn(requestor, 'search').and.returnValue(searchPromise);
 
     const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
       <FilterableDataGrid {...mockFilterableDataGridProps}/>);
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     const mockTextInput = 'test text input';
     simulateTextInput(filterableDataGrid, mockTextInput);
-    MockPromises.executeForPromise(searchPromise);
+    executeRequestorPromises(searchPromise);
 
     const bodyRow = filterableDataGrid.find(DataGrid).find(Body).find(BodyRow).first();
     const bodyCell = bodyRow.find(BodyCell).first();
     const folderText = bodyCell.find('.data-grid-body-cell-value');
     folderText.simulate('click');
-    MockPromises.executeForPromise(enumerateItemsPromise);
+    executeRequestorPromises(enumerateItemsPromise);
 
     // Breadcrumb should be 'D' -> 'test text input'
     const breadcrumb = filterableDataGrid.find(Breadcrumb);
