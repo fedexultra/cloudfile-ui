@@ -26,10 +26,17 @@ class BreadcrumbItem extends React.Component<BreadcrumbItemProps, void> {
   public constructor(props: BreadcrumbItemProps) {
     super(props);
     this.handleClick = this.handleClick.bind(this);
+    this.handleKeyDown = this.handleKeyDown.bind(this);
   }
 
   private handleClick(): void {
     this.props.onItemSelected(this.props.item);
+  }
+
+  private handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
+    if (event.key === 'Enter') {
+      this.handleClick();
+    }
   }
 
   public render(): JSX.Element {
@@ -46,7 +53,7 @@ class BreadcrumbItem extends React.Component<BreadcrumbItemProps, void> {
       return (
         <span style={BreadcrumbStyles.BreadcrumbStyle}>
           <InteractiveDomWrapper { ...interactiveDomProps }>
-            <span style={BreadcrumbStyles.ElidedFolderStyle}>{ itemName }</span>
+            <span style={BreadcrumbStyles.ElidedFolderStyle} tabIndex={0} onKeyDown={this.handleKeyDown}>{ itemName }</span>
           </InteractiveDomWrapper>
           {this.props.displayArrow ? <span style={BreadcrumbStyles.BreadcrumbTextStyle}> {' > '} </span> : undefined}
         </span>
