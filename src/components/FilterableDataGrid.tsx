@@ -277,7 +277,8 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
           <SearchBar displayText={this.state.query}
             resetQuery={this.state.resetQuery}
             handleCancel={this.handleQueryCancel}
-            handleEnter={this.handleQueryEnter} />
+            handleEnter={this.handleQueryEnter}
+            isSearchDisabled={this.props.requestor.isSearchDisabled}/>
         </div>
         <div style={SignedInUserWidgetStyle}>
           <SignedInUserWidget email={this.props.requestor.auth.userId} />
