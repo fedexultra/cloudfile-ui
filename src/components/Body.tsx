@@ -27,6 +27,8 @@ interface BodyState {
 
 class Body extends React.Component<BodyProps, BodyState> {
 
+  static defaultHighlightRow: number = -1;
+
   public constructor(props: BodyProps) {
     super(props);
     this.decrementRow = this.decrementRow.bind(this);
@@ -34,7 +36,7 @@ class Body extends React.Component<BodyProps, BodyState> {
     this.incrementRow = this.incrementRow.bind(this);
     this.onFolderOpened = this.onFolderOpened.bind(this);
     this.onRowSelected = this.onRowSelected.bind(this);
-    this.state = {highlightRow: -1};
+    this.state = {highlightRow: Body.defaultHighlightRow};
   }
 
   public componentWillReceiveProps(nextProps: BodyProps): void {
@@ -42,7 +44,7 @@ class Body extends React.Component<BodyProps, BodyState> {
     if (nextProps.rows.length !== this.props.rows.length) {
       // Quick and dirty check if we are receiving new rows. Better to be a little conservative than do an
       // expensive array comparison.
-      this.setState({highlightRow: -1});
+      this.setState({highlightRow: Body.defaultHighlightRow});
     }
   }
 
@@ -99,7 +101,7 @@ class Body extends React.Component<BodyProps, BodyState> {
     if (this.props.rows[rowId].cloudItem.type === CloudItemType.Folder) {
       this.props.onFolderOpened(this.props.rows[rowId].cloudItem);
     }
-    this.setState({highlightRow: -1});
+    this.setState({highlightRow: Body.defaultHighlightRow});
   }
 
   private onRowSelected(rowId: number): void {

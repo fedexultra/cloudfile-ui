@@ -70,6 +70,10 @@ class BodyRow extends React.Component<BodyRowProps, void> {
     this.props.onRowSelected(this.props.rowId);
   }
 
+  private getRowId(): string {
+    return 'gridRow_' + this.props.rowId;
+  }
+
   public render(): JSX.Element {
     const pointerEventProps: PointerEventProps = {
       pointerClick: this.handleRowSelected,
@@ -89,7 +93,7 @@ class BodyRow extends React.Component<BodyRowProps, void> {
     let renderedStyle: React.CSSProperties = this.getRenderedStyle();
     return (
       <PointerEventWrapper { ...pointerEventProps }>
-        <div id={'gridRow_' + this.props.rowId} onKeyDown={ this.handleKeyDown } style={ renderedStyle } tabIndex={-1}>{ cells }</div>
+        <div id={ this.getRowId() } onKeyDown={ this.handleKeyDown } style={ renderedStyle } tabIndex={-1}>{ cells }</div>
       </PointerEventWrapper>
     );
   }
