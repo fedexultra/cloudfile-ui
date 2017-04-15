@@ -14,7 +14,7 @@ import { TabStyles } from 'shared-widgets';
 
 const CloudFileConnectorStyle: CSSProperties = {
   height: '100%',
-  minHeight: TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 106,
+  minHeight: TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 51,
   minWidth: TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 133,
 };
 

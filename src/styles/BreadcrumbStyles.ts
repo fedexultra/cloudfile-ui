@@ -18,7 +18,10 @@ const { Colors, Spacing, Typography } = TabStyles;
 const BREADCRUMB_ITEM_WIDTH = 150;
 
 const BreadcrumbSpaceStyle: CSSProperties = assign({}, SpaceStyle, {
-  display: 'block'
+  display: 'block',
+  boxSizing: 'border-box',
+  flex: '0 0 auto',
+  WebkitFlex: '0 0 auto'
 });
 
 const BreadcrumbStyle: CSSProperties = {

@@ -29,6 +29,7 @@ import { SignedInUserWidgetStyle } from '../styles/SignedInUserWidgetStyles';
 import { SortOrder } from '../types/SortOrderTypes';
 import { SpaceStyle } from '../styles/SpaceStyles';
 import { Spinner } from './Spinner';
+import { WrapperStyle } from '../styles/FilterableDataGridStyles';
 
 interface FilterableDataGridProps extends React.Props<void> {
   providerInfo: ProviderInfo;
@@ -272,7 +273,7 @@ class FilterableDataGrid extends React.Component<FilterableDataGridProps, Filter
 
   public render(): JSX.Element {
     return (
-      <div>
+      <div style={WrapperStyle}>
         <div style={SearchBarStyle}>
           <SearchBar displayText={this.state.query}
             resetQuery={this.state.resetQuery}

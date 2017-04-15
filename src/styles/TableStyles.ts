@@ -49,9 +49,11 @@ const headerRowStyle: CSSProperties = assign({}, rowStyle, {
   borderRightColor: Colors && Colors.L2,
   borderTop: `${Sizing && Sizing.BorderWidth}px solid`,
   borderTopColor: Colors && Colors.L2,
+  flex: '0 0 auto',
   fontSize: Typography && Typography.Sizing && Typography.Sizing.Default,
   fontWeight: 'normal',
-  textAlign: 'left'
+  textAlign: 'left',
+  WebkitFlex: '0 0 auto'
 });
 
 const stripedRowStyle: CSSProperties = assign({}, rowStyle, {
@@ -66,8 +68,10 @@ const tableStyle: CSSProperties = {
   border: `${Sizing && Sizing.BorderWidth}px solid`,
   borderColor: Colors && Colors.L2,
   borderCollapse: 'collapse',
+  flex: '1 1 auto',
   height: `${TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 71}px`,
   overflowY: 'auto',
+  WebkitFlex: '1 1 auto',
   width: '100%'
 };
 

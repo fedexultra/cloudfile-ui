@@ -81,7 +81,7 @@ def test():
 
 def package():
     """
-    Grab the index.html, loc, imgs, and min.js files and put them into folder for easy deployment
+    Grab the index.html, css, loc, imgs, and min.js files and put them into folder for easy deployment
     """
     del_dir('deployment_files')
 
@@ -93,6 +93,9 @@ def package():
 
             print("Copying over index.html")
             shutil.copy2('index.html', 'deployment_files/index.html')
+
+            print("Copying over styles.css")
+            shutil.copy2('styles.css', 'deployment_files/styles.css')
 
             print("Copying over contents of src/img")
             shutil.copytree('src/img', 'deployment_files/src/img')
@@ -119,7 +122,7 @@ def validate_files():
     Word of warning: this might give a false positive if there are file paths that we should have but are not in list_of_file_paths.
     Another false positive scenario is if there are files missing in the paths that lead to directories since we don't check the contents.
     """
-    list_of_file_paths = ["index.html", "src/img", "dist/compiled-locales", "dist/cloud-file-connector.min.js"]
+    list_of_file_paths = ["index.html", "styles.css", "src/img", "dist/compiled-locales", "dist/cloud-file-connector.min.js"]
     for paths in list_of_file_paths:
         if not os.path.exists(paths):
             return False
