@@ -104,6 +104,7 @@ class OneDriveRequestor extends Requestor {
     }
     const pathArray: string[] = pathReference.path.split('/');
     let path: BasicCloudItem[] = [];
+    let startIdx = 0;
     for (let i = 0; i < pathArray.length; i++) {
       if (i === 0 && decodeURIComponent(pathArray[i]) === '') {
         path.push({
@@ -115,8 +116,10 @@ class OneDriveRequestor extends Requestor {
         (i === 2 && decodeURIComponent(pathArray[i]) === 'root:')) {
         continue;
       } else {
+        const index = pathReference.path.indexOf(pathArray[i], startIdx);
+        startIdx = index + pathArray[i].length;
         path.push({
-          id: pathReference.path,
+          id: pathReference.path.slice(0, startIdx),
           name: decodeURIComponent(pathArray[i]),
           type: CloudItemType.Folder
         });
