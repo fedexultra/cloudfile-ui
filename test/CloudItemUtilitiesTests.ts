@@ -10,9 +10,27 @@
 // -----------------------------------------------------------------------------
 
 import { createCloudItem, determineExtension, initializeCloudItemUtilities } from '../src/utils/CloudItemUtilities';
-import { BasicCloudItem, CloudItemType } from '../src/types/CloudItemTypes';
+import { BasicCloudItem, CloudItem, CloudItemType } from '../src/types/CloudItemTypes';
 import { DisabledFileIcon, EnabledFileIcon, FolderIcon } from '../src/icons/Icons';
 import { Messages } from '../src/codegen/Localize';
+
+export function testCloudItemsAreEqual(expected: CloudItem, actual: CloudItem): void {
+  expect(actual.canBeSelected).toBe(expected.canBeSelected);
+  expect(actual.displayAsEnabled).toBe(expected.displayAsEnabled);
+  expect(actual.displayKind).toBe(expected.displayKind);
+  expect(actual.extension).toBe(expected.extension);
+  expect(actual.icon).toBe(expected.icon);
+  expect(actual.id).toBe(expected.id);
+  expect(actual.modifiedAt.getTime()).toBe(expected.modifiedAt.getTime());
+  expect(actual.name).toBe(expected.name);
+  expect(actual.path.length).toBe(expected.path.length);
+  for (let i = 0; i < actual.path.length; i++) {
+    expect(actual.path[i].id).toBe(expected.path[i].id);
+    expect(actual.path[i].name).toBe(expected.path[i].name);
+    expect(actual.path[i].type).toBe(expected.path[i].type);
+  }
+  expect(actual.type).toBe(expected.type);
+}
 
 describe('CloudItemUtilities', () => {
   const displayKindFile = Messages.file();

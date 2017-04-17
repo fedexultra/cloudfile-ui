@@ -204,4 +204,4 @@ class OneDriveRequestor extends Requestor {
   }
 }
 
-export { OneDriveRequestor };
+export { DriveTypeResponse, OneDrivePath, OneDriveItem, OneDriveFolder, OneDriveRequestor };
