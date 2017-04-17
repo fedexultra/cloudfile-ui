@@ -40,4 +40,4 @@ const GridStyle: CSSProperties = {
   boxSizing: 'border-box'
 };
 
-export { FilterableDataGridStyle, WrapperStyle, GridStyle };
+export { FilterableDataGridStyle, GridStyle, WrapperStyle };
