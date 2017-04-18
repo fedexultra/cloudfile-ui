@@ -210,7 +210,7 @@ describe('Body', () => {
     };
     const wrapper: ReactWrapper<BodyProps, {}> = mount(<Body { ...mockBodyProps } />);
     wrapper.childAt(0).simulate('click');
-    expect(wrapper.childAt(0).props().currentHighlightedRow).toBe(0);
+    expect(wrapper.childAt(0).props().selected).toBe(true);
   });
 
   it('should not unhighlight the row when an already highlighted file is clicked', () => {
@@ -223,7 +223,7 @@ describe('Body', () => {
     const wrapper: ReactWrapper<BodyProps, {}> = mount(<Body { ...mockBodyProps } />);
     wrapper.childAt(0).simulate('click');
     wrapper.childAt(0).simulate('click');
-    expect(wrapper.childAt(0).props().currentHighlightedRow).toBe(0);
+    expect(wrapper.childAt(0).props().selected).toBe(true);
   });
 
   it('should highlight the row when a non-highlighted folder is clicked', () => {
@@ -235,7 +235,7 @@ describe('Body', () => {
     };
     const wrapper: ReactWrapper<BodyProps, {}> = mount(<Body { ...mockBodyProps } />);
     wrapper.childAt(0).simulate('click');
-    expect(wrapper.childAt(0).props().currentHighlightedRow).toBe(0);
+    expect(wrapper.childAt(0).props().selected).toBe(true);
   });
 
   it('should not unhighlight the row when an already highlighted folder is clicked', () => {
@@ -248,7 +248,7 @@ describe('Body', () => {
     const wrapper: ReactWrapper<BodyProps, {}> = mount(<Body { ...mockBodyProps } />);
     wrapper.childAt(0).simulate('click');
     wrapper.childAt(0).simulate('click');
-    expect(wrapper.childAt(0).props().currentHighlightedRow).toBe(0);
+    expect(wrapper.childAt(0).props().selected).toBe(true);
   });
 
   it('should unhighlight the old row when a new file is clicked', () => {
@@ -261,7 +261,7 @@ describe('Body', () => {
     const wrapper: ReactWrapper<BodyProps, {}> = mount(<Body { ...mockBodyProps } />);
     wrapper.childAt(0).simulate('click');
     wrapper.childAt(1).simulate('click');
-    expect(wrapper.childAt(0).props().currentHighlightedRow).toBe(1);
+    expect(wrapper.childAt(0).props().selected).toBe(false);
   });
 
   it('should unhighlight the old row when a new folder is clicked', () => {
@@ -274,7 +274,7 @@ describe('Body', () => {
     const wrapper: ReactWrapper<BodyProps, {}> = mount(<Body { ...mockBodyProps } />);
     wrapper.childAt(0).simulate('click');
     wrapper.childAt(1).simulate('click');
-    expect(wrapper.childAt(0).props().currentHighlightedRow).toBe(1);
+    expect(wrapper.childAt(0).props().selected).toBe(false);
   });
 
 });

@@ -114,15 +114,14 @@ class Body extends React.Component<BodyProps, BodyState> {
 
   public render(): JSX.Element {
     const bodyRows = this.props.rows.map((row, i) => {
-      const element = <BodyRow
+      return <BodyRow
         onConnect={this.props.onConnect}
         onFolderOpened={this.onFolderOpened}
         onRowSelected={this.onRowSelected}
         row={row}
         key={i}
         rowId={i}
-        selected={this.state.highlightRow === i}/>
-      return element;
+        selected={this.state.highlightRow === i}/>;
     });
     return <div tabIndex={0} onKeyDown={this.handleKeyDown}>{ bodyRows }</div>;
   }
