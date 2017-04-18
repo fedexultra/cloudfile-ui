@@ -26,10 +26,10 @@ const cellStyle: CSSProperties = {
 const rowStyle: CSSProperties = {
   borderBottom: `${Sizing && Sizing.BorderWidth}px solid`,
   borderBottomColor: Colors && Colors.L2,
+  boxSizing: 'border-box',
   display: 'table',
   fontSize: Typography && Typography.Sizing && Typography.Sizing.Small,
   fontFamily: Typography && Typography.FontFamily,
-  height: Sizing && Sizing.RowHeight,
   lineHeight: `${Sizing && Sizing.RowHeight}px`,
   outline: 'none',
   tableLayout: 'fixed',
@@ -49,6 +49,7 @@ const headerRowStyle: CSSProperties = assign({}, rowStyle, {
   borderRightColor: Colors && Colors.L2,
   borderTop: `${Sizing && Sizing.BorderWidth}px solid`,
   borderTopColor: Colors && Colors.L2,
+  boxSizing: 'border-box',
   flex: '0 0 auto',
   fontSize: Typography && Typography.Sizing && Typography.Sizing.Default,
   fontWeight: 'normal',
@@ -68,9 +69,9 @@ const tableStyle: CSSProperties = {
   border: `${Sizing && Sizing.BorderWidth}px solid`,
   borderColor: Colors && Colors.L2,
   borderCollapse: 'collapse',
+  boxSizing: 'border-box',
   flex: '1 1 auto',
   height: `${TabStyles && TabStyles.Sizing && (TabStyles.Sizing.BaseUnit || 6) * 71}px`,
-  overflowY: 'auto',
   WebkitFlex: '1 1 auto',
   width: '100%'
 };
