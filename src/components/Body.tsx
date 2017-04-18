@@ -44,8 +44,6 @@ class Body extends React.Component<BodyProps, BodyState> {
   public componentWillReceiveProps(nextProps: BodyProps): void {
     // If the parent triggers a re-render (e.g. when clicking a breadcrumb), reset the active row
     if (nextProps.rows !== this.props.rows) {
-      // Quick and dirty check if we are receiving new rows. Better to be a little conservative than do an
-      // expensive array comparison.
       this.setState({highlightRow: Body.defaultHighlightRow, highlightRowId: Body.defaultHighlightRowId});
     }
   }
