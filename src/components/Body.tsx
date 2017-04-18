@@ -31,9 +31,9 @@ class Body extends React.Component<BodyProps, BodyState> {
 
   public constructor(props: BodyProps) {
     super(props);
-    this.decrementRow = this.decrementRow.bind(this);
+    this.decrementRowId = this.decrementRowId.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
-    this.incrementRow = this.incrementRow.bind(this);
+    this.incrementRowId = this.incrementRowId.bind(this);
     this.onFolderOpened = this.onFolderOpened.bind(this);
     this.onRowSelected = this.onRowSelected.bind(this);
     this.state = {highlightRow: Body.defaultHighlightRow};
@@ -49,7 +49,7 @@ class Body extends React.Component<BodyProps, BodyState> {
   private handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault(); // Prevent the auto-scroll behavior
-      const nextHighlightRowId = this.getNextSelectableRow(event.key === 'ArrowDown' ? this.incrementRow : this.decrementRow);
+      const nextHighlightRowId = this.getNextSelectableRowId(event.key === 'ArrowDown' ? this.incrementRowId : this.decrementRowId);
       if (nextHighlightRowId < 0) {
         // No rows are selectable
         return;
@@ -67,14 +67,14 @@ class Body extends React.Component<BodyProps, BodyState> {
     }
   }
 
-  private getNextSelectableRow(nextRowFunc: (rowId: number) => number): number {
+  private getNextSelectableRowId(nextRowIdFunc: (rowId: number) => number): number {
     // Try rows starting with the next row (or row 0 if at the end of the grid)
     const highlightRowId: number = this.getRowId(this.state.highlightRow);
     let nextHighlightRowId = highlightRowId;
     let inspected = 0;
     // Check each other row
     while (inspected++ < this.props.rows.length - 1) {
-      nextHighlightRowId = nextRowFunc(nextHighlightRowId);
+      nextHighlightRowId = nextRowIdFunc(nextHighlightRowId);
       if (this.props.rows[nextHighlightRowId].cloudItem.canBeSelected) {
         // Return the first subsequent row that is selectable
         return nextHighlightRowId;
@@ -84,7 +84,7 @@ class Body extends React.Component<BodyProps, BodyState> {
     return highlightRowId;
   }
 
-  private incrementRow(rowId: number): number {
+  private incrementRowId(rowId: number): number {
     if (rowId === this.props.rows.length - 1) {
       return 0;
     } else {
@@ -92,7 +92,7 @@ class Body extends React.Component<BodyProps, BodyState> {
     }
   }
 
-  private decrementRow(rowId: number): number {
+  private decrementRowId(rowId: number): number {
     if (rowId === -1 || rowId === 0) {
       return this.props.rows.length - 1;
     } else {
