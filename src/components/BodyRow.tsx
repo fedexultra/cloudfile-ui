@@ -56,7 +56,7 @@ class BodyRow extends React.Component<BodyRowProps, void> {
     if (event.key === 'Enter') {
       if (this.props.row.cloudItem.type === CloudItemType.File) {
         this.props.onConnect();
-      } else if (this.props.row.cloudItem.type === CloudItemType.Folder) {
+      } else if (this.props.selected && this.props.row.cloudItem.type === CloudItemType.Folder) {
         this.props.onFolderOpened(this.props.rowId);
       }
     }
