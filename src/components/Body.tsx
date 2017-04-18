@@ -41,14 +41,14 @@ class Body extends React.Component<BodyProps, BodyState> {
     this.state = {highlightRow: Body.defaultHighlightRow, highlightRowId: Body.defaultHighlightRowId};
   }
 
-  public componentWillReceiveProps(nextProps: BodyProps): void {
+  /*public componentWillReceiveProps(nextProps: BodyProps): void {
     // If the parent triggers a re-render (e.g. when clicking a breadcrumb), reset the active row
     if (nextProps.rows.length !== this.props.rows.length) {
       // Quick and dirty check if we are receiving new rows. Better to be a little conservative than do an
       // expensive array comparison.
       this.setState({highlightRow: Body.defaultHighlightRow, highlightRowId: Body.defaultHighlightRowId});
     }
-  }
+  }*/
 
   private handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
