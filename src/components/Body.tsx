@@ -12,7 +12,7 @@
 import * as React from 'react';
 import { BodyRow } from './BodyRow';
 import { CloudItem, CloudItemType } from '../types/CloudItemTypes';
-import { Row } from '../types/DataGridTypes';
+import { Row, NullRow } from '../types/DataGridTypes';
 
 interface BodyProps extends React.Props<void> {
   rows: Row[];
@@ -22,12 +22,14 @@ interface BodyProps extends React.Props<void> {
 };
 
 interface BodyState {
-  highlightRow: number;
+  highlightRow: Row;
+  highlightRowId: number;
 }
 
 class Body extends React.Component<BodyProps, BodyState> {
 
-  private static defaultHighlightRow: number = -1;
+  private static defaultHighlightRow: Row = new NullRow();
+  private static defaultHighlightRowId: number = -1;
 
   public constructor(props: BodyProps) {
     super(props);
@@ -36,7 +38,7 @@ class Body extends React.Component<BodyProps, BodyState> {
     this.incrementRow = this.incrementRow.bind(this);
     this.onFolderOpened = this.onFolderOpened.bind(this);
     this.onRowSelected = this.onRowSelected.bind(this);
-    this.state = {highlightRow: Body.defaultHighlightRow};
+    this.state = {highlightRow: Body.defaultHighlightRow, highlightRowId: Body.defaultHighlightRowId};
   }
 
   public componentWillReceiveProps(nextProps: BodyProps): void {
@@ -44,22 +46,25 @@ class Body extends React.Component<BodyProps, BodyState> {
     if (nextProps.rows.length !== this.props.rows.length) {
       // Quick and dirty check if we are receiving new rows. Better to be a little conservative than do an
       // expensive array comparison.
-      this.setState({highlightRow: Body.defaultHighlightRow});
+      this.setState({highlightRow: Body.defaultHighlightRow, highlightRowId: Body.defaultHighlightRowId});
     }
   }
 
   private handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
     if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
       event.preventDefault(); // Prevent the auto-scroll behavior
-      const nextHighlightRow = this.getNextSelectableRow(event.key === 'ArrowDown' ? this.incrementRow : this.decrementRow);
-      if (nextHighlightRow !== -1) {
-        // Notify parent that we arrow'ed to a new item
-        this.props.onItemSelected(this.props.rows[nextHighlightRow].cloudItem);
+      const nextHighlightRowId = this.getNextSelectableRow(event.key === 'ArrowDown' ? this.incrementRow : this.decrementRow);
+      if (nextHighlightRowId === this.state.highlightRowId) {
+        return;
       }
-      this.setState({highlightRow: nextHighlightRow});
+
+      // Notify parent that we arrow'ed to a new item
+      const nextHighlightRow = this.props.rows[nextHighlightRowId];
+      this.props.onItemSelected(nextHighlightRow.cloudItem);
+      this.setState({highlightRow: nextHighlightRow, highlightRowId: nextHighlightRowId});
 
       // Scroll to keep the focused grid row in view, if needed
-      let row: HTMLElement = document.getElementById('gridRow_' + nextHighlightRow)!;
+      let row: HTMLElement = document.getElementById('gridRow_' + nextHighlightRowId)!;
       row.scrollIntoView(false); // Keep bottom of element aligned with the visible area
       row.focus(); // Let the row know it is active so it can capture 'enter' events to connect
     }
@@ -67,18 +72,18 @@ class Body extends React.Component<BodyProps, BodyState> {
 
   private getNextSelectableRow(nextRowFunc: (rowId: number) => number): number {
     // Try rows starting with the next row (or row 0 if at the end of the grid)
-    let nextHighlightRow = this.state.highlightRow;
+    let nextHighlightRowId: number = this.state.highlightRowId;
     let inspected = 0;
     // Check each other row
     while (inspected++ < this.props.rows.length - 1) {
-      nextHighlightRow = nextRowFunc(nextHighlightRow);
-      if (this.props.rows[nextHighlightRow].cloudItem.canBeSelected) {
+      nextHighlightRowId = nextRowFunc(nextHighlightRowId);
+      if (this.props.rows[nextHighlightRowId].cloudItem.canBeSelected) {
         // Return the first subsequent row that is selectable
-        return nextHighlightRow;
+        return nextHighlightRowId;
       }
     }
     // No, or no other rows are selectable
-    return this.state.highlightRow;
+    return this.state.highlightRowId;
   }
 
   private incrementRow(rowId: number): number {
@@ -101,7 +106,7 @@ class Body extends React.Component<BodyProps, BodyState> {
     if (this.props.rows[rowId].cloudItem.type === CloudItemType.Folder) {
       this.props.onFolderOpened(this.props.rows[rowId].cloudItem);
     }
-    this.setState({highlightRow: Body.defaultHighlightRow});
+    this.setState({highlightRow: Body.defaultHighlightRow, highlightRowId: Body.defaultHighlightRowId});
   }
 
   private onRowSelected(rowId: number): void {
@@ -109,7 +114,7 @@ class Body extends React.Component<BodyProps, BodyState> {
       return;
     }
     this.props.onItemSelected(this.props.rows[rowId].cloudItem);
-    this.setState({highlightRow: rowId});
+    this.setState({highlightRow: this.props.rows[rowId], highlightRowId: rowId});
   }
 
   public render(): JSX.Element {
