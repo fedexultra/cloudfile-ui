@@ -28,6 +28,9 @@ interface BodyRowProps extends React.Props<void> {
 };
 
 class BodyRow extends React.Component<BodyRowProps, void> {
+
+  public static idPrefix: string = 'gridRow_';
+
   public constructor(props: BodyRowProps) {
     super(props);
     this.handleKeyDown = this.handleKeyDown.bind(this);
@@ -71,7 +74,7 @@ class BodyRow extends React.Component<BodyRowProps, void> {
   }
 
   private getRowId(): string {
-    return 'gridRow_' + this.props.rowId;
+    return BodyRow.idPrefix + this.props.rowId;
   }
 
   public render(): JSX.Element {

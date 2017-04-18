@@ -61,7 +61,7 @@ class Body extends React.Component<BodyProps, BodyState> {
       this.setState({highlightRow: nextHighlightRow});
 
       // Scroll to keep the focused grid row in view, if needed
-      let row: HTMLElement = document.getElementById('gridRow_' + nextHighlightRowId)!;
+      let row: HTMLElement = document.getElementById(BodyRow.idPrefix + nextHighlightRowId)!;
       row.scrollIntoView(false); // Keep bottom of element aligned with the visible area
       row.focus(); // Let the row know it is active so it can capture 'enter' events to connect
     }
