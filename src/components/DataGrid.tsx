@@ -16,7 +16,7 @@ import { Row } from '../types/DataGridTypes';
 import { HeaderRow } from './HeaderRow';
 import { SortOrder } from '../types/SortOrderTypes';
 import { tableStyle } from '../styles/TableStyles';
-import { WrapperStyle } from '../styles/FilterableDataGridStyles';
+import { GridStyle } from '../styles/FilterableDataGridStyles';
 
 interface DataGridProps extends React.Props<void> {
   rows: Row[];
@@ -32,7 +32,7 @@ class DataGrid extends React.Component<DataGridProps, void> {
 
   public render(): JSX.Element {
     return (
-      <div style={WrapperStyle}>
+      <div style={GridStyle}>
         <HeaderRow onColumnSelected={this.props.onColumnSelected}
           sortableColumnId={this.props.sortableColumnId}
           sortOrder={this.props.sortOrder} />

@@ -30,4 +30,14 @@ const WrapperStyle: CSSProperties = {
   WebkitFlexFlow: 'column'
 };
 
-export { FilterableDataGridStyle, WrapperStyle };
+const GridStyle: CSSProperties = {
+  flex: '1 1 auto',
+  WebkitFlex: '1 1 auto',
+  display: '-webkit-flex',
+  flexFlow: 'column',
+  WebkitFlexFlow: 'column',
+  overflowY: 'auto',
+  boxSizing: 'border-box'
+};
+
+export { FilterableDataGridStyle, GridStyle, WrapperStyle };

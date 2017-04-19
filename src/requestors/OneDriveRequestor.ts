@@ -104,6 +104,7 @@ class OneDriveRequestor extends Requestor {
     }
     const pathArray: string[] = pathReference.path.split('/');
     let path: BasicCloudItem[] = [];
+    let startIdx = 0;
     for (let i = 0; i < pathArray.length; i++) {
       if (i === 0 && decodeURIComponent(pathArray[i]) === '') {
         path.push({
@@ -115,8 +116,10 @@ class OneDriveRequestor extends Requestor {
         (i === 2 && decodeURIComponent(pathArray[i]) === 'root:')) {
         continue;
       } else {
+        const index = pathReference.path.indexOf(pathArray[i], startIdx);
+        startIdx = index + pathArray[i].length;
         path.push({
-          id: pathReference.path,
+          id: pathReference.path.slice(0, startIdx),
           name: decodeURIComponent(pathArray[i]),
           type: CloudItemType.Folder
         });
@@ -144,11 +147,16 @@ class OneDriveRequestor extends Requestor {
   }
 
   private getFileIdFromSearchUrl(searchUrl: string): string {
-    let fileId = new URLSearchParams(new URL(searchUrl).search).get('resid');
-    if (fileId === null) {
-      return '';
+    const urlSearchParams = new URLSearchParams(new URL(searchUrl).search);
+    // Some files (e.g. JSON, text files) for OneDrive use TextFileEditor, which has 'id' instead of 'resid'
+    if (urlSearchParams.has('resid')) {
+      // We know for sure that 'resid' exists, so we cast here for the compiler
+      return <string> urlSearchParams.get('resid');
+    } else if ((urlSearchParams.get('v') === 'TextFileEditor') && urlSearchParams.has('id')) {
+      // We know for sure that 'id' exists, so we cast here for the compiler
+      return <string> urlSearchParams.get('id');
     }
-    return fileId;
+    return '';
   }
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
