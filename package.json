@@ -18,7 +18,6 @@
     "ts": "./node_modules/.bin/tsc --declaration --project src "
   },
   "dependencies": {
-    "@types/fetch-mock": "5.8.2",
     "es6-promise": "4.1.0",
     "isomorphic-fetch": "2.2.1",
     "url-polyfill": "1.0.3"
@@ -26,6 +25,7 @@
   "devDependencies": {
     "@tableau/localize": "http://artifactory/artifactory/api/npm/tab-npm-local/@tableau/localize/-/@tableau/localize-2.0.3.tgz",
     "@types/enzyme": "2.4.35",
+    "@types/fetch-mock": "5.8.2",
     "@types/jasmine": "2.5.47",
     "@types/lodash": "4.14.62",
     "@types/react": "15.0.21",
