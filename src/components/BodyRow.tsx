@@ -24,7 +24,7 @@ interface BodyRowProps extends React.Props<void> {
   onConnect: () => void;
   onFolderOpened: (rowId: number) => void;
   onRowSelected: (rowId: number) => void;
-  currentHighlightedRow: number;
+  selected: boolean;
 };
 
 class BodyRow extends React.Component<BodyRowProps, void> {
@@ -35,8 +35,12 @@ class BodyRow extends React.Component<BodyRowProps, void> {
     this.handleRowSelected = this.handleRowSelected.bind(this);
   }
 
+  public shouldComponentUpdate(nextProps: BodyRowProps): boolean {
+    return (this.props.selected !== nextProps.selected) || (this.props.row !== nextProps.row);
+  }
+
   private getRenderedStyle(): React.CSSProperties {
-    if (this.props.rowId === this.props.currentHighlightedRow) {
+    if (this.props.selected) {
       return rowHighlightStyle;
     } else {
       let styleToApply = this.props.rowId % 2 === 1 ? rowStyle : stripedRowStyle;
@@ -50,9 +54,9 @@ class BodyRow extends React.Component<BodyRowProps, void> {
 
   private handleKeyDown(event: React.KeyboardEvent<HTMLDivElement>): void {
     if (event.key === 'Enter') {
-      if (this.props.rowId === this.props.currentHighlightedRow && this.props.row.cloudItem.type === CloudItemType.File) {
+      if (this.props.row.cloudItem.type === CloudItemType.File) {
         this.props.onConnect();
-      } else if (this.props.rowId === this.props.currentHighlightedRow && this.props.row.cloudItem.type === CloudItemType.Folder) {
+      } else if (this.props.selected && this.props.row.cloudItem.type === CloudItemType.Folder) {
         this.props.onFolderOpened(this.props.rowId);
       }
     }
