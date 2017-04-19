@@ -144,7 +144,7 @@ class OneDriveRequestor extends Requestor {
   }
 
   private getFileIdFromSearchUrl(searchUrl: string): string {
-    const urlSearchParams: URLSearchParams = new URLSearchParams(new URL(searchUrl).search);
+    const urlSearchParams = new URLSearchParams(new URL(searchUrl).search);
     // Some files (e.g. JSON, text files) for OneDrive use TextFileEditor, which has 'id' instead of 'resid'
     const fileId: string | null = urlSearchParams.get('resid');
     if (fileId !== null) {
