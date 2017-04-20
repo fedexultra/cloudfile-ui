@@ -23,7 +23,7 @@ class RequestorFactory {
   public static getRequestor(provider: Provider, providerInfo: ProviderInfo): Requestor {
     const authInfo: AuthInfo = shim.getAuthInfo();
     const providerName = providerInfo.getProviderName();
-    Logger.info(`Requestor = ${ providerName }`);
+    Logger.info(`Requestor is ${ providerName }`);
     if (provider === Provider.box) {
       return new BoxRequestor(authInfo, providerInfo);
     } else if (provider === Provider.dropbox) {
