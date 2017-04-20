@@ -15,7 +15,7 @@ import { shim } from '../shim/Shim';
 class Logger {
 
   // This is used to identify which log messages are from our Cloud file ui
-  private static logPrefix: string = 'CloudFile UI';
+  private static logPrefix: string = 'CloudFile UI:';
   public static trace(message: string): void {
     shim.log({message: `${this.logPrefix} ${message}`}, Severity.Trace);
   }
