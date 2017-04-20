@@ -11,6 +11,7 @@
 
 import { AuthInfo, CloudFileError } from '../types/ShimTypes';
 import { CloudItem } from '../types/CloudItemTypes';
+import { Logger } from '../utils/Logger';
 import { ProviderInfo } from '../providers/ProviderInfo';
 import { shim } from '../shim/Shim';
 
@@ -35,21 +36,27 @@ abstract class Requestor {
   }
 
   private retryableCode(statusCode: number): boolean {
+    Logger.debug(`Requestor.retryableCode: statusCode=${statusCode}`);
     // Retry all 5xx responses and 401 responses (after refreshing)
     return (Math.floor(statusCode / 100) === 5) || (statusCode === 401);
   }
 
   protected sendRequest(url: string, httpRequest: Object, retryLeft: number = maxRetry): Promise<Response> {
+    Logger.debug(`Requestor.sendRequest: url=${url} httpRequest=${httpRequest} retryLeft=${retryLeft}`);
     return fetch(url, httpRequest)
     .then((response) => {
       if (response.ok) {
+        Logger.info(`Response successful. Status code is ${response.status}.`);
         return response;
       } else if (this.retryableCode(response.status) && retryLeft > 0) {
+        Logger.info(`Response not successful. Status code is ${response.status}.`);
         if (response.status === 401) {
+          Logger.info('Response not successful due to invalid access token. Refreshing access token.');
           // Ask Tableau to retrieve a new access token and try once more
           this.auth.accessToken = shim.refreshAuth();
           return this.sendRequest(url, httpRequest, 0);
         } else {
+          Logger.info(`Response not successful due to unknown reason. Retrying...`);
           // Retry the request using exponential backoff
           return new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -58,6 +65,7 @@ abstract class Requestor {
           });
         }
       } else {
+        Logger.info(`Response not successful and status code not retryable.`);
         // Tell Tableau to display an error dialog
         const error: CloudFileError = {message: response.statusText, code: response.status, abort: false};
         shim.reportError(error);
@@ -67,13 +75,17 @@ abstract class Requestor {
   }
 
   public isSearchDisabled(): Promise<boolean> {
+    Logger.info('Search not disabled.');
     return Promise.resolve(false);
   }
 
   protected getSearchType(searchText: string): SearchType {
+    Logger.debug(`searchText = ${searchText}`);
     if (Requestor.searchUrlRegex.test(searchText)) {
+      Logger.info('Search query is an url.');
       return SearchType.URL;
     } else {
+      Logger.info('Search type is a keyword.');
       return SearchType.Text;
     }
   }
