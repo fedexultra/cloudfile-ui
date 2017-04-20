@@ -21,6 +21,7 @@ import { shim } from '../shim/Shim';
 
 class RequestorFactory {
   public static getRequestor(provider: Provider, providerInfo: ProviderInfo): Requestor {
+    Logger.debug(`RequestorFactory.getRequestor: provider=${Provider[provider]} providerInfo=${providerInfo}`);
     const authInfo: AuthInfo = shim.getAuthInfo();
     const providerName = providerInfo.getProviderName();
     Logger.info(`Requestor is ${ providerName }`);
