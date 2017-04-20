@@ -392,10 +392,10 @@ describe('OneDrive Requestor', () => {
       initializeCloudItemUtilities({ 'excel': ['xls', 'xlsx'] });
 
       // Mock out fetch
-      const folder: OneDriveFolder = {value: []};
+      const searchItem: OneDriveItem = items[0];
       const fileId = 'MockFileId';
       const url = `https://onedrive.live.com/?resid=${fileId}`;
-      FetchMock.getOnce(`end:${fileId}`, {ok: true, ...folder});
+      FetchMock.getOnce(`end:${fileId}`, {ok: true, ...searchItem});
 
       // Validate the output of search
       requestor.search(url).then(done);
@@ -406,10 +406,10 @@ describe('OneDrive Requestor', () => {
       initializeCloudItemUtilities({ 'excel': ['xls', 'xlsx'] });
 
       // Mock out fetch
-      const folder: OneDriveFolder = {value: []};
+      const searchItem: OneDriveItem = items[0];
       const fileId = 'MockFileId';
       const url = `https://onedrive.live.com/?v=TextFileEditor&id=${fileId}`;
-      FetchMock.getOnce(`end:${fileId}`, {ok: true, ...folder});
+      FetchMock.getOnce(`end:${fileId}`, {ok: true, ...searchItem});
 
       // Validate the output of search
       requestor.search(url).then(done);
@@ -433,10 +433,15 @@ describe('OneDrive Requestor', () => {
     });
 
     it('should reject the promise if the query is an invalid URL ', (done) => {
+      const searchItem: OneDriveItem = {
+        name: '',
+        file: {},
+        lastModifiedDateTime: '',
+        parentReference: { path: '' }
+      };
 
       // Mock out fetch to make sure the promise is only rejected if the query is invalid
-      const folder: OneDriveFolder = { value: items };
-      FetchMock.getOnce('*', { ok: true, ...folder });
+      FetchMock.getOnce('*', { ok: true, ...searchItem });
 
       // Validate that search detects an invalid URL
       const url = 'http://www.google.com';

@@ -10,13 +10,14 @@
 // -----------------------------------------------------------------------------
 
 import 'isomorphic-fetch';
+import 'url-polyfill';
 
-import { AuthInfo, Severity } from '../types/ShimTypes';
+import { AuthInfo/*, Severity*/ } from '../types/ShimTypes';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../types/CloudItemTypes';
 import { createCloudItem, determineExtension } from '../utils/CloudItemUtilities';
 import { ProviderInfo } from '../providers/ProviderInfo';
 import { Requestor, SearchType } from './Requestor';
-import { shim } from '../shim/Shim';
+// import { shim } from '../shim/Shim';
 
 interface OneDrivePath {
   path: string;
@@ -211,7 +212,7 @@ class OneDriveRequestor extends Requestor {
     try {
       urlRequest = this.buildSearchRequest(query, typeOfSearch);
     } catch (e) {
-      shim.log({message: e}, Severity.Info);
+      // shim.log({message: e}, Severity.Info);
       return Promise.reject(e);
     }
 
