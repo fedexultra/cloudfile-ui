@@ -387,6 +387,34 @@ describe('OneDrive Requestor', () => {
       });
     });
 
+    it('should resolve the promise for search by URL for an Excel file', (done) => {
+      // Initialize the supported file types
+      initializeCloudItemUtilities({ 'excel': ['xls', 'xlsx'] });
+
+      // Mock out fetch
+      const folder: OneDriveFolder = {value: []};
+      const fileId = 'MockFileId';
+      const url = `https://onedrive.live.com/?resid=${fileId}`;
+      FetchMock.getOnce(`end:${fileId}`, {ok: true, ...folder});
+
+      // Validate the output of search
+      requestor.search(url).then(done);
+    });
+
+    it('should resolve the promise for search by URL for a TextFileEditor file', (done) => {
+      // Initialize the supported file types
+      initializeCloudItemUtilities({ 'excel': ['xls', 'xlsx'] });
+
+      // Mock out fetch
+      const folder: OneDriveFolder = {value: []};
+      const fileId = 'MockFileId';
+      const url = `https://onedrive.live.com/?v=TextFileEditor&id=${fileId}`;
+      FetchMock.getOnce(`end:${fileId}`, {ok: true, ...folder});
+
+      // Validate the output of search
+      requestor.search(url).then(done);
+    });
+
     describe('should reject the promise if the query contains invalid character ', () => {
 
       const invalidChars = [':', '\\', '\/', '\''];
@@ -401,6 +429,18 @@ describe('OneDrive Requestor', () => {
           requestor.search(char).catch(done);
         });
       }
+
+    });
+
+    it('should reject the promise if the query is an invalid URL ', (done) => {
+
+      // Mock out fetch to make sure the promise is only rejected if the query is invalid
+      const folder: OneDriveFolder = { value: items };
+      FetchMock.getOnce('*', { ok: true, ...folder });
+
+      // Validate that search detects an invalid URL
+      const url = 'http://www.google.com';
+      requestor.search(url).catch(done);
 
     });
 
