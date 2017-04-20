@@ -12,7 +12,6 @@
 import { Severity } from '../types/ShimTypes';
 import { shim } from '../shim/Shim';
 
-
 class Logger {
 
   public static trace(message: string): void {
