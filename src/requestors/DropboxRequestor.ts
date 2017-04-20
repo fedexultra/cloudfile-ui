@@ -67,10 +67,12 @@ class DropboxRequestor extends Requestor {
     `searchUrlHostName=${this.searchUrlHostName} ` +
     `searchUrlPathNamePrefix=${this.searchUrlPathNamePrefix} ` +
     `fields=${this.fields}`);
+    Logger.info('Constructed DropboxRequestor.');
   }
 
   private sendDropboxRequest(url: string, body: Object): Promise<Response> {
     Logger.debug(`DropboxRequestor.sendDropboxRequest: url=${url}`);
+    Logger.info(`Sending a POST request to Dropbox.... Endpoint is ${url}`);
     return this.sendRequest(url, {
       method: 'POST',
       headers: {
@@ -95,10 +97,13 @@ class DropboxRequestor extends Requestor {
     Logger.debug(`DropboxRequestor.determineCloudItemType: rawItemType=${rawItemType}`);
     switch (rawItemType) {
       case 'folder':
+        Logger.info('Dropbox item type is a folder.');
         return CloudItemType.Folder;
       case 'file':
+        Logger.info('Dropbox item type is a file.');
         return CloudItemType.File;
       default:
+        Logger.info('Dropbox item type is unknown.');
         return CloudItemType.Unknown;
     }
   }
@@ -142,8 +147,10 @@ class DropboxRequestor extends Requestor {
   private getDate(date: string): Date {
     Logger.debug(`DropboxRequestor.getDate: date=${date}`);
     if (typeof (date) === 'undefined') { // cloud item is a folder
+      Logger.info('Date is undefined.');
       return new Date(0);
     } else { // cloud item is a file
+      Logger.info(`Date is defined as ${date}.`);
       return new Date(date);
     }
   }
@@ -252,6 +259,7 @@ class DropboxRequestor extends Requestor {
     Logger.debug(`DropboxRequestor.getDropboxItemFromUrl: query=${query}`);
     const filePath = this.getDropboxFilePathFromSearchUrl(query);
     if (filePath !== '') {
+      Logger.info('There is a file path from the search query.');
       return this.getDropboxItem(filePath).then((response) => {
         // This checks if the response is valid. This will go away when we have better error handling. Story 623632
         if (response.name !== '') {
@@ -260,6 +268,7 @@ class DropboxRequestor extends Requestor {
         throw new CloudItemNotFoundError();
       });
     }
+    Logger.info('Cannot find file path from the search query.');
     return Promise.reject(new CloudItemNotFoundError());
   }
 
@@ -267,6 +276,7 @@ class DropboxRequestor extends Requestor {
     Logger.debug(`DropboxRequestor.search: query=${query}`);
     const typeOfSearch = this.getSearchType(query);
     if (typeOfSearch === SearchType.URL) {
+      Logger.info('Search query is a url.');
       return this.getDropboxItemFromUrl(query)
       .then(item => { return [ item ]; } )
       .catch((error: Error) => {
@@ -280,6 +290,7 @@ class DropboxRequestor extends Requestor {
     } else {
       // POST https://api.dropboxapi.com/2/files/search
       // body: {path: '', query: <query>}
+      Logger.info('Search query is a keyword');
       const urlRequest = this.baseUrl + 'files/search';
       return this.getSinglePageOfDropboxMatches(urlRequest, { path: '',
                                                               query: query,
