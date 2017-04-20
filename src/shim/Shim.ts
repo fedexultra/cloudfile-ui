@@ -11,6 +11,7 @@
 
 import { ShimDebug } from './ShimDebug';
 import { FileAttrs, Request, AuthInfo, CloudFileError, Environment, LogMessage, Severity, Provider } from '../types/ShimTypes';
+import { ShimMock } from './ShimMock';
 import { ShimV1 } from './ShimV1';
 import { shimVersion } from './Utilities';
 
@@ -67,4 +68,8 @@ export function createShim(): void {
     // webpack to make this possible.
     shim = new ShimDebug();
   }
+}
+
+export function createMockShim(): void {
+  shim = new ShimMock();
 }
