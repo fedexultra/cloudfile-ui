@@ -135,7 +135,7 @@ class Body extends React.Component<BodyProps, BodyState> {
         row={row}
         key={i}
         rowId={i}
-        currentHighlightedRow={this.state.highlightRow}/>;
+        selected={this.state.highlightRow === row}/>;
     });
     return <div tabIndex={0} onKeyDown={this.handleKeyDown}>{ bodyRows }</div>;
   }

@@ -32,8 +32,11 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
   public constructor(props: SearchBarProps) {
     super(props);
     this.state = {query: this.props.displayText, isDisabled: false};
+  }
+
+  public componentDidMount(): void {
     this.props.isSearchDisabled().then((value: boolean) => {
-      this.state = {query: this.props.displayText, isDisabled: value};
+      this.setState({query: this.props.displayText, isDisabled: value});
     });
   }
 

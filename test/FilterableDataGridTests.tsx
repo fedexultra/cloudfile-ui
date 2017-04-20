@@ -455,10 +455,10 @@ describe('Filterable Data Grid', () => {
       const secondColumn = filterableDataGrid.find(HeaderCell).at(1);
 
       thirdRow.simulate('click');
-      expect(thirdRow.props().currentHighlightedRow).toBe(thirdRow.props().row);
+      expect(thirdRow.props().selected).toBeTruthy();
 
       secondColumn.simulate('click');
-      expect(thirdRow.props().currentHighlightedRow).toBe(thirdRow.props().row);
+      expect(thirdRow.props().selected).toBeTruthy();
     });
 
     it('should remain the same after searching', () => {

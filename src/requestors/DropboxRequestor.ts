@@ -99,6 +99,7 @@ class DropboxRequestor extends Requestor {
     // Therefore, pathArray is created as ["", "Folder1", "Folder2"]
     const pathArray: string[] = pathDisplay.split('/');
     let path: BasicCloudItem[] = [];
+    let startIdx = 0;
     for (let i = 0; i < pathArray.length; i++) {
       if (i === 0 && pathArray[i] === '') {
         path.push({
@@ -112,9 +113,12 @@ class DropboxRequestor extends Requestor {
         // of the path, which is why we do not push the last item into the array
         continue;
       } else {
-        const index = pathDisplay.indexOf(pathArray[i]);
+        // Need to ignore previously processed substring of pathDisplay in case pathDisplay contains
+        // two folders with the same name, e.g. "/FolderA/FolderB/FolderA/file.xlsx"
+        const index = pathDisplay.indexOf(pathArray[i], startIdx);
+        startIdx = index + pathArray[i].length;
         path.push({
-          id: pathDisplay.slice(0, index + pathArray[i].length),
+          id: pathDisplay.slice(0, startIdx),
           name: pathArray[i],
           type: CloudItemType.Folder
         });
