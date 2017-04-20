@@ -14,36 +14,38 @@ import { shim } from '../shim/Shim';
 
 class Logger {
 
+  // This is used to identify which log messages are from our Cloud file ui
+  private static logPrefix: string = 'CloudFile UI';
   public static trace(message: string): void {
-    shim.log({message: `${message}`}, Severity.Trace);
+    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Trace);
   }
 
   public static debug(message: string): void {
-    shim.log({message: `${message}`}, Severity.Debug);
+    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Debug);
   }
 
   public static info(message: string): void {
-    shim.log({message: `${message}`}, Severity.Info);
+    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Info);
   }
 
   public static warn(message: string): void {
-    shim.log({message: `${message}`}, Severity.Warn);
+    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Warn);
   }
 
   public static error(message: string): void {
-    shim.log({message: `${message}`}, Severity.Error);
+    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Error);
   }
 
   public static fatal(message: string): void {
-    shim.log({message: `${message}`}, Severity.Fatal);
+    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Fatal);
   }
 
   public static off(message: string): void {
-    shim.log({message: `${message}`}, Severity.Off);
+    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Off);
   }
 
   public static LogDetail(message: string): void {
-    shim.log({message: `${message}`}, Severity.LogDetail);
+    shim.log({message: `${this.logPrefix} ${message}`}, Severity.LogDetail);
   }
 
   public static consoleLog(message: string): void {
