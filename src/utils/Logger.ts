@@ -16,35 +16,35 @@ import { shim } from '../shim/Shim';
 class Logger {
 
   public static trace(message: string): void {
-    shim.log({message: '${message}'}, Severity.Trace);
+    shim.log({message: `${message}`}, Severity.Trace);
   }
 
   public static debug(message: string): void {
-    shim.log({message: '${message}'}, Severity.Debug);
+    shim.log({message: `${message}`}, Severity.Debug);
   }
 
   public static info(message: string): void {
-    shim.log({message: '${message}'}, Severity.Info);
+    shim.log({message: `${message}`}, Severity.Info);
   }
 
   public static warn(message: string): void {
-    shim.log({message: '${message}'}, Severity.Warn);
+    shim.log({message: `${message}`}, Severity.Warn);
   }
 
   public static error(message: string): void {
-    shim.log({message: '${message}'}, Severity.Error);
+    shim.log({message: `${message}`}, Severity.Error);
   }
 
   public static fatal(message: string): void {
-    shim.log({message: '${message}'}, Severity.Fatal);
+    shim.log({message: `${message}`}, Severity.Fatal);
   }
 
   public static off(message: string): void {
-    shim.log({message: '${message}'}, Severity.Off);
+    shim.log({message: `${message}`}, Severity.Off);
   }
 
   public static LogDetail(message: string): void {
-    shim.log({message: '${message}'}, Severity.LogDetail);
+    shim.log({message: `${message}`}, Severity.LogDetail);
   }
 
   public static consoleLog(message: string): void {
