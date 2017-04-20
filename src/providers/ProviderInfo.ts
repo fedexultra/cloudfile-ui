@@ -31,6 +31,9 @@ abstract class ProviderInfo {
 
     return fileAttrs;
   }
+  public toString(): string {
+    return `{providerName=${this.getProviderName()} defaultFolder=${this.getDefaultFolder()}}`;
+  }
 }
 
 export { ProviderInfo };
