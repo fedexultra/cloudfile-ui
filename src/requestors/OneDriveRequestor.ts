@@ -99,10 +99,13 @@ class OneDriveRequestor extends Requestor {
   private determineCloudItemType(item: OneDriveItem): CloudItemType {
     Logger.debug(`OneDriveRequestor.determineCloudItemType: item=${item}`);
     if (typeof (item.folder) !== 'undefined') {
+      Logger.info('OneDriveItem type is a folder.');
       return CloudItemType.Folder;
     } else if (typeof (item.file) !== 'undefined') {
+      Logger.info('OneDrive item type is a file.');
       return CloudItemType.File;
     } else {
+      Logger.info('OneDrive item type is unknown.')
       return CloudItemType.Unknown;
     }
   }
@@ -150,9 +153,11 @@ class OneDriveRequestor extends Requestor {
     let urlRequest = '';
     if (folderID === this.providerInfo.getDefaultFolder()) {
       // GET https://graph.microsoft.com/v1.0/me/drive/root/children
+      Logger.info('Enumerating the root folder.');
       urlRequest = this.baseUrl + '/drive/root/children';
     } else {
       // GET https://graph.microsoft.com/v1.0/me/drive/root:/{item-path}:/children
+      Logger.info('Enumerating a non-root folder.');
       urlRequest = this.baseUrl + folderID + ':/children';
     }
     return this.getAllOneDriveItems([], urlRequest, true);
@@ -170,13 +175,17 @@ class OneDriveRequestor extends Requestor {
     // Some files (e.g. JSON, text files) for OneDrive use TextFileEditor, which has 'id' instead of 'resid'
     if (urlSearchParams.has('resid')) {
       // We know for sure that 'resid' exists, so we cast here for the compiler
+      Logger.info('Search params has resid. Extracting....');
       return <string> urlSearchParams.get('resid');
     } else if ((urlSearchParams.get('v') === 'TextFileEditor') && urlSearchParams.has('id')) {
+      Logger.info('Search params has TextFileEditor and id. Extracting....');
       // We know for sure that 'id' exists, so we cast here for the compiler
       return <string> urlSearchParams.get('id');
     } else {
       throw new Error(`Could not process search URL: ${searchUrl}`);
     }
+    Logger.warn('Cannot get file id from search url.');
+    return '';
   }
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
@@ -186,11 +195,14 @@ class OneDriveRequestor extends Requestor {
       /* getFileIdFromSearchUrl can return an empty string, which will return an invalid response
        * that eventually gets handled as an incorrect url error
       */
+      Logger.info('Search text is a url.');
       return this.baseUrl + '/drive/items/' + this.getFileIdFromSearchUrl(searchText);
     } else {
       this.validateSearchText(searchText);
       return this.baseUrl + '/drive/root/search(q=\'{' + encodeURIComponent(searchText) + '}\')';
     }
+    Logger.info('Search text is a keyword.');
+    return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
   }
 
   private constructCloudItem(oneDriveItem: OneDriveItem): CloudItem {
