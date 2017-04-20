@@ -16,7 +16,7 @@ import { AuthInfo } from '../types/ShimTypes';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../types/CloudItemTypes';
 import { CloudItemNotFoundError } from '../utils/Errors';
 import { createCloudItem, determineExtension } from '../utils/CloudItemUtilities';
-import { log } from '../utils/Logger';
+import { Logger } from '../utils/Logger';
 import { ProviderInfo } from '../providers/ProviderInfo';
 import { Requestor, SearchType } from './Requestor';
 
@@ -247,7 +247,7 @@ class DropboxRequestor extends Requestor {
         if (<CloudItemNotFoundError> error !== undefined) {
           return [];
         } else {
-          log(`Unknown error was caught after entering invalid url ${query}. Error message: ${error.message}`);
+          Logger.warn(`Unknown error was caught after entering invalid url ${query}. Error message: ${error.message}`);
           return [];
         }
       });
