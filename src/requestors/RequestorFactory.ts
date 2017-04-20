@@ -31,7 +31,7 @@ class RequestorFactory {
     } else if (provider === Provider.oneDrive) {
       return new OneDriveRequestor(authInfo, providerInfo);
     } else {
-      const errorMessage = `Invalida provider: ${ providerName }`;
+      const errorMessage = `Invalid provider: ${ providerName }`;
       Logger.error(errorMessage);
       throw new Error(errorMessage);
     }
