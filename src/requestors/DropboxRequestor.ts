@@ -61,9 +61,16 @@ class DropboxRequestor extends Requestor {
     this.searchUrlHostName = 'www.dropbox.com';
     this.searchUrlPathNamePrefix = '/home';
     this.fields = 'fields=path_display,name,.tag,server_modified';
+    Logger.debug(`DropboxRequestor.constructor: ` +
+    `baseUrl=${this.baseUrl} ` +
+    `contentUrl=${this.contentUrl} ` +
+    `searchUrlHostName=${this.searchUrlHostName} ` +
+    `searchUrlPathNamePrefix=${this.searchUrlPathNamePrefix} ` +
+    `fields=${this.fields}`);
   }
 
   private sendDropboxRequest(url: string, body: Object): Promise<Response> {
+    Logger.debug(`DropboxRequestor.sendDropboxRequest: url=${url}`);
     return this.sendRequest(url, {
       method: 'POST',
       headers: {
@@ -75,14 +82,17 @@ class DropboxRequestor extends Requestor {
   }
 
   private getSinglePageOfDropboxItems(url: string, body: Object): Promise<DropboxFolder> {
+    Logger.debug(`DropboxRequestor.getSinglePageOfDropboxItems: url=${url}`);
     return this.sendDropboxRequest(url, body).then(response => <Promise<DropboxFolder>> response.json());
   }
 
   private getSinglePageOfDropboxMatches(url: string, body: Object): Promise<DropboxMatches> {
+    Logger.debug(`DropboxRequestor.getSinglePageOfDropboxMatches: url=${url}`);
     return this.sendDropboxRequest(url, body).then(response => <Promise<DropboxMatches>> response.json());
   }
 
   private determineCloudItemType(rawItemType: string): CloudItemType {
+    Logger.debug(`DropboxRequestor.determineCloudItemType: rawItemType=${rawItemType}`);
     switch (rawItemType) {
       case 'folder':
         return CloudItemType.Folder;
@@ -97,6 +107,7 @@ class DropboxRequestor extends Requestor {
     // pathDisplay is returned as the cloud item's full path without the root folder
     // i.e. "/Folder1/Folder2"
     // Therefore, pathArray is created as ["", "Folder1", "Folder2"]
+    Logger.debug(`DropboxRequestor.getPath: pathDisplay=${pathDisplay}`);
     const pathArray: string[] = pathDisplay.split('/');
     let path: BasicCloudItem[] = [];
     let startIdx = 0;
@@ -129,6 +140,7 @@ class DropboxRequestor extends Requestor {
   }
 
   private getDate(date: string): Date {
+    Logger.debug(`DropboxRequestor.getDate: date=${date}`);
     if (typeof (date) === 'undefined') { // cloud item is a folder
       return new Date(0);
     } else { // cloud item is a file
@@ -137,6 +149,9 @@ class DropboxRequestor extends Requestor {
   }
 
   private constructCloudItem(entry: DropboxItem): CloudItem {
+    Logger.debug(`DropboxRequestor.constructCloudItem: entry={name=${entry.name} ` +
+                                                             `path_display=${entry.path_display} ` +
+                                                             `server_modified=${entry.server_modified}`);
     const type = this.determineCloudItemType(entry['.tag']);
     return createCloudItem(
       entry.path_display, // id is its path
@@ -149,7 +164,9 @@ class DropboxRequestor extends Requestor {
   }
 
   private getAllDropboxItems(currentListOfItems: CloudItem[], currentResponse: DropboxFolder): Promise<CloudItem[]> {
+    Logger.info('Start recursive DropboxRequestor.getAllDropboxItems call.');
     if (!currentResponse.has_more) {
+      Logger.info('Finish recursive DropboxRequestor.getAllDropboxItems call.');
       return Promise.resolve(currentListOfItems);
     }
     const urlRequest = this.baseUrl + 'files/list_folder/continue';
@@ -163,7 +180,9 @@ class DropboxRequestor extends Requestor {
 
   private getAllDropboxMatches(currentListOfItems: CloudItem[], currentResponse: DropboxMatches,
                                path: string, query: string): Promise<CloudItem[]> {
+    Logger.info('Start recursive DropboxRequestor.getAllDropboxMatches call.');
     if (!currentResponse.more) {
+      Logger.info('Finish recursive DropboxRequestor.getAllDropboxMatches call.');
       return Promise.resolve(currentListOfItems);
     }
     const urlRequest = this.baseUrl + 'files/search';
@@ -181,6 +200,7 @@ class DropboxRequestor extends Requestor {
   public enumerateItems(folderPath: string = ''): Promise<CloudItem[]> {
     // POST https://api.dropboxapi.com/2/files/list_folder
     // body: {path: <cloud_item_path>}
+    Logger.debug(`DropboxRequestor.enumerateItems: folderPath=${folderPath}`);
     const urlRequest = this.baseUrl + 'files/list_folder';
     return this.getSinglePageOfDropboxItems(urlRequest, { path: folderPath }).then((response) => {
       let items: CloudItem[] = response.entries.map((entry: DropboxItem) => {
@@ -196,12 +216,15 @@ class DropboxRequestor extends Requestor {
   public getDownloadUrl(): string {
     // POST https://content.dropboxapi.com/2/files/download
     // header: { Dropbox-API-Arg: { path: <cloud_file_path> } }
-    return this.contentUrl + 'files/download';
+    const downloadUrl: string = this.contentUrl + 'files/download';
+    Logger.debug(`DropboxRequestor.getDownloadUrl: downloadUrl=${downloadUrl}`);
+    return downloadUrl;
   }
 
   private getDropboxItem(filePath: string): Promise<DropboxItem> {
     // POST https://api.dropboxapi.com/2/files/get_metadata
     // body: {path: <filePath>}
+    Logger.debug(`DropboxRequestor.getDropboxItem: filePath=${filePath}`);
     const url = this.baseUrl + 'files/get_metadata';
     const body: Object = { path: filePath };
     return this.sendDropboxRequest(url, body).then(response => <Promise<DropboxItem>> response.json());
@@ -209,6 +232,7 @@ class DropboxRequestor extends Requestor {
 
   private getDropboxFilePathFromSearchUrl(query: string): string {
     // Convert https://www.dropbox.com/home/SubFolder?preview=1.xlsx TO SubFolder/1.xlsx
+    Logger.debug(`DropboxRequestor.getDropboxFilePathFromSearchUrl: query=${query}`);
     const url = new URL(query);
     let filename = new URLSearchParams(url.search).get('preview');
     // URL pathname (e.g. '/home/SubFolder') should start with '/home'
@@ -225,6 +249,7 @@ class DropboxRequestor extends Requestor {
   }
 
   private getDropboxItemFromUrl(query: string): Promise<CloudItem> {
+    Logger.debug(`DropboxRequestor.getDropboxItemFromUrl: query=${query}`);
     const filePath = this.getDropboxFilePathFromSearchUrl(query);
     if (filePath !== '') {
       return this.getDropboxItem(filePath).then((response) => {
@@ -239,6 +264,7 @@ class DropboxRequestor extends Requestor {
   }
 
   public search(query: string): Promise<CloudItem[]> {
+    Logger.debug(`DropboxRequestor.search: query=${query}`);
     const typeOfSearch = this.getSearchType(query);
     if (typeOfSearch === SearchType.URL) {
       return this.getDropboxItemFromUrl(query)

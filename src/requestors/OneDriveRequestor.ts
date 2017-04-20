@@ -14,6 +14,7 @@ import 'isomorphic-fetch';
 import { AuthInfo } from '../types/ShimTypes';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../types/CloudItemTypes';
 import { createCloudItem, determineExtension } from '../utils/CloudItemUtilities';
+import { Logger } from '../utils/Logger';
 import { ProviderInfo } from '../providers/ProviderInfo';
 import { Requestor, SearchType } from './Requestor';
 
@@ -46,9 +47,13 @@ class OneDriveRequestor extends Requestor {
     this.baseUrl = 'https://graph.microsoft.com/v1.0/me';
     this.getDriveTypeResponse = this.getDriveTypeResponse.bind(this);
     this.isSearchDisabled = this.isSearchDisabled.bind(this);
+    Logger.debug(`OneDriveRequestor.constructor: baseUrl=${this.baseUrl}`);
+    Logger.info('Constructed OneDrive Requestor.');
   }
 
   private sendOneDriveRequest(url: string): Promise<Response> {
+    Logger.debug(`OneDriveRequestor.sendOneDriveRequest: url=${url}`);
+    Logger.info(`Sending a GET request to OneDrive.... Endpoint is ${url}`);
     return this.sendRequest(url, {
       method: 'GET',
       headers: {
@@ -59,20 +64,25 @@ class OneDriveRequestor extends Requestor {
   }
 
   private getOneDriveItems(url: string): Promise<OneDriveFolder> {
+    Logger.debug(`OneDriveRequestor.getOneDriveItems: url=${url}`);
     return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveFolder>> response.json());
   }
 
   private getOneDriveItem(url: string): Promise<OneDriveItem> {
+    Logger.debug(`OneDriveRequestor.getOneDriveItem: url=${url}`);
     return this.sendOneDriveRequest(url).then(response => <Promise<OneDriveItem>> response.json());
   }
 
   private getDriveTypeResponse(url: string): Promise<DriveTypeResponse> {
+    Logger.debug(`OneDriveRequestor.getDriveTypeResponse: url=${url}`);
     return this.sendOneDriveRequest(url).then(response => <Promise<DriveTypeResponse>> response.json());
   }
 
   // Recursively calling Promises is stack-safe. We will not run into stack overflow errors.
   private getAllOneDriveItems(currentListOfItems: CloudItem[], url: string | undefined, firstCall: boolean): Promise<CloudItem[]> {
+    Logger.info('Start recursive OneDriveRequestor.getAllOneDriveItems call.');
     if (!url && !firstCall) {
+      Logger.info('Finish OneDriveRequestor.getAllOneDriveItems.');
       return Promise.resolve(currentListOfItems);
     }
     return this.getOneDriveItems(<string> url).then((oneDriveFolder: OneDriveFolder) => {
@@ -84,6 +94,7 @@ class OneDriveRequestor extends Requestor {
   }
 
   private determineCloudItemType(item: OneDriveItem): CloudItemType {
+    Logger.debug(`OneDriveRequestor.determineCloudItemType: item=${item}`);
     if (typeof (item.folder) !== 'undefined') {
       return CloudItemType.Folder;
     } else if (typeof (item.file) !== 'undefined') {
@@ -96,10 +107,12 @@ class OneDriveRequestor extends Requestor {
   private getPath(pathReference: OneDrivePath): BasicCloudItem[] {
     // pathReference.path is returned as /drive/root:/<cloud_item_path>/<cloud_item>
     // pathArray is created as ["", "drive", "root:", <names_of_the_rest>]
+    Logger.debug(`OneDriveRequestor.getPath: pathReference=${pathReference.path}`);
 
     // If we ever get an undefined path, we want to return an empty array, we can't connect to that file
     // anyway so this is to make sure we don't crash.
     if (typeof pathReference.path === 'undefined') {
+      Logger.warn(`pathReference.path is undefined`);
       return [];
     }
     const pathArray: string[] = pathReference.path.split('/');
@@ -130,6 +143,7 @@ class OneDriveRequestor extends Requestor {
   }
 
   public enumerateItems(folderID: string = ''): Promise<CloudItem[]> {
+    Logger.debug(`OneDriveRequestor.enumerateItems: folderID=${folderID}`);
     let urlRequest = '';
     if (folderID === this.providerInfo.getDefaultFolder()) {
       // GET https://graph.microsoft.com/v1.0/me/drive/root/children
@@ -143,10 +157,12 @@ class OneDriveRequestor extends Requestor {
 
   public getDownloadUrl(fileID: string): string {
     // GET https://graph.microsoft.com/v1.0/me/drive/root:/{item-path}:/content
+    Logger.debug(`OneDriveRequestor.getDownloadUrl: fileID=${fileID}`);
     return this.baseUrl + fileID + ':/content';
   }
 
   private getFileIdFromSearchUrl(searchUrl: string): string {
+    Logger.debug(`OneDriveRequestor.getFileIdFromSearchUrl: searchUrl=${searchUrl}`);
     const urlSearchParams = new URLSearchParams(new URL(searchUrl).search);
     // Some files (e.g. JSON, text files) for OneDrive use TextFileEditor, which has 'id' instead of 'resid'
     if (urlSearchParams.has('resid')) {
@@ -160,6 +176,7 @@ class OneDriveRequestor extends Requestor {
   }
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
+    Logger.debug(`OneDriveRequestor.buildSearchRequest: searchText=${searchText} typeOfSearch=${SearchType[typeOfSearch]}`);
 
     if (typeOfSearch === SearchType.URL) {
       /* getFileIdFromSearchUrl can return an empty string, which will return an invalid response
@@ -172,6 +189,11 @@ class OneDriveRequestor extends Requestor {
 
   private constructCloudItem(oneDriveItem: OneDriveItem): CloudItem {
     // This is a helper method for getting the correct data bits to create a cloud item.
+    Logger.debug(`OneDriveRequestor.constructCloudItem: oneDriveItem={name=${oneDriveItem.name} ` +
+                                                       `file=${oneDriveItem.file} ` +
+                                                       `folder=${oneDriveItem.folder} ` +
+                                                       `lastModifiedDateTime=${oneDriveItem.lastModifiedDateTime} ` +
+                                                       `parentReference=${oneDriveItem.parentReference.path}}`);
     const type = this.determineCloudItemType(oneDriveItem);
     return createCloudItem(
       oneDriveItem.parentReference.path + '/' + oneDriveItem.name, // id is its path
@@ -184,10 +206,13 @@ class OneDriveRequestor extends Requestor {
   }
 
   public isSearchDisabled(): Promise<boolean> {
+    Logger.debug(`OneDriveRequestor.isSearchDisabled`);
     return Promise.resolve(this.getDriveTypeResponse(this.baseUrl + '/drive').then((response: DriveTypeResponse) => {
       if (response.driveType.indexOf('business') !== -1) {
+        Logger.info('Search is disabled.');
         return true;
       }
+      Logger.info('Search is not disabled.');
       return false;
     }));
   }
@@ -195,6 +220,7 @@ class OneDriveRequestor extends Requestor {
   public search(query: string): Promise<CloudItem[]> {
     // GET https://graph.microsoft.com/v1.0/me/drive/root/search(q='{<SEARCH_TEXT>}')
     // GET https://graph.microsoft.com/v1.0/me/drive/items/<FILE_ID>
+    Logger.debug(`OneDriveRequestor.search: query=${query}`);
     const typeOfSearch = this.getSearchType(query);
     const urlRequest = this.buildSearchRequest(query, typeOfSearch);
 
