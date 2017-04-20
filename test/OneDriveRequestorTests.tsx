@@ -26,7 +26,9 @@ describe('OneDrive Requestor', () => {
   const providerInfo: ProviderInfo = new OneDrive();
   const requestor: OneDriveRequestor = new OneDriveRequestor({accessToken: '', userId: ''}, providerInfo);
 
-  afterEach(() => FetchMock.restore);
+  afterEach(() => {
+    FetchMock.restore();
+  });
 
   describe('enumerateItems', () => {
 
@@ -385,9 +387,27 @@ describe('OneDrive Requestor', () => {
       });
     });
 
+    describe('should reject the promise if the query contains invalid character ', () => {
+
+      const invalidChars = [':', '\\', '\/', '\''];
+
+      for (let char of invalidChars) {
+        it(char, (done) => {
+          // Mock out fetch to make sure the promise is only rejected if the query is invalid
+          const folder: OneDriveFolder = { value: items };
+          FetchMock.getOnce('*', { ok: true, ...folder });
+
+          // Validate that search detects invalid characters
+          requestor.search(char).catch(done);
+        });
+      }
+
+    });
+
   });
 
   describe('isSearchDisabled', () => {
+
     it('should return true for business accounts', (done) => {
       // Mock out fetch
       const driveTypeResponse: DriveTypeResponse = {driveType: 'business'};
