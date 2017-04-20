@@ -11,11 +11,12 @@
 
 import 'isomorphic-fetch';
 
-import { AuthInfo } from '../types/ShimTypes';
+import { AuthInfo, Severity } from '../types/ShimTypes';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../types/CloudItemTypes';
 import { createCloudItem, determineExtension } from '../utils/CloudItemUtilities';
 import { ProviderInfo } from '../providers/ProviderInfo';
 import { Requestor, SearchType } from './Requestor';
+import { shim } from '../shim/Shim';
 
 interface OneDrivePath {
   path: string;
@@ -40,6 +41,7 @@ interface DriveTypeResponse {
 
 class OneDriveRequestor extends Requestor {
   private baseUrl: string;
+  private static invalidSearchCharsRegEx: RegExp = new RegExp('\\|\/|\'|:|%3A|%2F|%5C|%27'); // Match \, /, ', :, and encoded versions
 
   public constructor(auth: AuthInfo, providerInfo: ProviderInfo) {
     super(auth, providerInfo);
@@ -155,8 +157,9 @@ class OneDriveRequestor extends Requestor {
     } else if ((urlSearchParams.get('v') === 'TextFileEditor') && urlSearchParams.has('id')) {
       // We know for sure that 'id' exists, so we cast here for the compiler
       return <string> urlSearchParams.get('id');
+    } else {
+      throw new Error(`Could not process search URL: ${searchUrl}`);
     }
-    return '';
   }
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
@@ -166,8 +169,10 @@ class OneDriveRequestor extends Requestor {
        * that eventually gets handled as an incorrect url error
       */
       return this.baseUrl + '/drive/items/' + this.getFileIdFromSearchUrl(searchText);
+    } else {
+      this.validateSearchText(searchText);
+      return this.baseUrl + '/drive/root/search(q=\'{' + encodeURIComponent(searchText) + '}\')';
     }
-    return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
   }
 
   private constructCloudItem(oneDriveItem: OneDriveItem): CloudItem {
@@ -183,6 +188,12 @@ class OneDriveRequestor extends Requestor {
     );
   }
 
+  private validateSearchText(searchText: string): void {
+    if (OneDriveRequestor.invalidSearchCharsRegEx.test(encodeURIComponent(searchText))) {
+      throw new Error(`Search could not be performed because query contains invalid characters. Query: ${searchText}`);
+    }
+  }
+
   public isSearchDisabled(): Promise<boolean> {
     return Promise.resolve(this.getDriveTypeResponse(this.baseUrl + '/drive').then((response: DriveTypeResponse) => {
       if (response.driveType.indexOf('business') !== -1) {
@@ -196,7 +207,13 @@ class OneDriveRequestor extends Requestor {
     // GET https://graph.microsoft.com/v1.0/me/drive/root/search(q='{<SEARCH_TEXT>}')
     // GET https://graph.microsoft.com/v1.0/me/drive/items/<FILE_ID>
     const typeOfSearch = this.getSearchType(query);
-    const urlRequest = this.buildSearchRequest(query, typeOfSearch);
+    let urlRequest: string;
+    try {
+      urlRequest = this.buildSearchRequest(query, typeOfSearch);
+    } catch (e) {
+      shim.log({message: e}, Severity.Info);
+      return Promise.reject(e);
+    }
 
     if (typeOfSearch === SearchType.URL) {
       return this.getOneDriveItem(urlRequest).then((response) => {
