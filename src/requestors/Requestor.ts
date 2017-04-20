@@ -56,7 +56,7 @@ abstract class Requestor {
           this.auth.accessToken = shim.refreshAuth();
           return this.sendRequest(url, httpRequest, 0);
         } else {
-          Logger.info(`Response not successful due to unknown reason. Retrying...`);
+          Logger.info('Response not successful due to unknown reason. Retrying...');
           // Retry the request using exponential backoff
           return new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -65,7 +65,7 @@ abstract class Requestor {
           });
         }
       } else {
-        Logger.info(`Response not successful and status code not retryable.`);
+        Logger.info('Response not successful and status code not retryable.');
         // Tell Tableau to display an error dialog
         const error: CloudFileError = {message: response.statusText, code: response.status, abort: false};
         shim.reportError(error);
@@ -75,12 +75,13 @@ abstract class Requestor {
   }
 
   public isSearchDisabled(): Promise<boolean> {
+    Logger.debug('Requestor.isSearchDisabled');
     Logger.info('Search not disabled.');
     return Promise.resolve(false);
   }
 
   protected getSearchType(searchText: string): SearchType {
-    Logger.debug(`searchText = ${searchText}`);
+    Logger.debug(`Requestor.getSearchType: searchText = ${searchText}`);
     if (Requestor.searchUrlRegex.test(searchText)) {
       Logger.info('Search query is an url.');
       return SearchType.URL;
