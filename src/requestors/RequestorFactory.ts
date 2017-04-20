@@ -12,6 +12,7 @@
 import { AuthInfo } from '../types/ShimTypes';
 import { BoxRequestor } from './BoxRequestor';
 import { DropboxRequestor } from './DropboxRequestor';
+import { Logger } from '../utils/Logger';
 import { OneDriveRequestor } from './OneDriveRequestor';
 import { Provider } from '../types/ShimTypes';
 import { ProviderInfo } from '../providers/ProviderInfo';
@@ -21,6 +22,8 @@ import { shim } from '../shim/Shim';
 class RequestorFactory {
   public static getRequestor(provider: Provider, providerInfo: ProviderInfo): Requestor {
     const authInfo: AuthInfo = shim.getAuthInfo();
+    const providerName = providerInfo.getProviderName();
+    Logger.info(`Requestor = ${ providerName }`);
     if (provider === Provider.box) {
       return new BoxRequestor(authInfo, providerInfo);
     } else if (provider === Provider.dropbox) {
@@ -28,7 +31,9 @@ class RequestorFactory {
     } else if (provider === Provider.oneDrive) {
       return new OneDriveRequestor(authInfo, providerInfo);
     } else {
-      throw new Error('Invalid provider: ' + provider.toString());
+      const errorMessage = `Invalida provider: ${ providerName }`;
+      Logger.error(errorMessage);
+      throw new Error(errorMessage);
     }
   }
 }
