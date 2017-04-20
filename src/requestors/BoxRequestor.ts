@@ -15,7 +15,7 @@ import { AuthInfo } from '../types/ShimTypes';
 import { BasicCloudItem, CloudItem, CloudItemType } from '../types/CloudItemTypes';
 import { createCloudItem, determineExtension } from '../utils/CloudItemUtilities';
 import { CloudItemNotFoundError } from '../utils/Errors';
-import { log } from '../utils/Logger';
+import { Logger } from '../utils/Logger';
 import { ProviderInfo } from '../providers/ProviderInfo';
 import { Requestor, SearchType } from './Requestor';
 
@@ -177,7 +177,7 @@ class BoxRequestor extends Requestor {
           if (<CloudItemNotFoundError> error !== undefined) {
             return [];
           } else {
-            log(`Unknown error was caught after entering invalid url ${query}. Error message: ${error.message}`);
+            Logger.warn(`Unknown error was caught after entering invalid url ${query}. Error message: ${error.message}`);
             return [];
           }
         });
