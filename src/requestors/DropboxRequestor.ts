@@ -164,7 +164,7 @@ class DropboxRequestor extends Requestor {
       determineExtension(type, entry.name),
       this.getDate(entry.server_modified),
       this.getPath(entry.path_display));
-    Logger.info(`Created cloudItem: ${createdCloudItem}`);
+    Logger.debug(`Created cloudItem: ${JSON.stringify(createdCloudItem)}`);
     return createdCloudItem;
   }
 

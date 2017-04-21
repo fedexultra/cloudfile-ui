@@ -212,7 +212,7 @@ class OneDriveRequestor extends Requestor {
       new Date(oneDriveItem.lastModifiedDateTime),
       this.getPath(oneDriveItem.parentReference)
     );
-    Logger.info(`Created cloudItem: ${JSON.stringify(createdCloudItem)}`);
+    Logger.debug(`Created cloudItem: ${JSON.stringify(createdCloudItem)}`);
     return createdCloudItem;
   }
 
