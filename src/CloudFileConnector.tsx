@@ -32,13 +32,7 @@ document.body.appendChild(formattersScript);
 // Set the language to English by default if the shim's locale does not match the regex.
 // We have a regex to support older builds.
 const environment = shim.getTableauEnvironment();
-Logger.info(`Tableau environment: ` +
-            `buildNumber=${environment.buildNumber} ` +
-            `edition=${environment.edition} ` +
-            `locale=${environment.locale} ` +
-            `os=${environment.os} ` +
-            `version=${environment.version} ` +
-            `supportedFileTypes=${environment.supportedFileTypes}`);
+Logger.info(`Tableau Environment: ${JSON.stringify(environment)}`);
 const localeRegEx = /^[a-z]{2}[_][A-Z]{2}$/;
 let localeMessagesFile = 'dist/compiled-locales/messages.en_US.js';
 let localeFormattersFile = 'dist/compiled-locales/formatters-and-parsers.en_US.js';

@@ -42,7 +42,7 @@ abstract class Requestor {
   }
 
   protected sendRequest(url: string, httpRequest: Object, retryLeft: number = maxRetry): Promise<Response> {
-    Logger.debug(`Requestor.sendRequest: url=${url} httpRequest=${httpRequest} retryLeft=${retryLeft}`);
+    Logger.debug(`Requestor.sendRequest: url=${url} httpRequest=${JSON.stringify(httpRequest)} retryLeft=${retryLeft}`);
     return fetch(url, httpRequest)
     .then((response) => {
       if (response.ok) {

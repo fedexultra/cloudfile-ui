@@ -47,7 +47,8 @@ class OneDriveRequestor extends Requestor {
     this.baseUrl = 'https://graph.microsoft.com/v1.0/me';
     this.getDriveTypeResponse = this.getDriveTypeResponse.bind(this);
     this.isSearchDisabled = this.isSearchDisabled.bind(this);
-    Logger.debug(`OneDriveRequestor.constructor: baseUrl=${this.baseUrl}`);
+    // We print the access token here, but it is ok because this will only be called in debug mode.
+    Logger.debug(`OneDriveRequestor.constructor: ${JSON.stringify(this)}`);
     Logger.info('Constructed OneDrive Requestor.');
   }
 
@@ -94,7 +95,7 @@ class OneDriveRequestor extends Requestor {
   }
 
   private determineCloudItemType(item: OneDriveItem): CloudItemType {
-    Logger.debug(`OneDriveRequestor.determineCloudItemType: item=${item}`);
+    Logger.debug(`OneDriveRequestor.determineCloudItemType: item=${JSON.stringify(item)}`);
     if (typeof (item.folder) !== 'undefined') {
       Logger.info('OneDriveItem type is a folder.');
       return CloudItemType.Folder;
@@ -110,7 +111,7 @@ class OneDriveRequestor extends Requestor {
   private getPath(pathReference: OneDrivePath): BasicCloudItem[] {
     // pathReference.path is returned as /drive/root:/<cloud_item_path>/<cloud_item>
     // pathArray is created as ["", "drive", "root:", <names_of_the_rest>]
-    Logger.debug(`OneDriveRequestor.getPath: pathReference=${pathReference.path}`);
+    Logger.debug(`OneDriveRequestor.getPath: pathReference=${JSON.stringify(pathReference)}`);
 
     // If we ever get an undefined path, we want to return an empty array, we can't connect to that file
     // anyway so this is to make sure we don't crash.
@@ -118,6 +119,7 @@ class OneDriveRequestor extends Requestor {
       Logger.warn(`pathReference.path is undefined`);
       return [];
     }
+    Logger.info(`pathReference.path is defined as ${pathReference.path}`);
     const pathArray: string[] = pathReference.path.split('/');
     let path: BasicCloudItem[] = [];
     let startIdx = 0;
@@ -142,6 +144,7 @@ class OneDriveRequestor extends Requestor {
       }
     }
     // We want path returned as [<root_folder>, <rest_of_the_items>]
+    Logger.debug(`Path is ${JSON.stringify(path)}`);
     return path;
   }
 
@@ -199,13 +202,9 @@ class OneDriveRequestor extends Requestor {
 
   private constructCloudItem(oneDriveItem: OneDriveItem): CloudItem {
     // This is a helper method for getting the correct data bits to create a cloud item.
-    Logger.debug(`OneDriveRequestor.constructCloudItem: oneDriveItem={name=${oneDriveItem.name} ` +
-                                                       `file=${oneDriveItem.file} ` +
-                                                       `folder=${oneDriveItem.folder} ` +
-                                                       `lastModifiedDateTime=${oneDriveItem.lastModifiedDateTime} ` +
-                                                       `parentReference=${oneDriveItem.parentReference.path}}`);
+    Logger.debug(`OneDriveRequestor.constructCloudItem: ${JSON.stringify(oneDriveItem)}`);
     const type = this.determineCloudItemType(oneDriveItem);
-    return createCloudItem(
+    const createdCloudItem: CloudItem = createCloudItem(
       oneDriveItem.parentReference.path + '/' + oneDriveItem.name, // id is its path
       type,
       oneDriveItem.name,
@@ -213,6 +212,8 @@ class OneDriveRequestor extends Requestor {
       new Date(oneDriveItem.lastModifiedDateTime),
       this.getPath(oneDriveItem.parentReference)
     );
+    Logger.info(`Created cloudItem: ${JSON.stringify(createdCloudItem)}`);
+    return createdCloudItem;
   }
 
   public isSearchDisabled(): Promise<boolean> {
@@ -235,14 +236,18 @@ class OneDriveRequestor extends Requestor {
     const urlRequest = this.buildSearchRequest(query, typeOfSearch);
 
     if (typeOfSearch === SearchType.URL) {
+      Logger.info('Search query is a url.');
       return this.getOneDriveItem(urlRequest).then((response) => {
         // This checks if the response is valid. This will go away when we have better error handling. Story 623632
         if (response.parentReference !== undefined) {
+          Logger.info('getOneDriveItem returned a valid response. Creating cloudItems....');
           return [this.constructCloudItem(response)];
         }
+        Logger.warn('getOneDriveItem returned an invalid response. Returning an empty array....');
         return [];
       });
     } else {
+      Logger.info('Search is a keyword search.');
       return this.getAllOneDriveItems([], urlRequest, true);
     }
   }

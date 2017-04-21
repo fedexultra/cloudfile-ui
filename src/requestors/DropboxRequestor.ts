@@ -61,17 +61,13 @@ class DropboxRequestor extends Requestor {
     this.searchUrlHostName = 'www.dropbox.com';
     this.searchUrlPathNamePrefix = '/home';
     this.fields = 'fields=path_display,name,.tag,server_modified';
-    Logger.debug(`DropboxRequestor.constructor: ` +
-    `baseUrl=${this.baseUrl} ` +
-    `contentUrl=${this.contentUrl} ` +
-    `searchUrlHostName=${this.searchUrlHostName} ` +
-    `searchUrlPathNamePrefix=${this.searchUrlPathNamePrefix} ` +
-    `fields=${this.fields}`);
+    // We print the access token here, but it is ok because this will only be called in debug mode.
+    Logger.debug(`DropboxRequestor.constructor: ${JSON.stringify(this)}`);
     Logger.info('Constructed DropboxRequestor.');
   }
 
   private sendDropboxRequest(url: string, body: Object): Promise<Response> {
-    Logger.debug(`DropboxRequestor.sendDropboxRequest: url=${url}`);
+    Logger.debug(`DropboxRequestor.sendDropboxRequest: url=${url} body=${JSON.stringify(body)}`);
     Logger.info(`Sending a POST request to Dropbox.... Endpoint is ${url}`);
     return this.sendRequest(url, {
       method: 'POST',
@@ -84,12 +80,12 @@ class DropboxRequestor extends Requestor {
   }
 
   private getSinglePageOfDropboxItems(url: string, body: Object): Promise<DropboxFolder> {
-    Logger.debug(`DropboxRequestor.getSinglePageOfDropboxItems: url=${url}`);
+    Logger.debug(`DropboxRequestor.getSinglePageOfDropboxItems: url=${url} body=${JSON.stringify(body)}`);
     return this.sendDropboxRequest(url, body).then(response => <Promise<DropboxFolder>> response.json());
   }
 
   private getSinglePageOfDropboxMatches(url: string, body: Object): Promise<DropboxMatches> {
-    Logger.debug(`DropboxRequestor.getSinglePageOfDropboxMatches: url=${url}`);
+    Logger.debug(`DropboxRequestor.getSinglePageOfDropboxMatches: url=${url} body=${JSON.stringify(body)}`);
     return this.sendDropboxRequest(url, body).then(response => <Promise<DropboxMatches>> response.json());
   }
 
@@ -141,33 +137,35 @@ class DropboxRequestor extends Requestor {
       }
     }
     // We want path returned as [<root_folder>, <rest_of_the_items>]
+    Logger.info(`Path is: ${JSON.stringify(path)}`);
     return path;
   }
 
   private getDate(date: string): Date {
     Logger.debug(`DropboxRequestor.getDate: date=${date}`);
     if (typeof (date) === 'undefined') { // cloud item is a folder
-      Logger.info('Date is undefined.');
-      return new Date(0);
+      const result: Date = new Date(0);
+      Logger.info(`Date is undefined. Setting date as: ${result.toString()}`);
+      return result;
     } else { // cloud item is a file
-      Logger.info(`Date is defined as ${date}.`);
-      return new Date(date);
+      const result: Date = new Date(date);
+      Logger.info(`Date is defined as ${date}. Setting date as: ${result.toString()}`);
+      return result;
     }
   }
 
   private constructCloudItem(entry: DropboxItem): CloudItem {
-    Logger.debug(`DropboxRequestor.constructCloudItem: entry={name=${entry.name} ` +
-                                                             `path_display=${entry.path_display} ` +
-                                                             `server_modified=${entry.server_modified}`);
+    Logger.debug(`DropboxRequestor.constructCloudItem: entry=${JSON.stringify(entry)}`);
     const type = this.determineCloudItemType(entry['.tag']);
-    return createCloudItem(
+    const createdCloudItem: CloudItem = createCloudItem(
       entry.path_display, // id is its path
       type,
       entry.name,
       determineExtension(type, entry.name),
       this.getDate(entry.server_modified),
-      this.getPath(entry.path_display)
-    );
+      this.getPath(entry.path_display));
+    Logger.info(`Created cloudItem: ${createdCloudItem}`);
+    return createdCloudItem;
   }
 
   private getAllDropboxItems(currentListOfItems: CloudItem[], currentResponse: DropboxFolder): Promise<CloudItem[]> {
@@ -244,8 +242,8 @@ class DropboxRequestor extends Requestor {
     let filename = new URLSearchParams(url.search).get('preview');
     // URL pathname (e.g. '/home/SubFolder') should start with '/home'
     if (url.hostname === this.searchUrlHostName &&
-      url.pathname.indexOf(this.searchUrlPathNamePrefix) === 0 &&
-      filename !== null && filename !== '') {
+        url.pathname.indexOf(this.searchUrlPathNamePrefix) === 0 &&
+        filename !== null && filename !== '') {
       // Remove '/home' from the pathname to get the directory path
       const dir = decodeURIComponent(url.pathname.substr(this.searchUrlPathNamePrefix.length));
       // Spaces in the filename need to be replaced separately since decodeURI does not handle it
@@ -259,12 +257,15 @@ class DropboxRequestor extends Requestor {
     Logger.debug(`DropboxRequestor.getDropboxItemFromUrl: query=${query}`);
     const filePath = this.getDropboxFilePathFromSearchUrl(query);
     if (filePath !== '') {
-      Logger.info('There is a file path from the search query.');
+      Logger.info('There is a file path from the search url.');
       return this.getDropboxItem(filePath).then((response) => {
+        Logger.debug(`getDropboxItem response: ${JSON.stringify(response)}`);
         // This checks if the response is valid. This will go away when we have better error handling. Story 623632
         if (response.name !== '') {
+          Logger.info('getDropboxItem returned a valid response. Constructing a Cloud Item....');
           return this.constructCloudItem(response);
         }
+        Logger.error('getDropboxItem returned an invalid response. Throwing CloudItemNotFoundError.');
         throw new CloudItemNotFoundError();
       });
     }
@@ -281,9 +282,10 @@ class DropboxRequestor extends Requestor {
       .then(item => { return [ item ]; } )
       .catch((error: Error) => {
         if (<CloudItemNotFoundError> error !== undefined) {
+          Logger.warn(`Known error was caught after entering invalid url ${query}. Error: ${JSON.stringify(error)}`);
           return [];
         } else {
-          Logger.warn(`Unknown error was caught after entering invalid url ${query}. Error message: ${error.message}`);
+          Logger.warn(`Unknown error was caught after entering invalid url ${query}. Error is undefined.`);
           return [];
         }
       });
