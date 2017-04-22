@@ -387,7 +387,7 @@ describe('OneDrive Requestor', () => {
       });
     });
 
-    it('should resolve the promise for search by URL for an Excel file', (done) => {
+    it('should return correct results for search by URL for an Excel file', (done) => {
       // Initialize the supported file types
       initializeCloudItemUtilities({ 'excel': ['xls', 'xlsx'] });
 
@@ -398,10 +398,14 @@ describe('OneDrive Requestor', () => {
       FetchMock.getOnce(`end:${fileId}`, {ok: true, ...searchItem});
 
       // Validate the output of search
-      requestor.search(url).then(done);
+      requestor.search(url).then(response => {
+        expect(response.length).toBe(1);
+        testCloudItemsAreEqual(expected[0], response[0]);
+        done();
+      });
     });
 
-    it('should resolve the promise for search by URL for a TextFileEditor file', (done) => {
+    it('should return correct results for search by URL for a TextFileEditor file', (done) => {
       // Initialize the supported file types
       initializeCloudItemUtilities({ 'excel': ['xls', 'xlsx'] });
 
@@ -411,8 +415,11 @@ describe('OneDrive Requestor', () => {
       const url = `https://onedrive.live.com/?v=TextFileEditor&id=${fileId}`;
       FetchMock.getOnce(`end:${fileId}`, {ok: true, ...searchItem});
 
-      // Validate the output of search
-      requestor.search(url).then(done);
+      requestor.search(url).then(response => {
+        expect(response.length).toBe(1);
+        testCloudItemsAreEqual(expected[0], response[0]);
+        done();
+      });
     });
 
     describe('should reject the promise if the query contains invalid character ', () => {
