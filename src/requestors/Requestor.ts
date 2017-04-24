@@ -86,7 +86,7 @@ abstract class Requestor {
     const logLocation = 'Requestor.getSearchType';
     Logger.info(logLocation, `searchText=${searchText}`);
     if (Requestor.searchUrlRegex.test(searchText)) {
-      Logger.info(logLocation, 'Search query type is an url.');
+      Logger.info(logLocation, 'Search query type is a url.');
       return SearchType.URL;
     } else {
       Logger.info(logLocation, 'Search query type is a keyword.');
