@@ -81,9 +81,10 @@ class OneDriveRequestor extends Requestor {
   // Recursively calling Promises is stack-safe. We will not run into stack overflow errors.
   private getAllOneDriveItems(currentListOfItems: CloudItem[], url: string | undefined, firstCall: boolean): Promise<CloudItem[]> {
     const logLocation = this.logLocationPrefix + 'getAllOneDriveItems';
-    Logger.debug(logLocation, `Start of the recursive call. currentListOfItems:${JSON.stringify(currentListOfItems)} url=${url} firstCall=${firstCall}`);
+    Logger.debug(logLocation, `Recursing... currentListOfItems:${JSON.stringify(currentListOfItems)} url=${url} firstCall=${firstCall}`);
     if (!url && !firstCall) {
-      Logger.debug(logLocation, `End of the recursive call. currentListOfItems:${JSON.stringify(currentListOfItems)} url=${url} firstCall=${firstCall}`);
+      Logger.debug(logLocation, 'Not the first call and no url to continue request. Ending recursion...' +
+                                `currentListOfItems:${JSON.stringify(currentListOfItems)} url=${url} firstCall=${firstCall}`);
       return Promise.resolve(currentListOfItems);
     }
     return this.getOneDriveItems(<string> url).then((oneDriveFolder: OneDriveFolder) => {
