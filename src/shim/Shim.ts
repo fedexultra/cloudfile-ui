@@ -62,7 +62,7 @@ export function createShim(): void {
       throw new Error('Invalid shim version. Version is ' + version);
     }
   } catch (err) {
-    // $TODO - We should only instantiate a debug shim in debug and dev builds
+    // $TODO TFSID: 593225 - We should only instantiate a debug shim in debug and dev builds
     // Otherwise, this should throw an error so if the user tries to access the
     // UI URL directly, we simply display an error message. Define a plugin in
     // webpack to make this possible.
