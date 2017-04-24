@@ -43,7 +43,7 @@ abstract class Requestor {
 
   protected sendRequest(url: string, httpRequest: Object, retryLeft: number = maxRetry): Promise<Response> {
     const logLocation = 'Requestor.sendRequest';
-    Logger.debug(logLocation, `httpRequest=${JSON.stringify(httpRequest)}`);
+    // We don't log the httpRequest here because it exposes access tokens.
     Logger.info(logLocation, `url=${url} retryLeft=${retryLeft}`);
     return fetch(url, httpRequest)
     .then((response) => {
