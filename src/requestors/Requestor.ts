@@ -36,27 +36,29 @@ abstract class Requestor {
   }
 
   private retryableCode(statusCode: number): boolean {
-    Logger.debug(`Requestor.retryableCode: statusCode=${statusCode}`);
+    Logger.info('Requestor.retryableCode', `statusCode=${statusCode}`);
     // Retry all 5xx responses and 401 responses (after refreshing)
     return (Math.floor(statusCode / 100) === 5) || (statusCode === 401);
   }
 
   protected sendRequest(url: string, httpRequest: Object, retryLeft: number = maxRetry): Promise<Response> {
-    Logger.debug(`Requestor.sendRequest: url=${url} httpRequest=${JSON.stringify(httpRequest)} retryLeft=${retryLeft}`);
+    const logLocation = 'Requestor.sendRequest';
+    Logger.debug(logLocation, `httpRequest=${JSON.stringify(httpRequest)}`);
+    Logger.info(logLocation, `url=${url} retryLeft=${retryLeft}`);
     return fetch(url, httpRequest)
     .then((response) => {
       if (response.ok) {
-        Logger.info(`Response successful. Status code is ${response.status}.`);
+        Logger.info(logLocation, `Response successful. status=${response.status}.`);
         return response;
       } else if (this.retryableCode(response.status) && retryLeft > 0) {
-        Logger.info(`Response not successful. Status code is ${response.status}.`);
         if (response.status === 401) {
-          Logger.info('Response not successful due to invalid access token. Refreshing access token.');
+          Logger.info(logLocation,
+                      `Response not successful due to invalid access token. status=${response.status} Refreshing access token...`);
           // Ask Tableau to retrieve a new access token and try once more
           this.auth.accessToken = shim.refreshAuth();
           return this.sendRequest(url, httpRequest, 0);
         } else {
-          Logger.info('Response not successful due to unknown reason. Retrying...');
+          Logger.info(logLocation, `Response not successful due to unknown reason. status=${response.status} Retrying response...`);
           // Retry the request using exponential backoff
           return new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -65,7 +67,7 @@ abstract class Requestor {
           });
         }
       } else {
-        Logger.info('Response not successful and status code not retryable.');
+        Logger.info(logLocation, `Response not successful. Status code not retryable. status=${response.status}`);
         // Tell Tableau to display an error dialog
         const error: CloudFileError = {message: response.statusText, code: response.status, abort: false};
         shim.reportError(error);
@@ -75,18 +77,18 @@ abstract class Requestor {
   }
 
   public isSearchDisabled(): Promise<boolean> {
-    Logger.debug('Requestor.isSearchDisabled');
-    Logger.info('Search not disabled.');
+    Logger.debug('Requestor.isSearchDisabled', 'Search is not disabled.');
     return Promise.resolve(false);
   }
 
   protected getSearchType(searchText: string): SearchType {
-    Logger.debug(`Requestor.getSearchType: searchText = ${searchText}`);
+    const logLocation = 'Requestor.getSearchType';
+    Logger.info(logLocation, `searchText=${searchText}`);
     if (Requestor.searchUrlRegex.test(searchText)) {
-      Logger.info('Search query is an url.');
+      Logger.info(logLocation, 'Search query type is an url.');
       return SearchType.URL;
     } else {
-      Logger.info('Search type is a keyword.');
+      Logger.info(logLocation, 'Search query type is a keyword.');
       return SearchType.Text;
     }
   }

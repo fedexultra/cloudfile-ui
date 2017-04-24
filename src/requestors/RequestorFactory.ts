@@ -21,10 +21,12 @@ import { shim } from '../shim/Shim';
 
 class RequestorFactory {
   public static getRequestor(provider: Provider, providerInfo: ProviderInfo): Requestor {
-    Logger.debug(`RequestorFactory.getRequestor: provider=${ Provider[provider] } providerInfo=${ JSON.stringify(providerInfo) }`);
     const authInfo: AuthInfo = shim.getAuthInfo();
     const providerName = providerInfo.getProviderName();
-    Logger.info(`Provider is ${providerName}`);
+    const logLocation = 'RequestorFactory.getRequestor';
+    Logger.debug(logLocation,
+                 `provider=${Provider[provider]} providerInfo=${JSON.stringify(providerInfo)} authInfo=${JSON.stringify(authInfo)}`);
+    Logger.info(logLocation, `Got a Requestor from provider info. Requestor=${providerName}`);
     if (provider === Provider.box) {
       return new BoxRequestor(authInfo, providerInfo);
     } else if (provider === Provider.dropbox) {
@@ -33,7 +35,7 @@ class RequestorFactory {
       return new OneDriveRequestor(authInfo, providerInfo);
     } else {
       const errorMessage = `Invalid provider: ${providerName}`;
-      Logger.error(errorMessage);
+      Logger.error(logLocation, errorMessage);
       throw new Error(errorMessage);
     }
   }

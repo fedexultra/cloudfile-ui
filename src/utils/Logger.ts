@@ -15,37 +15,42 @@ import { shim } from '../shim/Shim';
 class Logger {
 
   // This is used to identify which log messages are from our Cloud file ui
-  private static logPrefix: string = 'CloudFile UI:';
-  public static trace(message: string): void {
-    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Trace);
+  private static logPrefix: string = 'CloudFile UI';
+
+  private static constructMessage(location: string, message: string): string {
+    return `${this.logPrefix} | ${location} | ${message}`;
   }
 
-  public static debug(message: string): void {
-    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Debug);
+  public static trace(location: string, message: string): void {
+    shim.log({message: this.constructMessage(location, message)}, Severity.Trace);
   }
 
-  public static info(message: string): void {
-    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Info);
+  public static debug(location: string, message: string): void {
+    shim.log({message: this.constructMessage(location, message)}, Severity.Debug);
   }
 
-  public static warn(message: string): void {
-    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Warn);
+  public static info(location: string, message: string): void {
+    shim.log({message: this.constructMessage(location, message)}, Severity.Info);
   }
 
-  public static error(message: string): void {
-    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Error);
+  public static warn(location: string, message: string): void {
+    shim.log({message: this.constructMessage(location, message)}, Severity.Warn);
   }
 
-  public static fatal(message: string): void {
-    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Fatal);
+  public static error(location: string, message: string): void {
+    shim.log({message: this.constructMessage(location, message)}, Severity.Error);
   }
 
-  public static off(message: string): void {
-    shim.log({message: `${this.logPrefix} ${message}`}, Severity.Off);
+  public static fatal(location: string, message: string): void {
+    shim.log({message: this.constructMessage(location, message)}, Severity.Fatal);
   }
 
-  public static LogDetail(message: string): void {
-    shim.log({message: `${this.logPrefix} ${message}`}, Severity.LogDetail);
+  public static off(location: string, message: string): void {
+    shim.log({message: this.constructMessage(location, message)}, Severity.Off);
+  }
+
+  public static LogDetail(location: string, message: string): void {
+    shim.log({message: this.constructMessage(location, message)}, Severity.LogDetail);
   }
 
   public static consoleLog(message: string): void {
