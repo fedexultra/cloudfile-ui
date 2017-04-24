@@ -49,6 +49,7 @@ class BoxRequestor extends Requestor {
   private baseUrl: string;
   private fields: string;
   private limitField: string;
+  private logLocationPrefix: string = 'BoxRequestor.';
 
   public constructor(auth: AuthInfo, providerInfo: ProviderInfo) {
     super(auth, providerInfo);
@@ -169,6 +170,7 @@ class BoxRequestor extends Requestor {
   }
 
   public search(query: string): Promise<CloudItem[]> {
+    const logLocation = this.logLocationPrefix + 'search';
     const typeOfSearch: SearchType = this.getSearchType(query);
     if (typeOfSearch === SearchType.URL) {
         return this.getItemFromUrl(query)
@@ -177,7 +179,7 @@ class BoxRequestor extends Requestor {
           if (<CloudItemNotFoundError> error !== undefined) {
             return [];
           } else {
-            Logger.warn(`Unknown error was caught after entering invalid url ${query}. Error message: ${error.message}`);
+            Logger.warn(logLocation, `Unknown error was caught after entering invalid url ${query}. Error message: ${error.message}`);
             return [];
           }
         });
