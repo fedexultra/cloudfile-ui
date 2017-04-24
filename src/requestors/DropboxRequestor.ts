@@ -172,11 +172,11 @@ class DropboxRequestor extends Requestor {
 
   private getAllDropboxItems(currentListOfItems: CloudItem[], currentResponse: DropboxFolder): Promise<CloudItem[]> {
     const logLocation = this.logLocationPrefix + 'getAllDropboxItems';
-    Logger.debug(logLocation, 'Start of the recursive call.' +
+    Logger.debug(logLocation, 'Recursing...' +
                               `currentListOfItems=${JSON.stringify(currentListOfItems)} ` +
                               `currentResponse=${JSON.stringify(currentResponse)}`);
     if (!currentResponse.has_more) {
-      Logger.debug(logLocation, `End of the recursive call.`+
+      Logger.debug(logLocation, `Current response doesn't have more items. Ending recursion...` +
                                 `currentListOfItems=${JSON.stringify(currentListOfItems)} ` +
                                 `currentResponse=${JSON.stringify(currentResponse)}`);
       return Promise.resolve(currentListOfItems);
@@ -193,13 +193,13 @@ class DropboxRequestor extends Requestor {
   private getAllDropboxMatches(currentListOfItems: CloudItem[], currentResponse: DropboxMatches,
                                path: string, query: string): Promise<CloudItem[]> {
     const logLocation = this.logLocationPrefix + 'getAllDropboxMatches';
-    Logger.debug(logLocation, 'Start of the recursive call.' +
+    Logger.debug(logLocation, 'Recursing...' +
                               `currentListOfItems=${JSON.stringify(currentListOfItems)} ` +
                               `currentResponse=${JSON.stringify(currentResponse)}` +
                               `path=${path}` +
                               `query=${query}`);
     if (!currentResponse.more) {
-      Logger.debug(logLocation, `End of the recursive call.`+
+      Logger.debug(logLocation, `Current response doesn't have more items. Ending recursion...` +
                                 `currentListOfItems=${JSON.stringify(currentListOfItems)} ` +
                                 `currentResponse=${JSON.stringify(currentResponse)}` +
                                 `path=${path}` +
@@ -274,7 +274,7 @@ class DropboxRequestor extends Requestor {
     Logger.debug(logLocation, `query=${query}`);
     const filePath = this.getDropboxFilePathFromSearchUrl(query);
     if (filePath !== '') {
-      Logger.info(logLocation, 'There is a file path from the search url.');
+      Logger.info(logLocation, `There is a file path from the search url. filePath=${filePath}`);
       return this.getDropboxItem(filePath).then((response) => {
         Logger.debug(logLocation, `response=${JSON.stringify(response)}`);
         // This checks if the response is valid. This will go away when we have better error handling. Story 623632
