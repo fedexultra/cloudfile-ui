@@ -67,7 +67,8 @@ abstract class Requestor {
           });
         }
       } else {
-        Logger.info(logLocation, `Response not successful. Status code not retryable. status=${response.status}`);
+        Logger.info(logLocation, 'Response not successful. Status code not retryable or ran out of retries.' +
+                                 `status=${response.status} retryLeft=${retryLeft}`);
         // Tell Tableau to display an error dialog
         const error: CloudFileError = {message: response.statusText, code: response.status, abort: false};
         shim.reportError(error);
