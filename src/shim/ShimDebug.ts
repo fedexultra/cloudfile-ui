@@ -22,7 +22,7 @@ export class ShimDebug implements ShimInterface {
   }
 
   public connect(file: FileAttrs, request: Request): void {
-    Logger.consoleLog('Connect shim method invoked. Ending execution.');
+    Logger.consoleLog(`Connect shim method invoked. Ending execution. file=${JSON.stringify(file)} request=${JSON.stringify(request)}`);
     throw new Error('Program termination requested.');
   }
 
