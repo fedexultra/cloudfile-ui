@@ -12,7 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 *
 
-## [0.1.0] - 2017-04-xx
+## [1.0.0] - 2017-04-25
 ### Added
 * All the things! Not listing them as this is the initial production release
 
