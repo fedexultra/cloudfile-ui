@@ -107,7 +107,7 @@ def package():
             shutil.copy2('dist/cloud-file-connector.min.js', 'deployment_files/dist/')
 
             print("Copying over the New Relic Monitoring min.js file")
-            shutil.copy2('new-relic-monitoring.min.js', 'deploymentfiles/new-relic-monitoring.min.js')
+            shutil.copy2('new-relic-monitoring.min.js', 'deployment_files/new-relic-monitoring.min.js')
 
             print("Packaging has been successful")
 
