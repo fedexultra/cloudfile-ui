@@ -9,24 +9,7 @@
 //
 // -----------------------------------------------------------------------------
 
-import { CloudItem, NullCloudItem } from './CloudItemTypes';
-import { IconDefinition } from '../types/IconTypes';
+import { createMockShim } from '../src/shim/Shim';
 
-interface Column {
-  id: number;
-  title: string;
-  width: string;
-  hasBorder: boolean;
-  getIconFromRow: (row: Row) => IconDefinition;
-  getCellFromRow: (row: Row) => string;
-}
-
-interface Row {
-  cloudItem: CloudItem;
-}
-
-class NullRow implements Row {
-  public cloudItem: CloudItem = new NullCloudItem();
-}
-
-export { Row, Column, NullRow }
+// This is run once before any tests to initialize the shim globally
+createMockShim();

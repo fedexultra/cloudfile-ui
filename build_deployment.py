@@ -106,6 +106,9 @@ def package():
             print("Copying over the min.js file")
             shutil.copy2('dist/cloud-file-connector.min.js', 'deployment_files/dist/')
 
+            print("Copying over the New Relic Monitoring min.js file")
+            shutil.copy2('new-relic-monitoring.min.js', 'deployment_files/new-relic-monitoring.min.js')
+
             print("Packaging has been successful")
 
         except:
@@ -122,7 +125,7 @@ def validate_files():
     Word of warning: this might give a false positive if there are file paths that we should have but are not in list_of_file_paths.
     Another false positive scenario is if there are files missing in the paths that lead to directories since we don't check the contents.
     """
-    list_of_file_paths = ["index.html", "styles.css", "src/img", "dist/compiled-locales", "dist/cloud-file-connector.min.js"]
+    list_of_file_paths = ["index.html", "styles.css", "src/img", "dist/compiled-locales", "dist/cloud-file-connector.min.js", "new-relic-monitoring.min.js"]
     for paths in list_of_file_paths:
         if not os.path.exists(paths):
             return False
