@@ -447,6 +447,20 @@ describe('Filterable Data Grid', () => {
       expect(secondColumn.props().icon).toBe(ArrowDownIcon);
     });
 
+    it('should not change the selected item after sorting', () => {
+      const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
+        <FilterableDataGrid {...mockFilterableDataGridProps}/>);
+      executeRequestorPromises(requestorPromise);
+      const thirdRow = filterableDataGrid.find(BodyRow).at(2);
+      const secondColumn = filterableDataGrid.find(HeaderCell).at(1);
+
+      thirdRow.simulate('click');
+      expect(thirdRow.props().selected).toBeTruthy();
+
+      secondColumn.simulate('click');
+      expect(thirdRow.props().selected).toBeTruthy();
+    });
+
     it('should remain the same after searching', () => {
       const filterableDataGrid: ReactWrapper<FilterableDataGridProps, {}> = mount(
         <FilterableDataGrid {...mockFilterableDataGridProps}/>);

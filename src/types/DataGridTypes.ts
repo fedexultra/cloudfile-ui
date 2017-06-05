@@ -9,7 +9,7 @@
 //
 // -----------------------------------------------------------------------------
 
-import { CloudItem } from './CloudItemTypes';
+import { CloudItem, NullCloudItem } from './CloudItemTypes';
 import { IconDefinition } from '../types/IconTypes';
 
 interface Column {
@@ -25,4 +25,8 @@ interface Row {
   cloudItem: CloudItem;
 }
 
-export { Row, Column}
+class NullRow implements Row {
+  public cloudItem: CloudItem = new NullCloudItem();
+}
+
+export { Row, Column, NullRow }
