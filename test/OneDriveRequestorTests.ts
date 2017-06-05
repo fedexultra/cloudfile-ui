@@ -26,7 +26,9 @@ describe('OneDrive Requestor', () => {
   const providerInfo: ProviderInfo = new OneDrive();
   const requestor: OneDriveRequestor = new OneDriveRequestor({accessToken: '', userId: ''}, providerInfo);
 
-  afterEach(() => FetchMock.restore);
+  afterEach(() => {
+    FetchMock.restore();
+  });
 
   describe('enumerateItems', () => {
 
@@ -385,9 +387,79 @@ describe('OneDrive Requestor', () => {
       });
     });
 
+    it('should return correct results for search by URL for an Excel file', (done) => {
+      // Initialize the supported file types
+      initializeCloudItemUtilities({ 'excel': ['xls', 'xlsx'] });
+
+      // Mock out fetch
+      const searchItem: OneDriveItem = items[0];
+      const fileId = 'MockFileId';
+      const url = `https://onedrive.live.com/?resid=${fileId}`;
+      FetchMock.getOnce(`end:${fileId}`, {ok: true, ...searchItem});
+
+      // Validate the output of search
+      requestor.search(url).then(response => {
+        expect(response.length).toBe(1);
+        testCloudItemsAreEqual(expected[0], response[0]);
+        done();
+      });
+    });
+
+    it('should return correct results for search by URL for a TextFileEditor file', (done) => {
+      // Initialize the supported file types
+      initializeCloudItemUtilities({ 'excel': ['xls', 'xlsx'] });
+
+      // Mock out fetch
+      const searchItem: OneDriveItem = items[0];
+      const fileId = 'MockFileId';
+      const url = `https://onedrive.live.com/?v=TextFileEditor&id=${fileId}`;
+      FetchMock.getOnce(`end:${fileId}`, {ok: true, ...searchItem});
+
+      requestor.search(url).then(response => {
+        expect(response.length).toBe(1);
+        testCloudItemsAreEqual(expected[0], response[0]);
+        done();
+      });
+    });
+
+    describe('should reject the promise if the query contains invalid character ', () => {
+
+      const invalidChars = [':', '\\', '\/', '\''];
+
+      for (let char of invalidChars) {
+        it(char, (done) => {
+          // Mock out fetch to make sure the promise is only rejected if the query is invalid
+          const folder: OneDriveFolder = { value: items };
+          FetchMock.getOnce('*', { ok: true, ...folder });
+
+          // Validate that search detects invalid characters
+          requestor.search(char).catch(done);
+        });
+      }
+
+    });
+
+    it('should reject the promise if the query is an invalid URL ', (done) => {
+      const searchItem: OneDriveItem = {
+        name: '',
+        file: {},
+        lastModifiedDateTime: '',
+        parentReference: { path: '' }
+      };
+
+      // Mock out fetch to make sure the promise is only rejected if the query is invalid
+      FetchMock.getOnce('*', { ok: true, ...searchItem });
+
+      // Validate that search detects an invalid URL
+      const url = 'http://www.google.com';
+      requestor.search(url).catch(done);
+
+    });
+
   });
 
   describe('isSearchDisabled', () => {
+
     it('should return true for business accounts', (done) => {
       // Mock out fetch
       const driveTypeResponse: DriveTypeResponse = {driveType: 'business'};
