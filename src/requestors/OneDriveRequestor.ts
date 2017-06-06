@@ -192,8 +192,6 @@ class OneDriveRequestor extends Requestor {
     } else {
       throw new Error(`Could not process search URL: ${searchUrl}`);
     }
-    Logger.warn(logLocation, 'Cannot get file id from search url.');
-    return '';
   }
   private buildSearchRequest(searchText: string, typeOfSearch: SearchType): string {
     // This tries to determine if the searchText entered is a file url for OneDrive
@@ -210,8 +208,6 @@ class OneDriveRequestor extends Requestor {
       this.validateSearchText(searchText);
       return this.baseUrl + '/drive/root/search(q=\'{' + encodeURIComponent(searchText) + '}\')';
     }
-    Logger.info(logLocation, 'Search text is a keyword.');
-    return this.baseUrl + '/drive/root/search(q=\'{' + searchText + '}\')';
   }
 
   private constructCloudItem(oneDriveItem: OneDriveItem): CloudItem {
