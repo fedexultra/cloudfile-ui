@@ -14,6 +14,7 @@ import * as ReactDOM from 'react-dom';
 
 import { Container } from './components/Container';
 import { createShim, shim } from './shim/Shim';
+import { Logger } from './utils/Logger';
 import { Provider } from './types/ShimTypes';
 import { ProviderInfo } from './providers/ProviderInfo';
 import { ProviderInfoFactory } from './providers/ProviderFactory';
@@ -31,6 +32,7 @@ document.body.appendChild(formattersScript);
 // Set the language to English by default if the shim's locale does not match the regex.
 // We have a regex to support older builds.
 const environment = shim.getTableauEnvironment();
+Logger.info('CloudFileConnector', `Tableau Environment: ${JSON.stringify(environment)}`);
 const localeRegEx = /^[a-z]{2}[_][A-Z]{2}$/;
 let localeMessagesFile = 'dist/compiled-locales/messages.en_US.js';
 let localeFormattersFile = 'dist/compiled-locales/formatters-and-parsers.en_US.js';

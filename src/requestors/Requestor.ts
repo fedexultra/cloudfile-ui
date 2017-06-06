@@ -11,6 +11,7 @@
 
 import { AuthInfo, CloudFileError } from '../types/ShimTypes';
 import { CloudItem } from '../types/CloudItemTypes';
+import { Logger } from '../utils/Logger';
 import { ProviderInfo } from '../providers/ProviderInfo';
 import { shim } from '../shim/Shim';
 
@@ -35,21 +36,29 @@ abstract class Requestor {
   }
 
   private retryableCode(statusCode: number): boolean {
+    Logger.info('Requestor.retryableCode', `statusCode=${statusCode}`);
     // Retry all 5xx responses and 401 responses (after refreshing)
     return (Math.floor(statusCode / 100) === 5) || (statusCode === 401);
   }
 
   protected sendRequest(url: string, httpRequest: Object, retryLeft: number = maxRetry): Promise<Response> {
+    const logLocation = 'Requestor.sendRequest';
+    // We don't log the httpRequest here because it exposes access tokens.
+    Logger.info(logLocation, `url=${url} retryLeft=${retryLeft}`);
     return fetch(url, httpRequest)
     .then((response) => {
       if (response.ok) {
+        Logger.info(logLocation, `Response successful. status=${response.status}.`);
         return response;
       } else if (this.retryableCode(response.status) && retryLeft > 0) {
         if (response.status === 401) {
+          Logger.info(logLocation,
+                      `Response not successful due to invalid access token. status=${response.status} Refreshing access token...`);
           // Ask Tableau to retrieve a new access token and try once more
           this.auth.accessToken = shim.refreshAuth();
           return this.sendRequest(url, httpRequest, 0);
         } else {
+          Logger.info(logLocation, `Response not successful due to unknown reason. status=${response.status} Retrying response...`);
           // Retry the request using exponential backoff
           return new Promise((resolve, reject) => {
             setTimeout(() => {
@@ -58,6 +67,8 @@ abstract class Requestor {
           });
         }
       } else {
+        Logger.info(logLocation, 'Response not successful. Status code not retryable or ran out of retries.' +
+                                 `status=${response.status} retryLeft=${retryLeft}`);
         // Tell Tableau to display an error dialog
         const error: CloudFileError = {message: response.statusText, code: response.status, abort: false};
         shim.reportError(error);
@@ -67,13 +78,18 @@ abstract class Requestor {
   }
 
   public isSearchDisabled(): Promise<boolean> {
+    Logger.debug('Requestor.isSearchDisabled', 'Search is not disabled.');
     return Promise.resolve(false);
   }
 
   protected getSearchType(searchText: string): SearchType {
+    const logLocation = 'Requestor.getSearchType';
+    Logger.info(logLocation, `searchText=${searchText}`);
     if (Requestor.searchUrlRegex.test(searchText)) {
+      Logger.info(logLocation, 'Search query type is a url.');
       return SearchType.URL;
     } else {
+      Logger.info(logLocation, 'Search query type is a keyword.');
       return SearchType.Text;
     }
   }
