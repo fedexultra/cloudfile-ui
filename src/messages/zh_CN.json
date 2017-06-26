@@ -8,7 +8,7 @@
   "name": "名称",
   "queryErrorMessage": "未找到与搜索名称匹配的文件或文件夹",
   "search": "搜索",
-  "searchDisabledForOneDriveForBusiness": "Search not supported for Business accounts",
+  "searchDisabledForOneDrive": "业务帐户不支持搜索",
   "searchResultsMessage": "搜索结果",
   "signedInAs": "已以 {user} 身份登录",
   "signOut": "注销",
