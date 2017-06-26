@@ -61,7 +61,8 @@ class SearchBar extends React.Component<SearchBarProps, SearchBarState> {
 
   private getPlaceHolderText(): string {
     if (this.state.isDisabled) {
-      return Messages.searchDisabledForOneDriveForBusiness();
+      // Search not supported for OneDrive business accounts 
+      return Messages.searchDisabledForOneDrive();
     }
     return Messages.search();
   }
