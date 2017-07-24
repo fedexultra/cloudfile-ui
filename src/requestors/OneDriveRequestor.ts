@@ -180,13 +180,13 @@ class OneDriveRequestor extends Requestor {
     const logLocation = this.logLocationPrefix + 'getFileIdFromSearchUrl';
     Logger.debug(logLocation, `searchUrl=${searchUrl}`);
     const urlSearchParams = new URLSearchParams(new URL(searchUrl).search);
-    // Some files (e.g. JSON, text files) for OneDrive use TextFileEditor, which has 'id' instead of 'resid'
     if (urlSearchParams.has('resid')) {
       // We know for sure that 'resid' exists, so we cast here for the compiler
       Logger.info(logLocation, 'Search params has resid. Extracting....');
       return <string> urlSearchParams.get('resid');
-    } else if ((urlSearchParams.get('v') === 'TextFileEditor') && urlSearchParams.has('id')) {
-      Logger.info(logLocation, 'Search params has TextFileEditor and id. Extracting....');
+    } else if (urlSearchParams.has('id')) {
+      // Some files (e.g. JSON, text files) for OneDrive use TextFileEditor, which has 'id' instead of 'resid'
+      Logger.info(logLocation, 'Search params has id. Extracting....');
       // We know for sure that 'id' exists, so we cast here for the compiler
       return <string> urlSearchParams.get('id');
     } else {

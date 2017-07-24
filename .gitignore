@@ -20,3 +20,6 @@ npm-debug.log
 
 # CI files
 gitlab-ci
+
+# IntelliJ IDE files
+.idea
