@@ -73,7 +73,7 @@ class Body extends React.Component<BodyProps, BodyState> {
     let nextHighlightRowId = highlightRowId;
     let inspected = 0;
     // Check each other row
-    while (inspected++ < this.props.rows.length - 1) {
+    while (inspected++ <= this.props.rows.length - 1) {
       nextHighlightRowId = nextRowIdFunc(nextHighlightRowId);
       if (this.props.rows[nextHighlightRowId].cloudItem.canBeSelected) {
         // Return the first subsequent row that is selectable
