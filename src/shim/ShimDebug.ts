@@ -29,8 +29,8 @@ export class ShimDebug implements ShimInterface {
   public getAuthInfo(): AuthInfo {
     Logger.consoleLog('GetAuthInfo shim method invoked. Returning dummy data.');
     const auth: AuthInfo = {
-      userId: 'dummy@gmail.com',
-      accessToken: '0UQLbIImR4gljBygJcgZT2XBHebz8hqY'
+      userId: 'fucker@gmail.com',
+      accessToken: 'XLPWeoStALvaFddOYdPgN3hiMt7tnw3H'
     };
     return auth;
   }
